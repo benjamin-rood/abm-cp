@@ -1,13 +1,13 @@
 package main
 
-// ColRGB is a standard 8-bit per channel colour representation.
+/*ColRGB stores a standard 8-bit per channel Red Green Blue colour representation. */
 type ColRGB struct {
-	r byte
-	g byte
-	b byte
+	red   byte
+	green byte
+	blue  byte
 }
 
-// Environment specifies the boundary / dimensions of the working model. They extend in both positive and negative directions, oriented at the center. Setting any field (eg. zBounds) to zero will reduce the dimensionality of the model. For most cases, a 2D environment will be sufficient.
+/*Environment specifies the boundary / dimensions of the working model. They extend in both positive and negative directions, oriented at the center. Setting any field (eg. zBounds) to zero will reduce the dimensionality of the model. For most cases, a 2D environment will be sufficient. */
 type Environment struct {
 	xBounds float32
 	yBounds float32
@@ -48,6 +48,10 @@ type visualPredator struct {
 
 // AgentActions interface for general agent behaviours
 type AgentActions interface {
-	Rotate(axis Vec2f, angle float32)
+	Rotate(float32)
+	RotateFromPoint(Vec2f, float32)
 	Move()
+}
+
+func (vp *visualPredator) Rotate(turn float32) {
 }
