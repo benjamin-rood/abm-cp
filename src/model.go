@@ -20,11 +20,22 @@ type Vec2f struct {
 	y float32
 }
 
+// Vec2fCalc - 2D vector arithmetic
+type Vec2fCalc interface {
+	vecAddition(Vec2f, Vec2f) Vec2f
+	vecScalarMultiply(Vec2f, float32) Vec2f
+	dotProduct(Vec2f, Vec2f) float32
+	magnitude(Vec2f) float32
+	angleFromOrigin(Vec2f) float32
+	relativeAngle(Vec2f, Vec2f) float32
+}
+
 type colourPolymorhicPrey struct {
 	pos       Vec2f
 	movS      float32
 	movA      float32
 	heading   float32
+	direction Vec2f
 	lifetime  int32
 	hunger    int32
 	fertility int32 //	interval measurement between birth and sex
@@ -37,6 +48,7 @@ type visualPredator struct {
 	movS      float32
 	movA      float32
 	heading   float32
+	direction Vec2f
 	lifetime  int32
 	hunger    int32
 	fertility int32 //	interval measurement between birth and sex
@@ -48,10 +60,8 @@ type visualPredator struct {
 
 // AgentActions interface for general agent behaviours
 type AgentActions interface {
-	Rotate(float32)
-	RotateFromPoint(Vec2f, float32)
+	UpdateSectorLocation()
+	Turn(𝝧 float32)
 	Move()
-}
-
-func (vp *visualPredator) Rotate(turn float32) {
+	Death()
 }

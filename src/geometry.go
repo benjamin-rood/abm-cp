@@ -29,12 +29,12 @@ func Vec2fDistance(v1 Vec2f, v2 Vec2f) float64 {
 	return Vec2fMagniftude(vd)
 }
 
-/*ColourDifference quantifies the value 'distance' between two ColRGB structs,
+/*ColourDistance quantifies the value difference between two ColRGB structs,
 NOT the difference in magnitude between them as 3D vectors, as there would be 2
 other ColRGB for any ColRGB with an identical magnitude.
 e.g. [255 0 0] [0 255 0] [0 0 255] will all have the same magnitude, but are
 pure Red, pure Blue, pure Green respectively! */
-func ColourDifference(c1 ColRGB, c2 ColRGB) float32 {
+func ColourDistance(c1 ColRGB, c2 ColRGB) float32 {
 	redDiff := float32(c1.red-c2.red) / 255
 	greenDiff := float32(c1.green-c2.green) / 255
 	blueDiff := float32(c1.blue-c1.blue) / 255
