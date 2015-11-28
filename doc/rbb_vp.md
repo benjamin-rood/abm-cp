@@ -1,6 +1,5 @@
 
 ### Rule-Based Behaviour: Visual Predator ###
-###Algorithm###
 #### 1. Begin ####
 	IF PREDATOR AGEING is true:
 		Decrement vp.lifetime
