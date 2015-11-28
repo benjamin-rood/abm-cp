@@ -89,7 +89,8 @@ func TranslatePositionToSector2D(ed float32, n int, v Vector) (int, int) {
 	return x, y
 }
 
-// Magnitude does the classic calculation
+// Magnitude does the classic calculation for length of a vector
+// (or, distance from origin)
 func Magnitude(v Vector) (float64, error) {
 	if len(v) == 0 {
 		return 0, errors.New("v is an empty vector")
@@ -115,8 +116,10 @@ func VectorDistance(v Vector, u Vector) (float64, error) {
 }
 
 /*ColourDistance quantifies the value difference between two ColRGB structs,
-NOT the difference in magnitude between them as 3D vectors, as there would be 2
-other ColRGB for any ColRGB with an identical magnitude.
+returning a floating-point ratio from 0.0 to 1.0.
+Multiply the returned value by100 for a percentage.
+NOTE: this is a distinct concept from the distance between them as 3D vectors,
+as there would be 2 other ColRGB for any ColRGB with an identical magnitude.
 e.g. [255 0 0] [0 255 0] [0 0 255] will all have the same magnitude, but are
 pure Red, pure Blue, pure Green respectively! */
 func ColourDistance(c1 ColRGB, c2 ColRGB) float32 {
@@ -124,5 +127,5 @@ func ColourDistance(c1 ColRGB, c2 ColRGB) float32 {
 	greenDiff := float32(c1.green-c2.green) / 255
 	blueDiff := float32(c1.blue-c1.blue) / 255
 	return (redDiff + greenDiff + blueDiff) / 3
-	/*	will return a floating-point ratio, not a percentage. Multiply the returned value by 100 for a percentage. */
+	/*	will  */
 }
