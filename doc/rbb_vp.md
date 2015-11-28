@@ -1,5 +1,6 @@
 
 ### Rule-Based Behaviour: Visual Predator ###
+###Algorithm###
 #### 1. Begin ####
 	IF PREDATOR AGEING is true:
 		Decrement vp.lifetime
@@ -10,7 +11,7 @@
 	
 #### 2. Visual Search ####
 	SEARCH PREY population of SECTORS within vsr:
-		where FIND PREY ⟮ ∂ * γ * cd ⟯ > sSearchChance
+		where FIND PREY ⟮ ∂ * γ * colour∂ ⟯ > sSearchChance
 	IF FIND PREY: Jump to ATTACK
 	ELSE: Jump to PATROL
 	
@@ -65,7 +66,7 @@
 	
 	γ = visual acuity of vp (operating in E)
 	
-	c∂ = colour distance (difference)
+	colour∂ = colour distance (difference)
 	
 	℮ = energy gained by vp consuming prey
 	
