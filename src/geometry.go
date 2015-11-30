@@ -18,7 +18,7 @@ func VecAddition(v Vector, u Vector) (Vector, error) {
 }
 
 // VecScalarMultiply scalar * v = [scalar*e1, scalar*e2, scalar*e3]
-func VecScalarMultiply(v Vector, scalar float32) (Vector, error) {
+func VecScalarMultiply(v Vector, scalar float64) (Vector, error) {
 	if len(v) == 0 {
 		return nil, errors.New("v is an empty vector")
 	}
@@ -37,7 +37,7 @@ func DotProduct(v Vector, u Vector) (float64, error) {
 	}
 	var f float64
 	for i := 0; i < len(v); i++ {
-		f += float64((v[i] * u[i]))
+		f += (v[i] * u[i])
 	}
 	return f, nil
 }
@@ -58,7 +58,7 @@ func CrossProduct(v Vector, u Vector) (Vector, error) {
 // AngleFromOrigin calculates the angle of a given vector from the origin
 // relative to the x-axis of 𝐄 (the model environment)
 func AngleFromOrigin(v Vector) float64 {
-	return math.Atan2(float64(v[x]), float64(v[y]))
+	return math.Atan2(v[x], v[y])
 }
 
 // RelativeAngle – does what it says on the box.
@@ -66,7 +66,7 @@ func RelativeAngle(v Vector, u Vector) (float64, error) {
 	if len(v) == 0 || len(u) == 0 {
 		return 0, errors.New("v or u is an empty vector")
 	}
-	det := float64((v[x] * u[y]) - (v[y] * u[x]))
+	det := (v[x] * u[y]) - (v[y] * u[x])
 	dot, err := DotProduct(v, u)
 	if err != nil {
 		return 0, err
@@ -82,8 +82,8 @@ func UnitAngle(angle float64) float64 {
 }
 
 // TranslatePositionToSector2D : translates the co-ordinates of a 2D vector to sector indices location (2D Version)
-func TranslatePositionToSector2D(ed float32, n int, v Vector) (int, int) {
-	fn := float32(n)
+func TranslatePositionToSector2D(ed float64, n int, v Vector) (int, int) {
+	fn := float64(n)
 	x := int((v[x] + ed) / (2 * ed) * fn)
 	y := int((v[y] + ed) / (2 * ed) * fn)
 	return x, y
@@ -97,7 +97,7 @@ func Magnitude(v Vector) (float64, error) {
 	}
 	var ǁvǁsq float64
 	for i := 0; i < len(v); i++ {
-		ǁvǁsq += float64(v[i] * v[i])
+		ǁvǁsq += v[i] * v[i]
 	}
 	return math.Sqrt(ǁvǁsq), nil
 }
@@ -122,10 +122,10 @@ NOTE: this is a distinct concept from the distance between them as 3D vectors,
 as there would be 2 other ColRGB for any ColRGB with an identical magnitude.
 e.g. [255 0 0] [0 255 0] [0 0 255] will all have the same magnitude, but are
 pure Red, pure Blue, pure Green respectively! */
-func ColourDistance(c1 ColRGB, c2 ColRGB) float32 {
-	redDiff := float32(c1.red-c2.red) / 255
-	greenDiff := float32(c1.green-c2.green) / 255
-	blueDiff := float32(c1.blue-c1.blue) / 255
+func ColourDistance(c1 ColRGB, c2 ColRGB) float64 {
+	redDiff := float64(c1.red-c2.red) / 255
+	greenDiff := float64(c1.green-c2.green) / 255
+	blueDiff := float64(c1.blue-c1.blue) / 255
 	return (redDiff + greenDiff + blueDiff) / 3
 	/*	will  */
 }
