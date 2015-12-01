@@ -1,23 +1,49 @@
-package main
+package geometry
 
 import (
 	"errors"
 	"math"
 )
 
-// VecAddition v1 + v2 = v3
+// Vector : Any sized dimension representation of a point of vector space.
+type Vector []float64
+
+/*
+ColRGB stores a standard 8-bit per channel Red Green Blue colour
+representation. Part of pkg geometry colour lives in a form of
+vector space.
+*/
+type ColRGB struct {
+	red   byte
+	green byte
+	blue  byte
+}
+
+// just providing a conventional element naming system for
+// 2D and 3D vectors.
+// this 'aliasing' is just local to this file.
+const (
+	x = iota
+	y
+	z
+)
+
+// VecAddition – performs vector addition between two vectors, v and u
+// s.t. v + u = [v₁+u₁ , v₂+u₂, ⠂⠂⠂ , vᵢ₋₁+uᵢ₋₁ , vᵢ+uᵢ ]
+// on an i-th dimension vector.
 func VecAddition(v Vector, u Vector) (Vector, error) {
 	if len(v) != len(u) {
 		return nil, errors.New("vector dimensions do not coincide")
 	}
 	var vPlusU Vector
 	for i := 0; i < len(v); i++ {
-		vPlusU = append(vPlusU, (v[i] + u[i])) //	add an element to the new vector which is the sum of element i from v1 and v2
+		vPlusU = append(vPlusU, (v[i] + u[i])) //	add an element to the new vector which is the sum of element i from v and u
 	}
 	return vPlusU, nil
 }
 
-// VecScalarMultiply scalar * v = [scalar*e1, scalar*e2, scalar*e3]
+// VecScalarMultiply - performs scalar multiplication on a vector v,
+// s.t. scalar * v = [scalar*e1, scalar*e2, scalar*e3]
 func VecScalarMultiply(v Vector, scalar float64) (Vector, error) {
 	if len(v) == 0 {
 		return nil, errors.New("v is an empty vector")
@@ -29,8 +55,9 @@ func VecScalarMultiply(v Vector, scalar float64) (Vector, error) {
 	return sm, nil
 }
 
-// DotProduct returns the sum of the product of elements of two i-dimension vectors:
-// v₁u₁ + v₂u₂ + ⠂⠂⠂ + vᵢ₋₁+ vᵢ
+// DotProduct returns the sum of the product of elements of
+// two i-dimension vectors, u and v, as a scalar
+// s.t. v•v = (v₁u₁ + v₂u₂ + ⠂⠂⠂ + vᵢ₋₁uᵢ₋₁ + vᵢuᵢ)
 func DotProduct(v Vector, u Vector) (float64, error) {
 	if len(v) != len(u) {
 		return 0, errors.New("vector dimensions do not coincide")

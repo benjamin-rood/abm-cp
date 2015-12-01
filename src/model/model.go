@@ -28,15 +28,6 @@ const (
 )
 
 /*
-ColRGB stores a standard 8-bit per channel Red Green Blue colour representation.
-*/
-type ColRGB struct {
-	red   byte
-	green byte
-	blue  byte
-}
-
-/*
 Environment specifies the boundary / dimensions of the working model. They
 extend in both positive and negative directions, oriented at the center. Setting
 any field (eg. zBounds) to zero will reduce the dimensionality of the model. For
@@ -47,9 +38,6 @@ type Environment struct {
 	yBounds float64
 	zBounds float64
 }
-
-// Vector : Any sized dimension representation of a point of vector space.
-type Vector []float64
 
 // ColourPolymorhicPrey – Prey agent type for Predator-Prey ABM
 type ColourPolymorhicPrey struct {
