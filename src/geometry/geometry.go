@@ -8,6 +8,24 @@ import (
 // Vector : Any sized dimension representation of a point of vector space.
 type Vector []float64
 
+// VectorEquality – Trying to implement a quick version of checking for Vector equality
+type VectorEquality interface {
+	Equal(VectorEquality) bool
+}
+
+// Equal method implements an Equality comparison between vectors.
+func (v Vector) Equal(u VectorEquality) bool {
+	if len(v) != len(u.(Vector)) {
+		return false
+	}
+	for i := 0; i < len(v); i++ {
+		if v[i] != u.(Vector)[i] {
+			return false
+		}
+	}
+	return true
+}
+
 /*
 ColRGB stores a standard 8-bit per channel Red Green Blue colour
 representation. Part of pkg geometry colour lives in a form of
