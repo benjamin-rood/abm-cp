@@ -102,14 +102,24 @@ func CrossProduct(v Vector, u Vector) (Vector, error) {
 
 // AngleFromOrigin calculates the angle of a given vector from the origin
 // relative to the x-axis of 𝐄 (the model environment)
-func AngleFromOrigin(v Vector) float64 {
-	return math.Atan2(v[x], v[y])
+func AngleFromOrigin(v Vector) (float64, error) {
+	if len(v) != 2 {
+		return 0, errors.New("vector dimension != 2")
+	}
+	return math.Atan2(v[x], v[y]), nil
 }
 
 // RelativeAngle – does what it says on the box.
+// Only implemented in 2D currently, or, as a comparitive rotation
+// on the z-axis in 3D.
+// (Not restricted, however, as one could have higher dimensionalites
+// of vector and still test for relative angle, by passing a slice which indicates which axis of rotation to be performed. TO BE PROPERLY IMPLEMETED LATER!)
 func RelativeAngle(v Vector, u Vector) (float64, error) {
 	if len(v) == 0 || len(u) == 0 {
 		return 0, errors.New("v or u is an empty vector")
+	}
+	if len(v) != len(u) {
+		return 0, errors.New("vector dimensions do not coincide")
 	}
 	det := (v[x] * u[y]) - (v[y] * u[x])
 	dot, err := DotProduct(v, u)
@@ -129,9 +139,9 @@ func UnitAngle(angle float64) float64 {
 // TranslatePositionToSector2D : translates the co-ordinates of a 2D vector to sector indices location (2D Version)
 func TranslatePositionToSector2D(ed float64, n int, v Vector) (int, int) {
 	fn := float64(n)
-	x := int((v[x] + ed) / (2 * ed) * fn)
-	y := int((v[y] + ed) / (2 * ed) * fn)
-	return x, y
+	col := int(((v[x] + ed) / (2 * ed)) * fn)
+	row := int(((-1 * (v[y] - ed)) / (2 * ed)) * fn)
+	return row, col
 }
 
 // Magnitude does the classic calculation for length of a vector
