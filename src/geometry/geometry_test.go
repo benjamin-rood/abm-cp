@@ -1,3 +1,5 @@
+// geometry is for all the calculations related to agents and their interaction in the environment
+// but not their behaviours.
 package geometry
 
 import (
