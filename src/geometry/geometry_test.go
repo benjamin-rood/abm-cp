@@ -104,9 +104,9 @@ func Test(t *testing.T) {
 		v    Vector
 		want float64
 	}{
-		{Vector{1.0, 2.0}, math.Atan2(1.0, 2.0)},
-		{Vector{xval, yval}, math.Atan2(xval, yval)},
-		{Vector{randW, randZ}, math.Atan2(randW, randZ)},
+		{Vector{1.0, 2.0}, toFixed(math.Atan2(1.0, 2.0), 5)},
+		{Vector{xval, yval}, toFixed(math.Atan2(xval, yval), 5)},
+		{Vector{randW, randZ}, toFixed(math.Atan2(randW, randZ), 5)},
 	}
 
 	for _, g := range angleFromOriginTests {
@@ -172,9 +172,9 @@ func Test(t *testing.T) {
 		v    Vector
 		want float64
 	}{
-		{v0, 6.137686860699232},
-		{v1, 11.541925142713414},
-		{v2, 9.13000208825825},
+		{v0, 6.13769},
+		{v1, 11.54193},
+		{v2, 9.13000},
 	}
 
 	for _, k := range magnitudeTests {
@@ -188,9 +188,9 @@ func Test(t *testing.T) {
 		v    Vector
 		want Vector
 	}{
-		{v0, Vector{0.7071067811865476, -0.7071067811865476}},
-		{v1, Vector{-0.26477385377337137, 0.9643105341942486}},
-		{v2, Vector{-0.00015991234020391415, 0.9999997712751619, 0.0006571740008380034}},
+		{v0, Vector{0.70711, -0.70711}},
+		{v1, Vector{-0.26477, 0.96431}},
+		{v2, Vector{-0.00016, 1.0, 0.00066}},
 	}
 
 	for _, l := range normaliseTests {

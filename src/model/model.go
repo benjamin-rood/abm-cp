@@ -1,7 +1,5 @@
 package model
 
-import "errors"
-
 /*
 MTime holds the model's representation of the time metrics.
 Turn – The cycle length for all agents ∈ 𝐄 to perform 1 (and only 1) Action.
@@ -93,55 +91,4 @@ type AgentActions interface {
 	Turn(𝝧 float64)
 	Move()
 	Death()
-}
-
-// VPbehaviour – set of actions only VisualPredator agents will perform.
-type VPbehaviour interface {
-	VisualSearch([]ColourPolymorhicPrey, float64) (*ColourPolymorhicPrey, error)
-	// ColourImprinting updates VP colour / visual recognition bias
-	ColourImprinting(ColRGB, float64) error
-	Eat(*ColourPolymorhicPrey)
-}
-
-// VisualSearch tries to 'recognise' a nearby prey agent to attack.
-func (vp *VisualPredator) VisualSearch(population []ColourPolymorhicPrey, vsrSearchChance float64) (*ColourPolymorhicPrey, error) {
-	for i := range population {
-		population[i].𝛘 = ColourDistance(vp.colImprint, population[i].colour)
-	}
-
-	population = VisualSort(population)
-
-	for i := range population {
-		distanceToTarget, err := VectorDistance(vp.pos, population[i].pos)
-		if err != nil {
-			return nil, err
-		}
-		if distanceToTarget > vp.visRange {
-			return nil, errors.New("VisualSearch failed")
-		}
-		if (distanceToTarget * vp.visAcuity * population[i].𝛘) > vsrSearchChance {
-			return &population[i], nil
-		}
-	}
-
-	return nil, errors.New("VisualSearch failed")
-}
-
-// ColourImprinting updates VP colour / visual recognition bias
-// Uses a bias / weighting value, 𝜎 (sigma) to control the degree of
-// adaptation VP will make to differences in 'eaten' CPP colours.
-func (vp *VisualPredator) ColourImprinting(target ColRGB, 𝜎 float64) error {
-	𝚫red := byte(float64(vp.colImprint.red-target.red) * 𝜎)
-	𝚫green := byte(float64(vp.colImprint.green-target.green) * 𝜎)
-	𝚫blue := byte(float64(vp.colImprint.blue-target.blue) * 𝜎)
-	vp.colImprint = ColRGB{
-		vp.colImprint.red - 𝚫red,
-		vp.colImprint.green - 𝚫green,
-		vp.colImprint.blue - 𝚫blue}
-	return nil
-}
-
-// Eat absorbs energy from ColourPolymorhicPrey
-func (vp *VisualPredator) Eat(cpp *ColourPolymorhicPrey) {
-
 }
