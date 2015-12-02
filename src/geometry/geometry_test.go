@@ -1,7 +1,6 @@
 package geometry
 
 import (
-	"fmt"
 	"math"
 	"math/rand"
 	"testing"
@@ -119,13 +118,13 @@ func Test(t *testing.T) {
 		a, want float64
 	}{
 		{2 * math.Pi, 0},
-		{(2 * math.Pi) + randU, randU},
-		{(3 * math.Pi), (math.Pi)},
+		{(2 * math.Pi) + randU, toFixed(randU, 5)},
+		{(3 * math.Pi), toFixed(math.Pi, 5)},
 	}
 
 	for _, i := range unitAngleTests {
 		got := UnitAngle(i.a)
-		if float32(got) != float32(i.want) {
+		if got != i.want {
 			t.Errorf("UnitAngle(%v), == %v, want %v\n", i.a, got, i.want)
 		}
 	}
@@ -141,12 +140,10 @@ func Test(t *testing.T) {
 	d0 := float64(4.35)
 	r0 := float64(0.31)
 	n0 := int((2.0 * d0) / (2.0 * r0)) // n0 = 14
-	fmt.Println("n0 = ", n0)
 	v0 := Vector{4.34, -4.34}
 	d1 := float64(17.10189)
 	r1 := float64(0.125)
-	n1 := int((2 * d1) / (2 * r1))
-	fmt.Println("n1 = ", n1)
+	n1 := int((2 * d1) / (2 * r1)) // n1 = 136
 	v1 := Vector{-3.056, 11.13}
 
 	var translatePositionToSector2DTests = []struct {
@@ -164,6 +161,74 @@ func Test(t *testing.T) {
 		rowGot, colGot := TranslatePositionToSector2D(j.ed, j.n, j.v)
 		if rowGot != j.rowWant || colGot != j.colWant {
 			t.Errorf("TranslatePositionToSector2D(%v, %v, %v) == (%v,%v), want (%v,%v)\n", j.ed, j.n, j.v, rowGot, colGot, j.rowWant, j.colWant)
+		}
+	}
+
+	v2 := Vector{-0.00146, 9.13, 0.006}
+
+	var magnitudeTests = []struct {
+		v    Vector
+		want float64
+	}{
+		{v0, 6.137686860699232},
+		{v1, 11.541925142713414},
+		{v2, 9.13000208825825},
+	}
+
+	for _, k := range magnitudeTests {
+		got, _ := Magnitude(k.v)
+		if got != k.want {
+			t.Errorf("Magnitude(%v) == %v, want %v\n", k.v, got, k.want)
+		}
+	}
+
+	var normaliseTests = []struct {
+		v    Vector
+		want Vector
+	}{
+		{v0, Vector{0.7071067811865476, -0.7071067811865476}},
+		{v1, Vector{-0.26477385377337137, 0.9643105341942486}},
+		{v2, Vector{-0.00015991234020391415, 0.9999997712751619, 0.0006571740008380034}},
+	}
+
+	for _, l := range normaliseTests {
+		got, _ := Normalise(l.v)
+		if got.Equal(l.want) == false {
+			t.Errorf("Normalise(%v) == %v, want %v\n", l.v, got, l.want)
+		}
+	}
+
+	randRA := byte(rand.Intn(256))
+	randGA := byte(rand.Intn(256))
+	randBA := byte(rand.Intn(256))
+	randRB := byte(rand.Intn(256))
+	randGB := byte(rand.Intn(256))
+	randBB := byte(rand.Intn(256))
+	red := float64(randRA-randRB) / 255
+	green := float64(randGA-randGB) / 255
+	blue := float64(randBA-randBB) / 255
+	distance := toFixed(((red + blue + green) / 3.0), 3)
+	base1 := ColRGB{255, 0, 0}
+	base2 := ColRGB{0, 0, 255}
+	red = float64(base1.red-base2.red) / 255
+	green = float64(base1.green-base2.green) / 255
+	blue = float64(base1.blue-base2.blue) / 255
+	baseDiff := toFixed(((red + blue + green) / 3.0), 3)
+
+	var colourDistanceTests = []struct {
+		colA, colB ColRGB
+		want       float64
+	}{
+		{base1, base2, baseDiff},
+		{ColRGB{randRA, randGA, randBA}, ColRGB{randRB, randGB, randBB}, distance},
+		{ColRGB{10, 111, 188}, ColRGB{10, 111, 188}, 0.0},
+		{ColRGB{255, 255, 255}, ColRGB{0, 0, 0}, 1.0},
+	}
+
+	for _, m := range colourDistanceTests {
+		got := ColourDistance(m.colA, m.colB)
+		if got != m.want {
+			t.Errorf("ColourDistance(%v, %v) == %v, want %v\n", m.colA, m.colB, got, m.want)
 		}
 	}
 }

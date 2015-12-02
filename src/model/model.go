@@ -1,4 +1,4 @@
-package main
+package model
 
 import "errors"
 
@@ -128,10 +128,12 @@ func (vp *VisualPredator) VisualSearch(population []ColourPolymorhicPrey, vsrSea
 }
 
 // ColourImprinting updates VP colour / visual recognition bias
-func (vp *VisualPredator) ColourImprinting(target ColRGB, colourWeighting float64) error {
-	𝚫red := byte(float64(vp.colImprint.red-target.red) * colourWeighting)
-	𝚫green := byte(float64(vp.colImprint.green-target.green) * colourWeighting)
-	𝚫blue := byte(float64(vp.colImprint.blue-target.blue) * colourWeighting)
+// Uses a bias / weighting value, 𝜎 (sigma) to control the degree of
+// adaptation VP will make to differences in 'eaten' CPP colours.
+func (vp *VisualPredator) ColourImprinting(target ColRGB, 𝜎 float64) error {
+	𝚫red := byte(float64(vp.colImprint.red-target.red) * 𝜎)
+	𝚫green := byte(float64(vp.colImprint.green-target.green) * 𝜎)
+	𝚫blue := byte(float64(vp.colImprint.blue-target.blue) * 𝜎)
 	vp.colImprint = ColRGB{
 		vp.colImprint.red - 𝚫red,
 		vp.colImprint.green - 𝚫green,
