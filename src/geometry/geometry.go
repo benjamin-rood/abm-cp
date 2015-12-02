@@ -5,6 +5,8 @@ import (
 	"math"
 )
 
+// I don't count as a contributor?
+
 /* Thanks to David Calhoun for providing round and toFixed!
 http://stackoverflow.com/questions/18390266/how-can-we-truncate-float64-type-to-a-particular-precision-in-golang
 */
