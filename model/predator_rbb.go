@@ -3,13 +3,16 @@ package model
 import (
 	"errors"
 	"math"
+
+	"github.com/benjamin-rood/abm-colour-polymorphism/colour"
+	"github.com/benjamin-rood/abm-colour-polymorphism/geometry"
 )
 
 // VPbehaviour – set of actions only VisualPredator agents will perform.
 type VPbehaviour interface {
 	VisualSearch([]ColourPolymorhicPrey, float64) (*ColourPolymorhicPrey, error)
 	// ColourImprinting updates VP colour / visual recognition bias
-	ColourImprinting(ColRGB, float64) error
+	ColourImprinting(colour.RGB, float64) error
 	VSRSectorSamples(float64, int) ([4][2]int, error)
 	Turn(float64)
 	Move()
@@ -17,7 +20,7 @@ type VPbehaviour interface {
 
 // Turn updates dir𝚯 and dir vector to the new heading offset by 𝚯
 func (vp *VisualPredator) Turn(𝚯 float64) {
-	newHeading := UnitAngle(vp.dir𝚯 + 𝚯)
+	newHeading := geometry.UnitAngle(vp.dir𝚯 + 𝚯)
 	vp.dir[x] = math.Cos(newHeading)
 	vp.dir[y] = math.Sin(newHeading)
 	vp.dir𝚯 = newHeading
@@ -25,17 +28,18 @@ func (vp *VisualPredator) Turn(𝚯 float64) {
 
 // Move updates the agent's position if it doesn't encounter any errors.
 func (vp *VisualPredator) Move() error {
-	var posOffset, newPos Vector
+	var posOffset, newPos geometry.Vector
 	var err error
-	posOffset, err = VecScalarMultiply(vp.dir, vp.vsr)
+	posOffset, err = geometry.VecScalarMultiply(vp.dir, vp.movS*vp.movA)
 	if err != nil {
-		return errors.New("agent move failed: " + err)
+		return errors.New("agent move failed: " + err.Error())
 	}
-	newPos, err = VecAddition(vp.pos, posOffset)
+	newPos, err = geometry.VecAddition(vp.pos, posOffset)
 	if err != nil {
-		return errors.New("agent move failed: " + err)
+		return errors.New("agent move failed: " + err.Error())
 	}
 	vp.pos = newPos
+	return nil
 }
 
 // VSRSectorSamples checks which sectors the VP agent's
@@ -60,13 +64,13 @@ func (vp *VisualPredator) VSRSectorSamples(d float64, n int) ([4][2]int, error) 
 	x315 := vp.pos[x] + (vp.vsr * (math.Cos(7 * math.Pi / 4)))
 	y315 := vp.pos[y] + (vp.vsr * (math.Sin(7 * math.Pi / 4)))
 
-	sectorSamples[0][0], sectorSamples[0][1] = TranslatePositionToSector2D(d, n, Vector{x45, y45})
+	sectorSamples[0][0], sectorSamples[0][1] = geometry.TranslatePositionToSector2D(d, n, geometry.Vector{x45, y45})
 
-	sectorSamples[1][0], sectorSamples[1][1] = TranslatePositionToSector2D(d, n, Vector{x135, y135})
+	sectorSamples[1][0], sectorSamples[1][1] = geometry.TranslatePositionToSector2D(d, n, geometry.Vector{x135, y135})
 
-	sectorSamples[2][0], sectorSamples[2][1] = TranslatePositionToSector2D(d, n, Vector{x225, y225})
+	sectorSamples[2][0], sectorSamples[2][1] = geometry.TranslatePositionToSector2D(d, n, geometry.Vector{x225, y225})
 
-	sectorSamples[3][0], sectorSamples[3][1] = TranslatePositionToSector2D(d, n, Vector{x315, y315})
+	sectorSamples[3][0], sectorSamples[3][1] = geometry.TranslatePositionToSector2D(d, n, geometry.Vector{x315, y315})
 
 	return sectorSamples, nil
 }
@@ -74,20 +78,20 @@ func (vp *VisualPredator) VSRSectorSamples(d float64, n int) ([4][2]int, error) 
 // VisualSearch tries to 'recognise' a nearby prey agent to attack.
 func (vp *VisualPredator) VisualSearch(population []ColourPolymorhicPrey, vsrSearchChance float64) (*ColourPolymorhicPrey, error) {
 	for i := range population {
-		population[i].𝛘 = ColourDistance(vp.colImprint, population[i].colour)
+		population[i].𝛘 = colour.RGBDistance(vp.colImprint, population[i].colouration)
 	}
 
 	population = VisualSort(population)
 
 	for i := range population {
-		distanceToTarget, err := VectorDistance(vp.pos, population[i].pos)
+		distanceToTarget, err := geometry.VectorDistance(vp.pos, population[i].pos)
 		if err != nil {
 			return nil, err
 		}
-		if distanceToTarget > vp.visRange {
+		if distanceToTarget > vp.vsr {
 			return nil, errors.New("VisualSearch failed")
 		}
-		if (distanceToTarget * vp.visAcuity * population[i].𝛘) > vsrSearchChance {
+		if (distanceToTarget * vp.γ * population[i].𝛘) > vsrSearchChance {
 			return &population[i], nil
 		}
 	}
@@ -98,13 +102,12 @@ func (vp *VisualPredator) VisualSearch(population []ColourPolymorhicPrey, vsrSea
 // ColourImprinting updates VP colour / visual recognition bias
 // Uses a bias / weighting value, 𝜎 (sigma) to control the degree of
 // adaptation VP will make to differences in 'eaten' CPP colours.
-func (vp *VisualPredator) ColourImprinting(target ColRGB, 𝜎 float64) error {
-	𝚫red := byte(float64(vp.colImprint.red-target.red) * 𝜎)
-	𝚫green := byte(float64(vp.colImprint.green-target.green) * 𝜎)
-	𝚫blue := byte(float64(vp.colImprint.blue-target.blue) * 𝜎)
-	vp.colImprint = ColRGB{
-		vp.colImprint.red - 𝚫red,
-		vp.colImprint.green - 𝚫green,
-		vp.colImprint.blue - 𝚫blue}
+func (vp *VisualPredator) ColourImprinting(target colour.RGB, 𝜎 float64) error {
+	𝚫red := byte(float64(vp.colImprint.Red-target.Red) * 𝜎)
+	𝚫green := byte(float64(vp.colImprint.Green-target.Green) * 𝜎)
+	𝚫blue := byte(float64(vp.colImprint.Blue-target.Blue) * 𝜎)
+	vp.colImprint.Red = vp.colImprint.Red - 𝚫red
+	vp.colImprint.Green = vp.colImprint.Green - 𝚫green
+	vp.colImprint.Blue = vp.colImprint.Blue - 𝚫blue
 	return nil
 }

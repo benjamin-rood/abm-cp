@@ -1,5 +1,10 @@
 package model
 
+import (
+	"github.com/benjamin-rood/abm-colour-polymorphism/colour"
+	"github.com/benjamin-rood/abm-colour-polymorphism/geometry"
+)
+
 /*
 Timeframe holds the model's representation of the time metrics.
 Turn – The cycle length for all agents ∈ 𝐄 to perform 1 (and only 1) Action.
@@ -14,9 +19,9 @@ Action – An individual 'step' in the model. All Actions have a cost:
 				for a period.
 */
 type Timeframe struct {
-	turn   int
-	phase  int
-	action int
+	Turn   int
+	Phase  int
+	Action int
 }
 
 const (
@@ -34,7 +39,7 @@ In the future it may include some environmental factors etc.
 */
 type Environment struct {
 	bounds [][2]int //	from -d to d for each axis.
-	bg     ColRGB
+	bg     colour.RGB
 }
 
 // Context contains the local model context;
@@ -59,18 +64,19 @@ type Context struct {
 
 // ColourPolymorhicPrey – Prey agent type for Predator-Prey ABM
 type ColourPolymorhicPrey struct {
-	populationIndex uint    //	index to the master population array.
-	pos             Vector  //	position in the environment
-	movS            float64 //	speed
-	movA            float64 //	acceleration
-	dir             Vector  //	must be implemented as a unit vector
-	dir𝚯            float64 //	 heading angle
-	hunger          uint    //	counter for interval between needing food
-	fertility       uint    //	counter for interval between birth and sex
-	gravid          bool    //	i.e. pregnant
-	colour          ColRGB  //	colour
-	𝛘               float64 //	 colour sorting value
-	ϸ               float64 //  position sorting value
+	populationIndex uint            //	index to the master population array.
+	pos             geometry.Vector //	position in the environment
+	movS            float64         //	speed
+	movA            float64         //	acceleration
+	dir             geometry.Vector //	must be implemented as a unit vector
+	dir𝚯            float64         //	 heading angle
+	hunger          uint            //	counter for interval between needing food
+	fertility       uint            //	counter for interval between birth and sex
+	gravid          bool            //	i.e. pregnant
+	colouration     colour.RGB      //	colour
+	𝛘               float64         //	 colour sorting value
+	ϸ               float64         //  position sorting value
+	vpVisAcuity     float64         //	use 1.0 by default
 }
 
 // ProximitySort implements sort.Interface for []ColourPolymorhicPrey
@@ -79,7 +85,7 @@ type ProximitySort []ColourPolymorhicPrey
 
 func (ps ProximitySort) Len() int           { return len(ps) }
 func (ps ProximitySort) Swap(i, j int)      { ps[i], ps[j] = ps[j], ps[i] }
-func (ps ProximitySort) Less(i, j int) bool { return ps[i].δ < ps[j].δ }
+func (ps ProximitySort) Less(i, j int) bool { return ps[i].ϸ < ps[j].ϸ }
 
 // VisualSort implements sort.Interface for []ColourPolymorhicPrey
 // based on 𝛘 field.
@@ -91,18 +97,18 @@ func (vs VisualSort) Less(i, j int) bool { return vs[i].𝛘 < vs[j].𝛘 }
 
 // VisualPredator - Predator agent type for Predator-Prey ABM
 type VisualPredator struct {
-	populationIndex uint    //	index to the master population array.
-	pos             Vector  //	position in the environment
-	movS            float64 //	speed
-	movA            float64 //	acceleration
-	dir             Vector  //	must be implemented as a unit vector
-	dir𝚯            float64 //	 heading angle
-	hunger          uint    //	counter for interval between needing food
-	fertility       uint    //	counter for interval between birth and sex
-	gravid          bool    //	i.e. pregnant
-	vsr             float64 //	visual search range
-	γ               float64 //	visual acuity (initially, use 1.0)
-	colImprint      ColRGB
+	populationIndex uint            //	index to the master population array.
+	pos             geometry.Vector //	position in the environment
+	movS            float64         //	speed
+	movA            float64         //	acceleration
+	dir             geometry.Vector //	must be implemented as a unit vector
+	dir𝚯            float64         //	 heading angle
+	hunger          uint            //	counter for interval between needing food
+	fertility       uint            //	counter for interval between birth and sex
+	gravid          bool            //	i.e. pregnant
+	vsr             float64         //	visual search range
+	γ               float64         //	visual acuity (initially, use 1.0)
+	colImprint      colour.RGB
 }
 
 // AgentActions interface for general agent behaviours

@@ -210,21 +210,21 @@ func Test(t *testing.T) {
 	green := float64(randGA-randGB) / 255
 	blue := float64(randBA-randBB) / 255
 	distance := toFixed(((red + blue + green) / 3.0), 3)
-	base1 := ColRGB{255, 0, 0}
-	base2 := ColRGB{0, 0, 255}
-	red = float64(base1.red-base2.red) / 255
-	green = float64(base1.green-base2.green) / 255
-	blue = float64(base1.blue-base2.blue) / 255
+	base1 := RGB{255, 0, 0}
+	base2 := RGB{0, 0, 255}
+	red = float64(base1.Red-base2.Red) / 255
+	green = float64(base1.Green -base2.Green ) / 255
+	blue = float64(base1.Blue -base2.Blue ) / 255
 	baseDiff := toFixed(((red + blue + green) / 3.0), 3)
 
 	var colourDistanceTests = []struct {
-		colA, colB ColRGB
+		colA, colB RGB
 		want       float64
 	}{
 		{base1, base2, baseDiff},
-		{ColRGB{randRA, randGA, randBA}, ColRGB{randRB, randGB, randBB}, distance},
-		{ColRGB{10, 111, 188}, ColRGB{10, 111, 188}, 0.0},
-		{ColRGB{255, 255, 255}, ColRGB{0, 0, 0}, 1.0},
+		{RGB{randRA, randGA, randBA}, RGB{randRB, randGB, randBB}, distance},
+		{RGB{10, 111, 188}, RGB{10, 111, 188}, 0.0},
+		{RGB{255, 255, 255}, RGB{0, 0, 0}, 1.0},
 	}
 
 	for _, m := range colourDistanceTests {

@@ -3,21 +3,9 @@ package geometry
 import (
 	"errors"
 	"math"
+
+	"github.com/benjamin-rood/abm-colour-polymorphism/calc"
 )
-
-// I don't count as a contributor?
-
-/* Thanks to David Calhoun for providing round and toFixed!
-http://stackoverflow.com/questions/18390266/how-can-we-truncate-float64-type-to-a-particular-precision-in-golang
-*/
-func round(num float64) int {
-	return int(num + math.Copysign(0.5, num))
-}
-
-func toFixed(num float64, precision int) float64 {
-	output := math.Pow(10, float64(precision))
-	return float64(round(num*output)) / output
-}
 
 // Vector : Any sized dimension representation of a point of vector space.
 type Vector []float64
@@ -38,17 +26,6 @@ func (v Vector) Equal(u VectorEquality) bool {
 		}
 	}
 	return true
-}
-
-/*
-ColRGB stores a standard 8-bit per channel Red Green Blue colour
-representation. Part of pkg geometry colour lives in a form of
-vector space.
-*/
-type ColRGB struct {
-	red   byte
-	green byte
-	blue  byte
 }
 
 // just providing a conventional element naming system for
@@ -120,7 +97,7 @@ func AngleFromOrigin(v Vector) (float64, error) {
 	if len(v) != 2 {
 		return 0, errors.New("vector dimension != 2")
 	}
-	return toFixed(math.Atan2(v[x], v[y]), 5), nil
+	return calc.ToFixed(math.Atan2(v[x], v[y]), 5), nil
 }
 
 // RelativeAngle – does what it says on the box.
@@ -141,13 +118,13 @@ func RelativeAngle(v Vector, u Vector) (float64, error) {
 		return 0, err
 	}
 	angle := math.Atan2(det, dot)
-	return toFixed(angle, 5), nil
+	return calc.ToFixed(angle, 5), nil
 }
 
 // UnitAngle will map any floating-point value to its angle on a unit circle.
 func UnitAngle(angle float64) float64 {
 	twoPi := math.Pi * 2
-	return toFixed((angle - (twoPi * math.Floor(angle/twoPi))), 5)
+	return calc.ToFixed((angle - (twoPi * math.Floor(angle/twoPi))), 5)
 }
 
 // Magnitude does the classic calculation for length of a vector
@@ -160,7 +137,7 @@ func Magnitude(v Vector) (float64, error) {
 	for i := 0; i < len(v); i++ {
 		ǁvǁsq += v[i] * v[i]
 	}
-	return toFixed(math.Sqrt(ǁvǁsq), 5), nil
+	return calc.ToFixed(math.Sqrt(ǁvǁsq), 5), nil
 }
 
 // VectorDistance calculates the distance between two positions
@@ -193,7 +170,7 @@ func Normalise(v Vector) (Vector, error) {
 		if err != nil {
 			return nil, err
 		}
-		norm = append(norm, toFixed(v[i]/ǁvǁ, 5))
+		norm = append(norm, calc.ToFixed(v[i]/ǁvǁ, 5))
 	}
 	return norm, nil
 }
@@ -204,18 +181,4 @@ func TranslatePositionToSector2D(ed float64, n int, v Vector) (int, int) {
 	col := int(((v[x] + ed) / (2 * ed)) * fn)
 	row := int(((-1 * (v[y] - ed)) / (2 * ed)) * fn)
 	return row, col
-}
-
-/*ColourDistance quantifies the value difference between two ColRGB structs,
-returning a floating-point ratio from 0.0 to 1.0.
-Multiply the returned value by100 for a percentage.
-NOTE: this is a distinct concept from the distance between them as 3D vectors,
-as there would be 2 other ColRGB for any ColRGB with an identical magnitude.
-e.g. [255 0 0] [0 255 0] [0 0 255] will all have the same magnitude, but are
-pure Red, pure Blue, pure Green respectively! */
-func ColourDistance(c1 ColRGB, c2 ColRGB) float64 {
-	red := float64(c1.red-c2.red) / 255
-	green := float64(c1.green-c2.green) / 255
-	blue := float64(c1.blue-c2.blue) / 255
-	return toFixed(((red + blue + green) / 3.0), 3) // returns to 3 d.p. only
 }
