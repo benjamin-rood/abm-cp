@@ -34,6 +34,7 @@ In the future it may include some environmental factors etc.
 */
 type Environment struct {
 	bounds [][2]int //	from -d to d for each axis.
+	bg     ColRGB
 }
 
 // Context contains the local model context;
