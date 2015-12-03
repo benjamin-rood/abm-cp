@@ -1,6 +1,9 @@
 package model
 
-import "errors"
+import (
+	"errors"
+	"math"
+)
 
 // VPbehaviour – set of actions only VisualPredator agents will perform.
 type VPbehaviour interface {
@@ -8,25 +11,40 @@ type VPbehaviour interface {
 	// ColourImprinting updates VP colour / visual recognition bias
 	ColourImprinting(ColRGB, float64) error
 	VSRSectorSamples(float64, int) [4][2]int
+	Turn(float64) error
 }
 
 // VSRSectorSamples checks which sectors the VP agent's
 // Visual Search Radius intersects.
 // This initial version samples from 4 points on the circumference
 // of the circle with radius vp.visRange originating at the VP agent's position
-// The four sample points are at 0, π/2, π, 3π/2 radians.
-func (vp *VisualPredator) VSRSectorSamples(d float64, n int) [4][2]int {
+// The four sample points on the circumference at 45°, 135°, 225°, 315°
+// or π/4, 3π/4, 5π/4, 7π/4 radians,
+// or NE, NW, SW, SE on a compass, if you want to think of it that way :-)
+func (vp *VisualPredator) VSRSectorSamples(d float64, n int) ([4][2]int, error) {
 	sectorSamples := [4][2]int{}
 
-	sectorSamples[0][0], sectorSamples[0][1] = TranslatePositionToSector2D(d, n, Vector{(vp.pos[x] + vp.visRange), vp.pos[y]})
+	x45 := vp.pos[x] + (vp.vsr * (math.Cos(math.Pi / 4)))
+	y45 := vp.pos[y] + (vp.vsr * (math.Sin(math.Pi / 4)))
 
-	sectorSamples[1][0], sectorSamples[1][1] = TranslatePositionToSector2D(d, n, Vector{vp.pos[x], (vp.pos[y] + vp.visRange)})
+	x135 := vp.pos[x] + (vp.vsr * (math.Cos(3 * math.Pi / 4)))
+	y135 := vp.pos[y] + (vp.vsr * (math.Sin(3 * math.Pi / 4)))
 
-	sectorSamples[2][0], sectorSamples[2][1] = TranslatePositionToSector2D(d, n, Vector{vp.pos[x] - vp.visRange, vp.pos[y]})
+	x225 := vp.pos[x] + (vp.vsr * (math.Cos(5 * math.Pi / 4)))
+	y225 := vp.pos[y] + (vp.vsr * (math.Sin(5 * math.Pi / 4)))
 
-	sectorSamples[3][0], sectorSamples[3][1] = TranslatePositionToSector2D(d, n, Vector{vp.pos[x], (vp.pos[y] - vp.visRange)})
+	x315 := vp.pos[x] + (vp.vsr * (math.Cos(7 * math.Pi / 4)))
+	y315 := vp.pos[y] + (vp.vsr * (math.Sin(7 * math.Pi / 4)))
 
-	return sectorSamples
+	sectorSamples[0][0], sectorSamples[0][1] = TranslatePositionToSector2D(d, n, Vector{x45, y45})
+
+	sectorSamples[1][0], sectorSamples[1][1] = TranslatePositionToSector2D(d, n, Vector{x135, y135})
+
+	sectorSamples[2][0], sectorSamples[2][1] = TranslatePositionToSector2D(d, n, Vector{x225, y225})
+
+	sectorSamples[3][0], sectorSamples[3][1] = TranslatePositionToSector2D(d, n, Vector{x315, y315})
+
+	return sectorSamples, nil
 }
 
 // VisualSearch tries to 'recognise' a nearby prey agent to attack.

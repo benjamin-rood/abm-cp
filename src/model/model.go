@@ -40,8 +40,8 @@ type Environment struct {
 type Context struct {
 	𝐄                  Environment
 	time               Timeframe
-	cppPopulation      uint
-	vpPopulation       uint
+	cppPopulation      uint    // CPP agent population size
+	vpPopulation       uint    //	VP agent population size
 	vsr                float64 //	visual search range
 	γ                  float64 //	visual acuity in environments
 	vpSpan             uint    //	Visual Predator lifespan
@@ -58,18 +58,17 @@ type Context struct {
 
 // ColourPolymorhicPrey – Prey agent type for Predator-Prey ABM
 type ColourPolymorhicPrey struct {
-	populationIndex uint    //	index to directly access agent in the master population array.
+	populationIndex uint    //	index to the master population array.
 	pos             Vector  //	position in the environment
 	movS            float64 //	speed
 	movA            float64 //	acceleration
 	dir             Vector  //	must be implemented as a unit vector
-	heading         float64 //	dir as an angle
 	hunger          uint    //	counter for interval between needing food
 	fertility       uint    //	counter for interval between birth and sex
 	gravid          bool    //	i.e. pregnant
 	colour          ColRGB  //	colour
-	𝛘               float64 //	colour sorting value
-	ϸ               float64 // position sorting value
+	𝛘               float64 //	 colour sorting value
+	ϸ               float64 //  position sorting value
 }
 
 // ProximitySort implements sort.Interface for []ColourPolymorhicPrey
@@ -95,7 +94,6 @@ type VisualPredator struct {
 	movS            float64 //	speed
 	movA            float64 //	acceleration
 	dir             Vector  //	must be implemented as a unit vector
-	heading         float64 //	dir as angle
 	hunger          uint    //	counter for interval between needing food
 	fertility       uint    //	counter for interval between birth and sex
 	gravid          bool    //	i.e. pregnant
