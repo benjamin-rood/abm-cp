@@ -1,7 +1,7 @@
 package model
 
 /*
-MTime holds the model's representation of the time metrics.
+Timeframe holds the model's representation of the time metrics.
 Turn – The cycle length for all agents ∈ 𝐄 to perform 1 (and only 1) Action.
 Phase – Division of a Turn, between agent sets, environmental effects/factors,
 				and updates to populations and model conditions (via external).
@@ -13,7 +13,7 @@ Action – An individual 'step' in the model. All Actions have a cost:
 				Some Actions could also *stop* any other behaviour by that agent
 				for a period.
 */
-type MTime struct {
+type Timeframe struct {
 	turn   int
 	phase  int
 	action int
@@ -30,27 +30,46 @@ Environment specifies the boundary / dimensions of the working model. They
 extend in both positive and negative directions, oriented at the center. Setting
 any field (eg. zBounds) to zero will reduce the dimensionality of the model. For
 most cases, a 2D environment will be sufficient.
+In the future it may include some environmental factors etc.
 */
 type Environment struct {
-	xBounds float64
-	yBounds float64
-	zBounds float64
+	bounds [][2]int //	from -d to d for each axis.
+}
+
+// Context contains the local model context;
+type Context struct {
+	𝐄                  Environment
+	time               Timeframe
+	cppPopulation      uint
+	vpPopulation       uint
+	vsr                float64 //	visual search range
+	γ                  float64 //	visual acuity in environments
+	vpSpan             uint    //	Visual Predator lifespan
+	cppSpan            uint    //	Colour Polymorphic Prey lifespan
+	φ                  uint    //	CPP incubation cost
+	ȣ                  uint    //	CPP sexual rest cost
+	vpAgeing           bool
+	cppAgeing          bool
+	cppReproduceChance float64
+	vpReproduceChance  float64
+	vsrSearchChance    float64
+	vpAttackChance     float64
 }
 
 // ColourPolymorhicPrey – Prey agent type for Predator-Prey ABM
 type ColourPolymorhicPrey struct {
-	populationIndex int
-	pos             Vector
-	movS            float64
-	movA            float64
-	heading         float64
-	direction       Vector
-	lifetime        int32
-	hunger          int32
-	gravid          bool //	i.e. pregnant
-	colour          ColRGB
+	populationIndex uint    //	index to directly access agent in the master population array.
+	pos             Vector  //	position in the environment
+	movS            float64 //	speed
+	movA            float64 //	acceleration
+	dir             Vector  //	must be implemented as a unit vector
+	heading         float64 //	dir as an angle
+	hunger          uint    //	counter for interval between needing food
+	fertility       uint    //	counter for interval between birth and sex
+	gravid          bool    //	i.e. pregnant
+	colour          ColRGB  //	colour
 	𝛘               float64 //	colour sorting value
-	δ               float64 // position sorting value
+	ϸ               float64 // position sorting value
 }
 
 // ProximitySort implements sort.Interface for []ColourPolymorhicPrey
@@ -71,18 +90,17 @@ func (vs VisualSort) Less(i, j int) bool { return vs[i].𝛘 < vs[j].𝛘 }
 
 // VisualPredator - Predator agent type for Predator-Prey ABM
 type VisualPredator struct {
-	populationIndex int
-	pos             Vector
-	movS            float64
-	movA            float64
-	heading         float64 //	angle of direction relative to origin ∈ 𝐄
-	direction       Vector  //	unit vector for
-	lifetime        int32   //	counter for number of turns agent exists in the model
-	hunger          int32   //	measurement reflecting
-	fertility       int32   //	interval measurement between birth and sex
+	populationIndex uint    //	index to directly access agent in the master population array.
+	pos             Vector  //	position in the environment
+	movS            float64 //	speed
+	movA            float64 //	acceleration
+	dir             Vector  //	must be implemented as a unit vector
+	heading         float64 //	dir as angle
+	hunger          uint    //	counter for interval between needing food
+	fertility       uint    //	counter for interval between birth and sex
 	gravid          bool    //	i.e. pregnant
-	visRange        float64
-	visAcuity       float64
+	vsr             float64 //	visual search range
+	γ               float64 //	visual acuity (initially, use 1.0)
 	colImprint      ColRGB
 }
 
