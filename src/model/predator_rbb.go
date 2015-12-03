@@ -10,8 +10,32 @@ type VPbehaviour interface {
 	VisualSearch([]ColourPolymorhicPrey, float64) (*ColourPolymorhicPrey, error)
 	// ColourImprinting updates VP colour / visual recognition bias
 	ColourImprinting(ColRGB, float64) error
-	VSRSectorSamples(float64, int) [4][2]int
-	Turn(float64) error
+	VSRSectorSamples(float64, int) ([4][2]int, error)
+	Turn(float64)
+	Move()
+}
+
+// Turn updates dir𝚯 and dir vector to the new heading offset by 𝚯
+func (vp *VisualPredator) Turn(𝚯 float64) {
+	newHeading := UnitAngle(vp.dir𝚯 + 𝚯)
+	vp.dir[x] = math.Cos(newHeading)
+	vp.dir[y] = math.Sin(newHeading)
+	vp.dir𝚯 = newHeading
+}
+
+// Move updates the agent's position if it doesn't encounter any errors.
+func (vp *VisualPredator) Move() error {
+	var posOffset, newPos Vector
+	var err error
+	posOffset, err = VecScalarMultiply(vp.dir, vp.vsr)
+	if err != nil {
+		return errors.New("agent move failed: " + err)
+	}
+	newPos, err = VecAddition(vp.pos, posOffset)
+	if err != nil {
+		return errors.New("agent move failed: " + err)
+	}
+	vp.pos = newPos
 }
 
 // VSRSectorSamples checks which sectors the VP agent's

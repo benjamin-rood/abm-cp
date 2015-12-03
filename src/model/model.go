@@ -44,8 +44,8 @@ type Context struct {
 	vpPopulation       uint    //	VP agent population size
 	vsr                float64 //	visual search range
 	γ                  float64 //	visual acuity in environments
-	vpSpan             uint    //	Visual Predator lifespan
-	cppSpan            uint    //	Colour Polymorphic Prey lifespan
+	vpLifespan         uint    //	Visual Predator lifespan
+	cppLifespan        uint    //	Colour Polymorphic Prey lifespan
 	φ                  uint    //	CPP incubation cost
 	ȣ                  uint    //	CPP sexual rest cost
 	vpAgeing           bool
@@ -63,6 +63,7 @@ type ColourPolymorhicPrey struct {
 	movS            float64 //	speed
 	movA            float64 //	acceleration
 	dir             Vector  //	must be implemented as a unit vector
+	dir𝚯            float64 //	 heading angle
 	hunger          uint    //	counter for interval between needing food
 	fertility       uint    //	counter for interval between birth and sex
 	gravid          bool    //	i.e. pregnant
@@ -94,6 +95,7 @@ type VisualPredator struct {
 	movS            float64 //	speed
 	movA            float64 //	acceleration
 	dir             Vector  //	must be implemented as a unit vector
+	dir𝚯            float64 //	 heading angle
 	hunger          uint    //	counter for interval between needing food
 	fertility       uint    //	counter for interval between birth and sex
 	gravid          bool    //	i.e. pregnant
