@@ -90,7 +90,7 @@ func (vs VisualSort) Less(i, j int) bool { return vs[i].𝛘 < vs[j].𝛘 }
 
 // VisualPredator - Predator agent type for Predator-Prey ABM
 type VisualPredator struct {
-	populationIndex uint    //	index to directly access agent in the master population array.
+	populationIndex uint    //	index to the master population array.
 	pos             Vector  //	position in the environment
 	movS            float64 //	speed
 	movA            float64 //	acceleration
@@ -106,7 +106,7 @@ type VisualPredator struct {
 
 // AgentActions interface for general agent behaviours
 type AgentActions interface {
-	Turn(𝝧 float64)
+	Turn(float64)
 	Move()
 	Death()
 }
