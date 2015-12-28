@@ -62,6 +62,50 @@ type Context struct {
 	vpAttackChance     float64
 }
 
+// Mover defines an agent whose position is non-static
+type Mover interface {
+	Turn(𝚯 float64)
+	Move(target geometry.Vector)
+}
+
+// Hunter defines an agent which looks for sustinence by going after prey agents.
+type Hunter interface {
+	PreySearch() (bool, Hunted)
+	Attack(Hunted) bool
+	Eat(Hunted) bool
+}
+
+// Forager defines an agent which looks for sustinence by searching its environment – although it can be carnivorous, it does not Hunt for live prey.
+type Forager interface {
+	FoodSearch()
+	Eat()
+}
+
+// Hunted defines an agent which must avoid Hunters!
+type Hunted interface {
+	Evade(Hunter) //	e.g. dodging!
+	Hide()        //	e.g. uses camoflage
+}
+
+// Defender defines an agent which actively repels attacks
+type Defender interface {
+	Block() bool
+	Counter()
+}
+
+// Breeder defines an agent which breeds sexually with other agents of the same type.
+type Breeder interface {
+	MateSearch() (bool, Breeder)
+	Copulation(Breeder) bool
+	Birth() []Breeder
+}
+
+// Mortal defines an agent which ages and dies.
+type Mortal interface {
+	Age()
+	Death()
+}
+
 // ColourPolymorhicPrey – Prey agent type for Predator-Prey ABM
 type ColourPolymorhicPrey struct {
 	populationIndex uint            //	index to the master population array.
@@ -74,9 +118,8 @@ type ColourPolymorhicPrey struct {
 	fertility       uint            //	counter for interval between birth and sex
 	gravid          bool            //	i.e. pregnant
 	colouration     colour.RGB      //	colour
-	𝛘               float64         //	 colour sorting value
-	ϸ               float64         //  position sorting value
-	vpVisAcuity     float64         //	use 1.0 by default
+	𝛘               float64         //	 colour sorting value - colour distance/difference between vp.imprimt and cpp.colouration
+	ϸ               float64         //  position sorting value - vector distance between vp.pos and cpp.pos
 }
 
 // ProximitySort implements sort.Interface for []ColourPolymorhicPrey
@@ -88,7 +131,7 @@ func (ps ProximitySort) Swap(i, j int)      { ps[i], ps[j] = ps[j], ps[i] }
 func (ps ProximitySort) Less(i, j int) bool { return ps[i].ϸ < ps[j].ϸ }
 
 // VisualSort implements sort.Interface for []ColourPolymorhicPrey
-// based on 𝛘 field.
+// based on 𝛘 field – to assert visual bias of a VisualPredator based on it's colour imprinting value.
 type VisualSort []ColourPolymorhicPrey
 
 func (vs VisualSort) Len() int           { return len(vs) }
@@ -109,11 +152,4 @@ type VisualPredator struct {
 	vsr             float64         //	visual search range
 	γ               float64         //	visual acuity (initially, use 1.0)
 	colImprint      colour.RGB
-}
-
-// AgentActions interface for general agent behaviours
-type AgentActions interface {
-	Turn(float64)
-	Move()
-	Death()
 }

@@ -10,7 +10,8 @@ func round(num float64) int {
 }
 
 // ToFixed will give a rounded-up version of "num" to "precision" decimal places.
-func ToFixed(num float64, precision int) float64 {
-	output := math.Pow(10, float64(precision))
-	return float64(round(num*output)) / output
+func ToFixed(num float64, precision int) (output float64) {
+	output = math.Pow(10, float64(precision))
+	output = float64(round(num*output)) / output
+	return
 }

@@ -7,34 +7,29 @@ import (
 	"github.com/benjamin-rood/abm-colour-polymorphism/geometry"
 )
 
-// CPPbehaviour – set of actions ColourPolymorhicPrey agents will perform.
-type CPPbehaviour interface {
-	Turn(float64)
-	Move()
-	//Spawn()
-	//Death() to be implemented
+// Turn implements agent Mover interface method for ColourPolymorhicPrey:
+// updates dir𝚯 and dir vector to the new heading offset by 𝚯
+func (c *ColourPolymorhicPrey) Turn(𝚯 float64) {
+	newHeading := geometry.UnitAngle(c.dir𝚯 + 𝚯)
+	c.dir[x] = math.Cos(newHeading)
+	c.dir[y] = math.Sin(newHeading)
+	c.dir𝚯 = newHeading
 }
 
-// Turn updates dir𝚯 and dir vector to the new heading offset by 𝚯
-func (cpp *ColourPolymorhicPrey) Turn(𝚯 float64) {
-	newHeading := geometry.UnitAngle(cpp.dir𝚯 + 𝚯)
-	cpp.dir[x] = math.Cos(newHeading)
-	cpp.dir[y] = math.Sin(newHeading)
-	cpp.dir𝚯 = newHeading
-}
-
-// Move updates the agent's position if it doesn't encounter any errors.
-func (cpp *ColourPolymorhicPrey) Move() error {
+// Move implements agent Mover interface method for ColourPolymorhicPrey:
+// updates the agent's position according to its direction (heading) and
+// velocity (speed*acceleration) if it doesn't encounter any errors.
+func (c *ColourPolymorhicPrey) Move() error {
 	var posOffset, newPos geometry.Vector
 	var err error
-	posOffset, err = geometry.VecScalarMultiply(cpp.dir, cpp.movS*cpp.movA)
+	posOffset, err = geometry.VecScalarMultiply(c.dir, c.movS*c.movA)
 	if err != nil {
 		return errors.New("agent move failed: " + err.Error())
 	}
-	newPos, err = geometry.VecAddition(cpp.pos, posOffset)
+	newPos, err = geometry.VecAddition(c.pos, posOffset)
 	if err != nil {
 		return errors.New("agent move failed: " + err.Error())
 	}
-	cpp.pos = newPos
+	c.pos = newPos
 	return nil
 }
