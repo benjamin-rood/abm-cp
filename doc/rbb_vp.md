@@ -1,5 +1,6 @@
 
 ### Rule-Based Behaviour: Visual Predator ###
+
 #### 1. Begin ####
 	IF PREDATOR AGEING is true:
 		Decrement vp.lifetime
@@ -10,24 +11,31 @@
 	
 #### 2. Visual Search ####
 	SEARCH PREY population of SECTORS within vsr:
-		where FIND PREY ⟮ ∂ * γ * colour∂ ⟯ > sSearchChance
+		where FIND PREY ⟮ ∂ * γ * colour∂ ⟯ > vsrSearchChance
 	IF FIND PREY: Jump to ATTACK
 	ELSE: Jump to PATROL
 	
 ####3. Attack ####
 	Let α be a random real value in [0, 1]
-	IF α > sAttackChance: 
+	IF α > vpAttackChance: 
 		MOVE to PREY position
 		Jump to EAT
 	ELSE: 
 		MOVE to fuzzy offset of PREY position (missed target)
 		Jump to END
 
-####4. Patrol ####
+####4.  Eat####
+
+	Remove PREY from model population and sector location.
+	Decrement hunger by ℮
+	Jump to END
+
+####5. Patrol ####
 	Let ϴ be a random angle (radians) in [-π/2, π/2] 
 	IF ϴ > zero: vp turns left by ϴ radians.
-	ELSE IF ϴ < zero: vp turns right by ϴ radians.
-	MOVE forward according to new heading, at distance (movS+movA) from current position.
+
+	MOVE forward according to new heading, at distance 
+	(movS * movA) from current position.
 	Jump to END
 
 	Further Details:
@@ -35,12 +43,6 @@
 	Where (heading + ϴ) ≣ U (mod 2π)
 	heading ⟵ U
 	direction ⟵ Vec2f{cosU, sineU}
-
-####5.  Eat####
-
-	Remove PREY from model population and sector location.
-	Decrement hunger by ℮
-	Jump to END
 
 ####6. Death####
 	Remove vp from model population and sector location.
@@ -71,6 +73,6 @@
 	
 	movS, movA = speed, acceleration of vp
 	
-	sSearchChance, sAttackChance = 
+	vsrSearchChance, vpAttackChance = 
 		constant values to bias likelihood of
 		successfully finding, eating PREY

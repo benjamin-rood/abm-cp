@@ -1,9 +1,9 @@
 ### Rule-Based Behaviour: CP Prey ###
 ####1. Begin####
 	IF PREY AGEING is true:
-		decrement cpp.lifetime
+		decrement lifetime
 		IF lifetime ≤ 0: Jump to DEATH
-	Increment cpp.fertility
+	Increment fertility
 	IF fertility = 0:
 		gravid ⟵ false
 		Jump to SPAWN
@@ -25,7 +25,7 @@
 	Jump to END
 
 ####4. Explore####
-	MOVE to random position within radius (movS+movA)
+	MOVE to random position within radius (movS*movA)
 	Jump to END
 
 ####5. Spawn####
