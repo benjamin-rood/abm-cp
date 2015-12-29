@@ -5,6 +5,14 @@ import (
 	"github.com/benjamin-rood/abm-colour-polymorphism/geometry"
 )
 
+// Model acts as the working instance of the 'game'
+type Model struct {
+	Timeframe
+	Environment
+	CppPopulation []ColourPolymorhicPrey
+	VpPopulation  []VisualPredator
+}
+
 /*
 Timeframe holds the model's representation of the time metrics.
 Turn – The cycle length for all agents ∈ 𝐄 to perform 1 (and only 1) Action.

@@ -7,6 +7,15 @@ import (
 	"github.com/benjamin-rood/abm-colour-polymorphism/geometry"
 )
 
+/*
+The Colour Polymorphic Prey agent is currently defined by the following animalistic interfaces:
+Mover
+Breeder
+Mortal
+*/
+
+// Mover interface:
+
 // Turn implements agent Mover interface method for ColourPolymorhicPrey:
 // updates dir𝚯 and dir vector to the new heading offset by 𝚯
 func (c *ColourPolymorhicPrey) Turn(𝚯 float64) {
@@ -32,4 +41,11 @@ func (c *ColourPolymorhicPrey) Move() error {
 	}
 	c.pos = newPos
 	return nil
+}
+
+// Breeder interface:
+
+// MateSearch implements Breeder interface method for ColourPolymorhicPrey:
+func (c *ColourPolymorhicPrey) MateSearch(env *Environment, pop []ColourPolymorhicPrey) (bool, Breeder) {
+
 }
