@@ -37,8 +37,8 @@ type Defender interface {
 
 // Breeder defines an agent which breeds sexually with other agents of the same type.
 type Breeder interface {
-	MateSearch(*Environment, []ColourPolymorhicPrey) (bool, Breeder)
-	Copulation(Breeder) bool
+	MateSearch([]Breeder) (bool, *Breeder)
+	Copulation(*Breeder) bool
 	Birth() []Breeder
 }
 

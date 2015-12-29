@@ -8,14 +8,28 @@ import (
 	"github.com/benjamin-rood/abm-colour-polymorphism/geometry"
 )
 
-// VPbehaviour – set of actions only VisualPredator agents will perform.
-type VPbehaviour interface {
-	VisualSearch([]ColourPolymorhicPrey, float64) (*ColourPolymorhicPrey, error)
+// VisualPredator - Predator agent type for Predator-Prey ABM
+type VisualPredator struct {
+	populationIndex uint            //	index to the master population array.
+	pos             geometry.Vector //	position in the environment
+	movS            float64         //	speed
+	movA            float64         //	acceleration
+	dir             geometry.Vector //	must be implemented as a unit vector
+	dir𝚯            float64         //	 heading angle
+	hunger          uint            //	counter for interval between needing food
+	fertility       uint            //	counter for interval between birth and sex
+	gravid          bool            //	i.e. pregnant
+	vsr             float64         //	visual search range
+	γ               float64         //	visual acuity (initially, use 1.0)
+	colImprint      colour.RGB
+}
+
+// vpBehaviour – set of actions only VisualPredator agents will perform – unexported!
+type vpBehaviour interface {
+	visualSearch([]ColourPolymorhicPrey, float64) (*ColourPolymorhicPrey, error)
 	// ColourImprinting updates VP colour / visual recognition bias
-	ColourImprinting(colour.RGB, float64) error
-	VSRSectorSamples(float64, int) ([4][2]int, error)
-	Turn(float64)
-	Move()
+	colourImprinting(colour.RGB, float64) error
+	vsrSectorSamples(float64, int) ([4][2]int, error)
 }
 
 // Turn updates dir𝚯 and dir vector to the new heading offset by 𝚯
