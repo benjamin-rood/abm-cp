@@ -37,9 +37,9 @@ type Defender interface {
 
 // Breeder defines an agent which breeds sexually with other agents of the same type.
 type Breeder interface {
-	MateSearch([]Breeder) (bool, *Breeder)
-	Copulation(*Breeder) bool
-	Birth() []Breeder
+	MateSearch([]Breeder) *Breeder
+	Copulation(mate *Breeder, chance float64, gestation int) bool
+	Birth(int, float64) []Breeder
 }
 
 // Mortal defines an agent which ages and dies.

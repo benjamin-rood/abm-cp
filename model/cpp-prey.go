@@ -3,6 +3,7 @@ package model
 import (
 	"errors"
 	"math"
+	"math/rand"
 
 	"github.com/benjamin-rood/abm-colour-polymorphism/colour"
 	"github.com/benjamin-rood/abm-colour-polymorphism/geometry"
@@ -16,18 +17,13 @@ type ColourPolymorhicPrey struct {
 	movA            float64         //	acceleration
 	dir             geometry.Vector //	must be implemented as a unit vector
 	dir𝚯            float64         //	 heading angle
-	hunger          uint            //	counter for interval between needing food
-	fertility       uint            //	counter for interval between birth and sex
+	sr              float64         //	search range
+	hunger          int             //	counter for interval between needing food
+	fertility       int             //	counter for interval between birth and sex
 	gravid          bool            //	i.e. pregnant
 	colouration     colour.RGB      //	colour
 	𝛘               float64         //	 colour sorting value - colour distance/difference between vp.imprimt and cpp.colouration
 	ϸ               float64         //  position sorting value - vector distance between vp.pos and cpp.pos
-}
-
-// cppBehaviour – set of actions only VisualPredator agents will perform – unexported!
-type cppBehaviour interface {
-	mutation() // variation at time of birth
-	spawn() []ColourPolymorhicPrey
 }
 
 // ProximitySort implements sort.Interface for []ColourPolymorhicPrey
@@ -85,6 +81,59 @@ func (c *ColourPolymorhicPrey) Move() error {
 // Breeder interface:
 
 // MateSearch implements Breeder interface method for ColourPolymorhicPrey:
-func (c *ColourPolymorhicPrey) MateSearch(pop []ColourPolymorhicPrey) (bool, *ColourPolymorhicPrey) {
+// NEEDS BETTER HANDLING THAN JUST PUSHING THE ERROR UP!
+func (c *ColourPolymorhicPrey) MateSearch(pop []ColourPolymorhicPrey) (*ColourPolymorhicPrey, error) {
+	for i := 0; i < len(pop); i++ {
+		dist, err := geometry.VectorDistance(c.pos, pop[i].pos)
+		if err != nil {
+			return nil, err
+		}
+		if dist <= c.sr {
+			return &pop[i], nil
+		}
+	}
+	return nil, nil
+}
+
+// Copulation implemets Breeder interface method for ColourPolymorhicPrey:
+func (c *ColourPolymorhicPrey) Copulation(mate *ColourPolymorhicPrey, chance float64, gestation int) bool {
+	ω := rand.Float64()
+	if ω <= chance {
+		c.gravid = true
+		c.fertility = -gestation
+		return true
+	}
+	return false
+}
+
+// Birth implemets Breeder interface method for ColourPolymorhicPrey:
+func (c *ColourPolymorhicPrey) Birth(b int, m float64) []ColourPolymorhicPrey {
+	n := 1
+	if b > 1 {
+		n = rand.Intn(b-1) + 1 //	i.e. range [1, b]
+	}
+	var progeny []ColourPolymorhicPrey
+	for i := 0; i < n; i++ {
+		child := c.newChild()
+		child.mutation(m)
+		progeny = append(progeny, child)
+	}
+	c.gravid = false
+	return progeny
+}
+
+// set of actions only ColourPolymorhicPrey agents will perform
+type cppBehaviour interface {
+	newChild() ColourPolymorhicPrey
+	mutation(float64) // variation at time of birth
+	spawn() []ColourPolymorhicPrey
+}
+
+func (c *ColourPolymorhicPrey) newChild() ColourPolymorhicPrey {
+	child := ColourPolymorhicPrey{}
+	return child
+}
+
+func (c *ColourPolymorhicPrey) mutation(dif float64) {
 
 }
