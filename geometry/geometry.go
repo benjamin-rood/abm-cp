@@ -3,6 +3,7 @@ package geometry
 import (
 	"errors"
 	"math"
+	"math/rand"
 
 	"github.com/benjamin-rood/abm-colour-polymorphism/calc"
 )
@@ -181,4 +182,20 @@ func TranslatePositionToSector2D(ed float64, n int, v Vector) (int, int) {
 	col := int(((v[x] + ed) / (2 * ed)) * fn)
 	row := int(((-1 * (v[y] - ed)) / (2 * ed)) * fn)
 	return row, col
+}
+
+// Fuzzify will return a a 'fuzzy', slightly randomised version of v, at a random variance in range (-ε, +ε) offset from each existing element of v.
+func Fuzzify(v Vector, ε float64) (Vector, error) {
+	if len(v) == 0 {
+		return nil, errors.New("v is an empty vector")
+	}
+	vf := v
+	for i := 0; i < len(vf); i++ {
+		offset := rand.Float64() * ε
+		if rand.Intn(2) == 0 { //	flip a coin
+			offset = -offset
+		}
+		vf[i] = vf[i] + offset
+	}
+	return vf, nil
 }

@@ -6,6 +6,7 @@ import "github.com/benjamin-rood/abm-colour-polymorphism/colour"
 type Model struct {
 	Timeframe
 	Environment
+	Context
 	CPP cppPopulation
 	VP  vpPopulation
 }
@@ -59,16 +60,23 @@ type Environment struct {
 
 // Context contains the local model context;
 type Context struct {
-	𝐄                  Environment
+	E                  Environment
 	time               Timeframe
-	cppPopulation      uint    // CPP agent population size
+	cppPopulation      int     // CPP agent population size
 	vpPopulation       uint    //	VP agent population size
-	vsr                float64 //	visual search range
+	vpVsr              float64 //	VP agent visual search range
 	γ                  float64 //	visual acuity in environments
-	vpLifespan         uint    //	Visual Predator lifespan
-	cppLifespan        uint    //	Colour Polymorphic Prey lifespan
-	φ                  uint    //	CPP incubation cost
-	ȣ                  uint    //	CPP sexual rest cost
+	vpLifespan         int     //	Visual Predator lifespan
+	vpS                float64 // Visual Predator speed
+	vpA                float64 // Visual Predator acceleration
+	cppLifespan        int     //	CPP agent lifespan
+	cppS               float64 // CPP agent speed
+	cppA               float64 // CPP agent acceleration
+	cppSr              float64 // CPP agentsearch range for mating
+	randomAges         bool
+	mf                 float64 //	mutation factor
+	φ                  int     //	CPP incubation cost
+	ȣ                  int     //	CPP sexual rest cost
 	vpAgeing           bool
 	cppAgeing          bool
 	cppReproduceChance float64

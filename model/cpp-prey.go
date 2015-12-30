@@ -11,19 +11,44 @@ import (
 
 // ColourPolymorhicPrey – Prey agent type for Predator-Prey ABM
 type ColourPolymorhicPrey struct {
-	populationIndex uint            //	index to the master population array.
-	pos             geometry.Vector //	position in the environment
-	movS            float64         //	speed
-	movA            float64         //	acceleration
-	dir             geometry.Vector //	must be implemented as a unit vector
-	dir𝚯            float64         //	 heading angle
-	sr              float64         //	search range
-	hunger          int             //	counter for interval between needing food
-	fertility       int             //	counter for interval between birth and sex
-	gravid          bool            //	i.e. pregnant
-	colouration     colour.RGB      //	colour
-	𝛘               float64         //	 colour sorting value - colour distance/difference between vp.imprimt and cpp.colouration
-	ϸ               float64         //  position sorting value - vector distance between vp.pos and cpp.pos
+	popIndex    int             //	index to the master population array.
+	pos         geometry.Vector //	position in the environment
+	movS        float64         //	speed
+	movA        float64         //	acceleration
+	dir         geometry.Vector //	must be implemented as a unit vector
+	dir𝚯        float64         //	 heading angle
+	sr          float64         //	search range
+	lifespan    int
+	hunger      int        //	counter for interval between needing food
+	fertility   int        //	counter for interval between birth and sex
+	gravid      bool       //	i.e. pregnant
+	colouration colour.RGB //	colour
+	𝛘           float64    //	 colour sorting value - colour distance/difference between vp.imprimt and cpp.colouration
+	ϸ           float64    //  position sorting value - vector distance between vp.pos and cpp.pos
+}
+
+// GeneratePopulation will create `size` number of agents
+func GeneratePopulation(size int, context Context) []ColourPolymorhicPrey {
+	var pop []ColourPolymorhicPrey
+	for i := 0; i < size; i++ {
+		agent := ColourPolymorhicPrey{}
+		agent.popIndex = i
+		agent.pos = geometry.RandVector(context.E)
+		if context.cppAgeing {
+			if context.randomAges {
+				agent.lifespan = rand.Intn(context.cppLifespan) + 1
+			} else {
+				agent.lifespan = context.cppLifespan
+			}
+		} else {
+			agent.lifespan = -1
+		}
+		agent.movS = context.cppS
+		agent.movA = context.cppA
+		agent.sr = context.cppSr
+
+	}
+	return pop
 }
 
 // ProximitySort implements sort.Interface for []ColourPolymorhicPrey
@@ -131,6 +156,7 @@ type cppBehaviour interface {
 
 func (c *ColourPolymorhicPrey) newChild() ColourPolymorhicPrey {
 	child := ColourPolymorhicPrey{}
+	child.pos, _ = geometry.Fuzzify(c.pos, 0.1)
 	return child
 }
 
