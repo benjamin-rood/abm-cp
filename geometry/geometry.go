@@ -199,3 +199,13 @@ func Fuzzify(v Vector, ε float64) (Vector, error) {
 	}
 	return vf, nil
 }
+
+// RandVector will give a random vector within boundaries the axes of len(bounds) dimensions
+func RandVector(bounds [][2]float64) Vector {
+	var v Vector
+	for i := 0; i < len(bounds); i++ {
+		val := calc.RandFloatIn(bounds[i][0], math.Nextafter(bounds[i][1], bounds[i][1]+1))
+		v = append(v, val)
+	}
+	return v
+}

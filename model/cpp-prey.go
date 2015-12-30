@@ -41,7 +41,7 @@ func GeneratePopulation(size int, context Context) []ColourPolymorhicPrey {
 				agent.lifespan = context.cppLifespan
 			}
 		} else {
-			agent.lifespan = -1
+			agent.lifespan = -1 //	i.e. Undead!
 		}
 		agent.movS = context.cppS
 		agent.movA = context.cppA

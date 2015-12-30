@@ -117,9 +117,9 @@ func (vp *VisualPredator) VisualSearch(population []ColourPolymorhicPrey, vsrSea
 // Uses a bias / weighting value, 𝜎 (sigma) to control the degree of
 // adaptation VP will make to differences in 'eaten' CPP colours.
 func (vp *VisualPredator) ColourImprinting(target colour.RGB, 𝜎 float64) error {
-	𝚫red := byte(float64(vp.colImprint.Red-target.Red) * 𝜎)
-	𝚫green := byte(float64(vp.colImprint.Green-target.Green) * 𝜎)
-	𝚫blue := byte(float64(vp.colImprint.Blue-target.Blue) * 𝜎)
+	𝚫red := (vp.colImprint.Red - target.Red) * 𝜎
+	𝚫green := (vp.colImprint.Green - target.Green) * 𝜎
+	𝚫blue := (vp.colImprint.Blue - target.Blue) * 𝜎
 	vp.colImprint.Red = vp.colImprint.Red - 𝚫red
 	vp.colImprint.Green = vp.colImprint.Green - 𝚫green
 	vp.colImprint.Blue = vp.colImprint.Blue - 𝚫blue

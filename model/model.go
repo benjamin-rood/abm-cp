@@ -7,8 +7,9 @@ type Model struct {
 	Timeframe
 	Environment
 	Context
-	CPP cppPopulation
-	VP  vpPopulation
+	dimensionality int
+	CPP            cppPopulation
+	VP             vpPopulation
 }
 
 type cppPopulation struct {
@@ -62,6 +63,7 @@ type Environment struct {
 type Context struct {
 	E                  Environment
 	time               Timeframe
+	dimensionality     int
 	cppPopulation      int     // CPP agent population size
 	vpPopulation       uint    //	VP agent population size
 	vpVsr              float64 //	VP agent visual search range

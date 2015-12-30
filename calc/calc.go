@@ -23,3 +23,17 @@ func ToFixed(num float64, precision int) (output float64) {
 func RandFloatIn(min float64, max float64) float64 {
 	return (rand.Float64() * (max - min)) + min
 }
+
+// ClampFloatIn will ensure that a floating point value is within range [min, max]. Dependant on min < max
+func ClampFloatIn(f float64, min float64, max float64) float64 {
+	if min >= max {
+		return f
+	}
+	if f < min {
+		return min
+	}
+	if f > max {
+		return max
+	}
+	return f
+}
