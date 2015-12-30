@@ -12,9 +12,19 @@ type Mover interface {
 
 // Hunter defines an agent which looks for sustinence by going after prey agents.
 type Hunter interface {
-	PreySearch() (bool, Hunted)
+	PreySearch() Hunted
 	Attack(Hunted) bool
 	Eat(Hunted) bool
+}
+
+// Patroller defines an agent which moves in a circuit within a bounded area.
+type Patroller interface {
+	Patrol(bounds [][2]geometry.Vector) (target geometry.Vector)
+}
+
+// Explorer defines an agent which searches the environment to map it
+type Explorer interface {
+	Exploation() (target geometry.Vector, bounds [][2]geometry.Vector)
 }
 
 // Forager defines an agent which looks for sustinence by searching its environment – although it can be carnivorous, it does not Hunt for live prey.

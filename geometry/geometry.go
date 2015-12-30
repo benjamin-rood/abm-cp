@@ -3,7 +3,6 @@ package geometry
 import (
 	"errors"
 	"math"
-	"math/rand"
 
 	"github.com/benjamin-rood/abm-colour-polymorphism/calc"
 )
@@ -128,6 +127,15 @@ func UnitAngle(angle float64) float64 {
 	return calc.ToFixed((angle - (twoPi * math.Floor(angle/twoPi))), 5)
 }
 
+// UnitVector returns a direction unit vector for an axis pair.
+func UnitVector(angle float64) Vector {
+	var v Vector
+	angle = UnitAngle(angle)
+	v = append(v, math.Cos(angle))
+	v = append(v, math.Sin(angle))
+	return v
+}
+
 // Magnitude does the classic calculation for length of a vector
 // (or, distance from origin)
 func Magnitude(v Vector) (float64, error) {
@@ -184,18 +192,14 @@ func TranslatePositionToSector2D(ed float64, n int, v Vector) (int, int) {
 	return row, col
 }
 
-// Fuzzify will return a a 'fuzzy', slightly randomised version of v, at a random variance in range (-ε, +ε) offset from each existing element of v.
-func Fuzzify(v Vector, ε float64) (Vector, error) {
+// FuzzifyVector will return a a 'fuzzy', slightly randomised version of v, at a random variance in range (-ε, +ε) offset from each existing element of v.
+func FuzzifyVector(v Vector, ε float64) (Vector, error) {
 	if len(v) == 0 {
 		return nil, errors.New("v is an empty vector")
 	}
 	vf := v
 	for i := 0; i < len(vf); i++ {
-		offset := rand.Float64() * ε
-		if rand.Intn(2) == 0 { //	flip a coin
-			offset = -offset
-		}
-		vf[i] = vf[i] + offset
+		vf[i] = vf[i] + calc.RandFloatIn(-ε, ε)
 	}
 	return vf, nil
 }
@@ -204,7 +208,9 @@ func Fuzzify(v Vector, ε float64) (Vector, error) {
 func RandVector(bounds [][2]float64) Vector {
 	var v Vector
 	for i := 0; i < len(bounds); i++ {
-		val := calc.RandFloatIn(bounds[i][0], math.Nextafter(bounds[i][1], bounds[i][1]+1))
+		a := bounds[i][0]
+		b := math.Nextafter(bounds[i][1], bounds[i][1]+1)
+		val := calc.RandFloatIn(a, b)
 		v = append(v, val)
 	}
 	return v

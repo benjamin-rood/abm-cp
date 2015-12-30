@@ -24,6 +24,11 @@ func RandFloatIn(min float64, max float64) float64 {
 	return (rand.Float64() * (max - min)) + min
 }
 
+// RandIntIn will give a random value in [min, max)
+func RandIntIn(min int, max int) int {
+	return rand.Intn(max-min) + min
+}
+
 // ClampFloatIn will ensure that a floating point value is within range [min, max]. Dependant on min < max
 func ClampFloatIn(f float64, min float64, max float64) float64 {
 	if min >= max {

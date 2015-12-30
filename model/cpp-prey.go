@@ -5,8 +5,13 @@ import (
 	"math"
 	"math/rand"
 
+	"github.com/benjamin-rood/abm-colour-polymorphism/calc"
 	"github.com/benjamin-rood/abm-colour-polymorphism/colour"
 	"github.com/benjamin-rood/abm-colour-polymorphism/geometry"
+)
+
+var (
+	cppLifespan = 20
 )
 
 // ColourPolymorhicPrey – Prey agent type for Predator-Prey ABM
@@ -15,8 +20,8 @@ type ColourPolymorhicPrey struct {
 	pos         geometry.Vector //	position in the environment
 	movS        float64         //	speed
 	movA        float64         //	acceleration
-	dir         geometry.Vector //	must be implemented as a unit vector
 	dir𝚯        float64         //	 heading angle
+	dir         geometry.Vector //	must be implemented as a unit vector
 	sr          float64         //	search range
 	lifespan    int
 	hunger      int        //	counter for interval between needing food
@@ -33,10 +38,10 @@ func GeneratePopulation(size int, context Context) []ColourPolymorhicPrey {
 	for i := 0; i < size; i++ {
 		agent := ColourPolymorhicPrey{}
 		agent.popIndex = i
-		agent.pos = geometry.RandVector(context.E)
+		agent.pos = geometry.RandVector(context.E.bounds)
 		if context.cppAgeing {
-			if context.randomAges {
-				agent.lifespan = rand.Intn(context.cppLifespan) + 1
+			if context.randomAges && (context.cppLifespan > 5) {
+				agent.lifespan = calc.RandIntIn(5, context.cppLifespan)
 			} else {
 				agent.lifespan = context.cppLifespan
 			}
@@ -45,8 +50,15 @@ func GeneratePopulation(size int, context Context) []ColourPolymorhicPrey {
 		}
 		agent.movS = context.cppS
 		agent.movA = context.cppA
+		agent.dir𝚯 = rand.Float64() * (2 * math.Pi)
+		agent.dir = geometry.UnitVector(agent.dir𝚯)
 		agent.sr = context.cppSr
-
+		agent.fertility = 0
+		agent.gravid = false
+		agent.colouration = colour.RandRGB()
+		agent.𝛘 = 0.0
+		agent.ϸ = 0.0
+		pop = append(pop, agent)
 	}
 	return pop
 }
@@ -80,8 +92,7 @@ Mortal
 // updates dir𝚯 and dir vector to the new heading offset by 𝚯
 func (c *ColourPolymorhicPrey) Turn(𝚯 float64) {
 	newHeading := geometry.UnitAngle(c.dir𝚯 + 𝚯)
-	c.dir[x] = math.Cos(newHeading)
-	c.dir[y] = math.Sin(newHeading)
+	c.dir = geometry.UnitVector(newHeading)
 	c.dir𝚯 = newHeading
 }
 
@@ -132,16 +143,14 @@ func (c *ColourPolymorhicPrey) Copulation(mate *ColourPolymorhicPrey, chance flo
 }
 
 // Birth implemets Breeder interface method for ColourPolymorhicPrey:
-func (c *ColourPolymorhicPrey) Birth(b int, m float64) []ColourPolymorhicPrey {
+func (c *ColourPolymorhicPrey) Birth(b int, mf float64) []ColourPolymorhicPrey {
 	n := 1
 	if b > 1 {
 		n = rand.Intn(b-1) + 1 //	i.e. range [1, b]
 	}
-	var progeny []ColourPolymorhicPrey
+	progeny := c.spawn(n)
 	for i := 0; i < n; i++ {
-		child := c.newChild()
-		child.mutation(m)
-		progeny = append(progeny, child)
+		progeny[i].mutation(mf)
 	}
 	c.gravid = false
 	return progeny
@@ -151,15 +160,38 @@ func (c *ColourPolymorhicPrey) Birth(b int, m float64) []ColourPolymorhicPrey {
 type cppBehaviour interface {
 	newChild() ColourPolymorhicPrey
 	mutation(float64) // variation at time of birth
-	spawn() []ColourPolymorhicPrey
+	spawn(int) []ColourPolymorhicPrey
 }
 
 func (c *ColourPolymorhicPrey) newChild() ColourPolymorhicPrey {
-	child := ColourPolymorhicPrey{}
-	child.pos, _ = geometry.Fuzzify(c.pos, 0.1)
+	child := *c
+	child.lifespan = cppLifespan
+	child.pos, _ = geometry.FuzzifyVector(c.pos, 0.1)
 	return child
 }
 
-func (c *ColourPolymorhicPrey) mutation(dif float64) {
+func (c *ColourPolymorhicPrey) mutation(mf float64) {
+	c.colouration = colour.RandRGBClamped(c.colouration, mf)
+}
+
+func (c *ColourPolymorhicPrey) spawn(n int) (progeny []ColourPolymorhicPrey) {
+	for i := 0; i < n; i++ {
+		child := c.newChild()
+		progeny = append(progeny, child)
+	}
+	return
+}
+
+// set of methods implementing Mortal interface
+
+// Age decrements the lifespan of an agent,
+// and applies the effects of ageing (if any)
+func (c *ColourPolymorhicPrey) Age() {
+	c.lifespan--
+	c.hunger++
+}
+
+// Death not implemented
+func (c *ColourPolymorhicPrey) Death() {
 
 }
