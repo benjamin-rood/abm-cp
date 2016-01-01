@@ -55,34 +55,35 @@ most cases, a 2D environment will be sufficient.
 In the future it may include some environmental factors etc.
 */
 type Environment struct {
-	bounds [][2]float64 //	from -d to d for each axis.
-	bg     colour.RGB
+	Bounds []float64 // d value for each axis
+	BG     colour.RGB
 }
 
 // Context contains the local model context;
 type Context struct {
-	E                  Environment
-	time               Timeframe
-	dimensionality     int
-	cppPopulation      int     // CPP agent population size
-	vpPopulation       uint    //	VP agent population size
-	vpVsr              float64 //	VP agent visual search range
-	γ                  float64 //	visual acuity in environments
-	vpLifespan         int     //	Visual Predator lifespan
-	vpS                float64 // Visual Predator speed
-	vpA                float64 // Visual Predator acceleration
-	cppLifespan        int     //	CPP agent lifespan
-	cppS               float64 // CPP agent speed
-	cppA               float64 // CPP agent acceleration
-	cppSr              float64 // CPP agentsearch range for mating
-	randomAges         bool
-	mf                 float64 //	mutation factor
-	φ                  int     //	CPP incubation cost
-	ȣ                  int     //	CPP sexual rest cost
-	vpAgeing           bool
-	cppAgeing          bool
-	cppReproduceChance float64
-	vpReproduceChance  float64
-	vsrSearchChance    float64
-	vpAttackChance     float64
+	E              Environment
+	Time           Timeframe
+	Dimensionality int
+	CppPopulation  int  // CPP agent population size
+	VpPopulation   uint //	VP agent population size
+	VpAgeing       bool
+	VpLifespan     int     //	Visual Predator lifespan
+	VpS            float64 // Visual Predator speed
+	VpA            float64 // Visual Predator acceleration
+	VpVsr          float64 //	VP agent visual search range
+	Vγ             float64 //	visual acuity in environments
+	Vκ             float64 //	chance of VP copulation success.
+	V𝛔             float64 // VsrSearchChance
+	V𝛂             float64 // VpAttackChance
+	CppAgeing      bool
+	CppLifespan    int     //	CPP agent lifespan
+	CppS           float64 // CPP agent speed
+	CppA           float64 // CPP agent acceleration
+	CppSr          float64 // CPP agentsearch range for mating
+	RandomAges     bool
+	Mf             float64 //	mutation factor
+	Cφ             int     //	CPP incubation cost
+	Cȣ             int     //	CPP sexual rest cost
+	Cκ             float64 //	chance of CPP copulation success.
+	Cβ             int     // 	CPP max spawn size (birth range)
 }

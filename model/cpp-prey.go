@@ -46,21 +46,21 @@ func GeneratePopulation(size int, context Context) []ColourPolymorhicPrey {
 	for i := 0; i < size; i++ {
 		agent := ColourPolymorhicPrey{}
 		agent.popIndex = i
-		agent.pos = geometry.RandVector(context.E.bounds)
-		if context.cppAgeing {
-			if context.randomAges && (context.cppLifespan > 5) {
-				agent.lifespan = calc.RandIntIn(5, context.cppLifespan)
+		agent.pos = geometry.RandVector(context.E.Bounds)
+		if context.CppAgeing {
+			if context.RandomAges && (context.CppLifespan > 5) {
+				agent.lifespan = calc.RandIntIn(5, context.CppLifespan)
 			} else {
-				agent.lifespan = context.cppLifespan
+				agent.lifespan = context.CppLifespan
 			}
 		} else {
 			agent.lifespan = -1 //	i.e. Undead!
 		}
-		agent.movS = context.cppS
-		agent.movA = context.cppA
+		agent.movS = context.CppS
+		agent.movA = context.CppA
 		agent.dir𝚯 = rand.Float64() * (2 * math.Pi)
 		agent.dir = geometry.UnitVector(agent.dir𝚯)
-		agent.sr = context.cppSr
+		agent.sr = context.CppSr
 		agent.fertility = 0
 		agent.gravid = false
 		agent.colouration = colour.RandRGB()
