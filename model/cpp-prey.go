@@ -8,6 +8,7 @@ import (
 	"github.com/benjamin-rood/abm-colour-polymorphism/calc"
 	"github.com/benjamin-rood/abm-colour-polymorphism/colour"
 	"github.com/benjamin-rood/abm-colour-polymorphism/geometry"
+	"github.com/benjamin-rood/abm-colour-polymorphism/render"
 )
 
 var (
@@ -30,6 +31,13 @@ type ColourPolymorhicPrey struct {
 	colouration colour.RGB //	colour
 	𝛘           float64    //	 colour sorting value - colour distance/difference between vp.imprimt and cpp.colouration
 	ϸ           float64    //  position sorting value - vector distance between vp.pos and cpp.pos
+}
+
+func (c *ColourPolymorhicPrey) getDrawInfo() (d render.CppRender) {
+	d.Pos.X = c.pos[x]
+	d.Pos.Y = c.pos[y]
+	d.Col = c.colouration
+	return
 }
 
 // GeneratePopulation will create `size` number of agents
