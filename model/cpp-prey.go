@@ -33,10 +33,10 @@ type ColourPolymorhicPrey struct {
 	ϸ           float64    //  position sorting value - vector distance between vp.pos and cpp.pos
 }
 
-func (c *ColourPolymorhicPrey) getDrawInfo() (d render.CppRender) {
-	d.Pos.X = c.pos[x]
-	d.Pos.Y = c.pos[y]
-	d.Col = c.colouration
+func (c *ColourPolymorhicPrey) getDrawInfo() (ar render.AgentRender) {
+	ar.Pos.X = c.pos[x]
+	ar.Pos.Y = c.pos[y]
+	ar.Col = c.colouration
 	return
 }
 
