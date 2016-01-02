@@ -17,6 +17,21 @@ type RGB struct {
 	Blue  float64
 }
 
+// provided global "constants"
+// Black White Red Green Blue Yellow Magenta Cyan Orange
+
+var (
+	Black   = RGB{Red: 0.0, Green: 0.0, Blue: 0.0}
+	White   = RGB{Red: 1.0, Green: 1.0, Blue: 1.0}
+	Red     = RGB{Red: 1.0, Green: 0.0, Blue: 0.0}
+	Green   = RGB{Red: 0.0, Green: 1.0, Blue: 0.0}
+	Blue    = RGB{Red: 0.0, Green: 0.0, Blue: 1.0}
+	Yellow  = RGB{Red: 1.0, Green: 1.0, Blue: 0.0}
+	Magenta = RGB{Red: 1.0, Green: 0.0, Blue: 1.0}
+	Cyan    = RGB{Red: 0.0, Green: 1.0, Blue: 1.0}
+	Orange  = RGB{Red: 1.0, Green: 0.5, Blue: 0.0}
+)
+
 /*RGBDistance quantifies the value difference between two RGB structs,
 returning a floating-point ratio from 0.0 to 1.0.
 Multiply the returned value by100 for a percentage.

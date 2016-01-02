@@ -1,4 +1,4 @@
-package model
+package abm
 
 import "github.com/benjamin-rood/abm-colour-polymorphism/geometry"
 

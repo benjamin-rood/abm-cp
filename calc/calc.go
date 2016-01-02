@@ -42,3 +42,23 @@ func ClampFloatIn(f float64, min float64, max float64) float64 {
 	}
 	return f
 }
+
+// WrapFloatIn loops values within range [min, max].
+// e.g. range [0, 1.0], let the function symbolised by f, if input x = 1.1
+// then  f(1.1) = 0.1
+// i.e.    1.1 ⟼ 0.1
+// e.g. range [-1.0, 1.0], input x = -1.1
+// then  f(-1.1) = 0.9
+// i.e.		 -1.1 ⟼ 0.9
+func WrapFloatIn(f float64, min float64, max float64) float64 {
+	if min >= max {
+		return f
+	}
+	if f > max {
+		return f - max
+	}
+	if f < min {
+		return (max - min) + f
+	}
+	return f
+}

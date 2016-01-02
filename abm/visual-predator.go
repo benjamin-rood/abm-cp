@@ -1,4 +1,4 @@
-package model
+package abm
 
 import (
 	"errors"
@@ -14,6 +14,7 @@ type VisualPredator struct {
 	pos             geometry.Vector //	position in the environment
 	movS            float64         //	speed
 	movA            float64         //	acceleration
+	τ               float64         // turn rate / range (in radians)
 	dir             geometry.Vector //	must be implemented as a unit vector
 	dir𝚯            float64         //	 heading angle
 	hunger          uint            //	counter for interval between needing food
@@ -26,7 +27,7 @@ type VisualPredator struct {
 
 // vpBehaviour – set of actions only VisualPredator agents will perform – unexported!
 type vpBehaviour interface {
-	visualSearch([]ColourPolymorhicPrey, float64) (*ColourPolymorhicPrey, error)
+	visualSearch([]ColourPolymorphicPrey, float64) (*ColourPolymorphicPrey, error)
 	// ColourImprinting updates VP colour / visual recognition bias
 	colourImprinting(colour.RGB, float64) error
 	vsrSectorSamples(float64, int) ([4][2]int, error)
@@ -90,7 +91,7 @@ func (vp *VisualPredator) VSRSectorSamples(d float64, n int) ([4][2]int, error) 
 }
 
 // VisualSearch tries to 'recognise' a nearby prey agent to attack.
-func (vp *VisualPredator) VisualSearch(population []ColourPolymorhicPrey, vsrSearchChance float64) (*ColourPolymorhicPrey, error) {
+func (vp *VisualPredator) VisualSearch(population []ColourPolymorphicPrey, vsrSearchChance float64) (*ColourPolymorphicPrey, error) {
 	for i := range population {
 		population[i].𝛘 = colour.RGBDistance(vp.colImprint, population[i].colouration)
 	}

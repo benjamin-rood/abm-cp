@@ -88,4 +88,21 @@ func Test(t *testing.T) {
 			t.Errorf("ClampFloatIn(%v, %v, %v) == %v, want %v\n", cf.f, cf.min, cf.max, got, cf.want)
 		}
 	}
+
+	var wrapFloatInTests = []struct {
+		f, min, max, want float64
+	}{
+		{1.6751, 0.0, 1.0, 0.6751},
+		{5.6751, 1.0, 0.0, 5.6751},
+		{0.6751, 0.0, 1.0, 0.6751},
+		{-1.313, -1.0, 1.0, 0.687},
+		{-0.6751, -1.0, 1.0, -0.6751},
+	}
+
+	for _, wf := range wrapFloatInTests {
+		got := WrapFloatIn(wf.f, wf.min, wf.max)
+		if got != wf.want {
+			t.Errorf("WrapFloatIn(%v, %v, %v) == %v, want %v\n", wf.f, wf.min, wf.max, got, wf.want)
+		}
+	}
 }

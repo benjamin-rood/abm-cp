@@ -1,4 +1,4 @@
-package model
+package abm
 
 import "github.com/benjamin-rood/abm-colour-polymorphism/colour"
 
@@ -7,19 +7,20 @@ type Model struct {
 	Timeframe
 	Environment
 	Context
-	dimensionality int
-	CPP            cppPopulation
-	VP             vpPopulation
+	PopulationCPP
+	PopulationVP
 }
 
-type cppPopulation struct {
-	Pop        []ColourPolymorhicPrey
-	Definition []string //	lists agent interfaces which define the behaviour of this type
+// PopulationCPP holds the agent population
+type PopulationCPP struct {
+	PopCPP        []ColourPolymorphicPrey
+	DefinitionCPP []string //	lists agent interfaces which define the behaviour of this type
 }
 
-type vpPopulation struct {
-	Pop        []VisualPredator
-	Definition []string //	lists agent interfaces which define the behaviour of this type
+// PopulationVP holds the agent population
+type PopulationVP struct {
+	PopVP        []VisualPredator
+	DefinitionVP []string //	lists agent interfaces which define the behaviour of this type
 }
 
 /*
@@ -68,9 +69,10 @@ type Context struct {
 	VpPopulation   uint //	VP agent population size
 	VpAgeing       bool
 	VpLifespan     int     //	Visual Predator lifespan
-	VpS            float64 // Visual Predator speed
-	VpA            float64 // Visual Predator acceleration
-	VpVsr          float64 //	VP agent visual search range
+	VS             float64 // Visual Predator speed
+	VA             float64 // Visual Predator acceleration
+	Vτ             float64 //	Visual Predator turn rate / range (in radians)
+	Vsr            float64 //	VP agent visual search range
 	Vγ             float64 //	visual acuity in environments
 	Vκ             float64 //	chance of VP copulation success.
 	V𝛔             float64 // VsrSearchChance
@@ -79,7 +81,8 @@ type Context struct {
 	CppLifespan    int     //	CPP agent lifespan
 	CppS           float64 // CPP agent speed
 	CppA           float64 // CPP agent acceleration
-	CppSr          float64 // CPP agentsearch range for mating
+	Cτ             float64 //	CPP agent turn rate / range (in radians)
+	CppSr          float64 // CPP agent search range for mating
 	RandomAges     bool
 	Mf             float64 //	mutation factor
 	Cφ             int     //	CPP incubation cost
