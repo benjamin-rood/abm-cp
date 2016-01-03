@@ -56,37 +56,36 @@ most cases, a 2D environment will be sufficient.
 In the future it may include some environmental factors etc.
 */
 type Environment struct {
-	Bounds []float64 // d value for each axis
-	BG     colour.RGB
+	Bounds         []float64 // d value for each axis
+	Dimensionality int
+	BG             colour.RGB
 }
 
 // Context contains the local model context;
 type Context struct {
-	E              Environment
-	Time           Timeframe
-	Dimensionality int
-	CppPopulation  int  // CPP agent population size
-	VpPopulation   uint //	VP agent population size
-	VpAgeing       bool
-	VpLifespan     int     //	Visual Predator lifespan
-	VS             float64 // Visual Predator speed
-	VA             float64 // Visual Predator acceleration
-	Vτ             float64 //	Visual Predator turn rate / range (in radians)
-	Vsr            float64 //	VP agent visual search range
-	Vγ             float64 //	visual acuity in environments
-	Vκ             float64 //	chance of VP copulation success.
-	V𝛔             float64 // VsrSearchChance
-	V𝛂             float64 // VpAttackChance
-	CppAgeing      bool
-	CppLifespan    int     //	CPP agent lifespan
-	CppS           float64 // CPP agent speed
-	CppA           float64 // CPP agent acceleration
-	Cτ             float64 //	CPP agent turn rate / range (in radians)
-	CppSr          float64 // CPP agent search range for mating
-	RandomAges     bool
-	Mf             float64 //	mutation factor
-	Cφ             int     //	CPP incubation cost
-	Cȣ             int     //	CPP sexual rest cost
-	Cκ             float64 //	chance of CPP copulation success.
-	Cβ             int     // 	CPP max spawn size (birth range)
+	Bounds        []float64 // d value for each axis
+	CppPopulation int       // starting CPP agent population size
+	VpPopulation  uint      //	starting VP agent population size
+	VpAgeing      bool
+	VpLifespan    int     //	Visual Predator lifespan
+	VS            float64 // Visual Predator speed
+	VA            float64 // Visual Predator acceleration
+	Vτ            float64 //	Visual Predator turn rate / range (in radians)
+	Vsr           float64 //	VP agent visual search range
+	Vγ            float64 //	visual acuity in environments
+	Vκ            float64 //	chance of VP copulation success.
+	V𝛔            float64 // VsrSearchChance
+	V𝛂            float64 // VpAttackChance
+	CppAgeing     bool
+	CppLifespan   int     //	CPP agent lifespan
+	CppS          float64 // CPP agent speed
+	CppA          float64 // CPP agent acceleration
+	Cτ            float64 //	CPP agent turn rate / range (in radians)
+	CppSr         float64 // CPP agent search range for mating
+	RandomAges    bool
+	Mf            float64 //	mutation factor
+	Cφ            int     //	CPP incubation cost
+	Cȣ            int     //	CPP sexual rest cost
+	Cκ            float64 //	chance of CPP copulation success.
+	Cβ            int     // 	CPP max spawn size (birth range)
 }

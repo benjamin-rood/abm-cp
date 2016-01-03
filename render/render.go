@@ -31,10 +31,11 @@ type Viewport struct {
 	Width, Height float64
 }
 
-func translateToViewport(ar AgentRender, v Viewport) (out AgentRender) {
+func TranslateToViewport(ar AgentRender, v Viewport) (out AgentRender) {
 	// for now we have to assume that the range of x = (-1.0,+1.0) and y = (-1.0,+1.0)
 	out.Pos.X = absToView(ar.Pos.X, 1.0, v.Width)
-	out.Pos.Y = absToView(ar.Pos.Y, 1.0, v.Width)
+	out.Pos.Y = absToView(ar.Pos.Y, 1.0, v.Height)
+	out.Col = ar.Col
 	return
 }
 

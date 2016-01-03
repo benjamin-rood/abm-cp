@@ -2,6 +2,7 @@ package abm
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"math"
 	"math/rand"
@@ -35,7 +36,7 @@ type ColourPolymorphicPrey struct {
 	ϸ           float64    //  position sorting value - vector distance between vp.pos and cpp.pos
 }
 
-func (c *ColourPolymorphicPrey) getDrawInfo() (ar render.AgentRender) {
+func (c *ColourPolymorphicPrey) GetDrawInfo() (ar render.AgentRender) {
 	ar.Pos.X = c.pos[x]
 	ar.Pos.Y = c.pos[y]
 	ar.Col = c.colouration
@@ -48,7 +49,7 @@ func GeneratePopulation(size int, context Context) []ColourPolymorphicPrey {
 	for i := 0; i < size; i++ {
 		agent := ColourPolymorphicPrey{}
 		agent.popIndex = i
-		agent.pos = geometry.RandVector(context.E.Bounds)
+		agent.pos = geometry.RandVector(context.Bounds)
 		if context.CppAgeing {
 			if context.RandomAges && (context.CppLifespan > 5) {
 				agent.lifespan = calc.RandIntIn(5, context.CppLifespan)
@@ -70,6 +71,7 @@ func GeneratePopulation(size int, context Context) []ColourPolymorphicPrey {
 		agent.𝛘 = 0.0
 		agent.ϸ = 0.0
 		pop = append(pop, agent)
+		fmt.Println(agent)
 	}
 	return pop
 }
