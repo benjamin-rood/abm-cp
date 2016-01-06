@@ -63,6 +63,7 @@ type Environment struct {
 
 // Context contains the local model context;
 type Context struct {
+	// Type          string    `json:"type"` //	json flag for deserialisation
 	Bounds        []float64 // d value for each axis
 	CppPopulation int       // starting CPP agent population size
 	VpPopulation  uint      //	starting VP agent population size

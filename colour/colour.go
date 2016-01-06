@@ -2,6 +2,7 @@ package colour
 
 import (
 	"math"
+	"math/rand"
 
 	"github.com/benjamin-rood/abm-colour-polymorphism/calc"
 )
@@ -12,9 +13,27 @@ RGB colour (Red Green Blue), where each value is in range [0,1]
 Colours live in a form of vector space.
 */
 type RGB struct {
-	Red   float64
-	Green float64
-	Blue  float64
+	Red   float64 `json:"red"`
+	Green float64 `json:"green"`
+	Blue  float64 `json:"blue"`
+}
+
+/*
+RGB256 stores a integer representation of 3 colour channel
+RGB colour (Red Green Blue), where each value is in range [0,256)
+*/
+type RGB256 struct {
+	Red   byte `json:"red"`
+	Green byte `json:"green"`
+	Blue  byte `json:"blue"`
+}
+
+// To256 returns the conversion from floating point ranged RGB values to those in range [0,256)
+func (rgb *RGB) To256() (conv RGB256) {
+	conv.Red = byte(rgb.Red * 255)
+	conv.Green = byte(rgb.Green * 255)
+	conv.Blue = byte(rgb.Blue * 255)
+	return
 }
 
 // provided global "constants"
@@ -52,6 +71,13 @@ func RandRGB() RGB {
 	green := calc.RandFloatIn(0, math.Nextafter(1.0, 2.0))
 	blue := calc.RandFloatIn(0, math.Nextafter(1.0, 2.0))
 	return RGB{red, green, blue}
+}
+
+func RandRGB256() RGB256 {
+	red := byte(rand.Intn(256))
+	green := byte(rand.Intn(256))
+	blue := byte(rand.Intn(256))
+	return RGB256{red, green, blue}
 }
 
 // RandRGBClamped will return a random valid RGB object within some differential of `col`

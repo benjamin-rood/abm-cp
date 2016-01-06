@@ -37,9 +37,9 @@ type ColourPolymorphicPrey struct {
 }
 
 func (c *ColourPolymorphicPrey) GetDrawInfo() (ar render.AgentRender) {
-	ar.Pos.X = c.pos[x]
-	ar.Pos.Y = c.pos[y]
-	ar.Col = c.colouration
+	ar.X = c.pos[x]
+	ar.Y = c.pos[y]
+	ar.RGB256 = c.colouration.To256()
 	return
 }
 

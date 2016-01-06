@@ -5,37 +5,39 @@ import (
 	"github.com/benjamin-rood/abm-colour-polymorphism/colour"
 )
 
-// pos2D is the in-between translation for vector position.
-type pos2D struct {
+// Pos2D is the pixel 2D projection from vector position.
+type Pos2D struct {
 	X float64 `json:"x"`
 	Y float64 `json:"y"`
 }
 
 // AgentRender holds the minimum required data for the data visualisation of an individual agent
 type AgentRender struct {
-	Pos     pos2D      `json:"position"`
-	Heading float64    `json:"heading"`
-	Col     colour.RGB `json:"colour"`
+	Pos2D         `json:"position"`
+	Heading       float64 `json:"heading"`
+	colour.RGB256 `json:"colour"`
 }
 
-// Msg contains the draw instructions for front-end JS gfx API
-type Msg struct {
-	Type string        `json:"type"`
-	CPP  []AgentRender `json:"render-cpp-array"`
-	VP   []AgentRender `json:"render-vp-array"`
+// DrawList contains the draw instructions for front-end JS gfx API
+type DrawList struct {
+	CPP []AgentRender `json:"cpp"`
+	VP  []AgentRender `json:"vp"`
+	BG  colour.RGB256 `json:"bg"`
 }
 
 // Viewport holds the resolution / scale of the front-end JS gfx
 type Viewport struct {
-	Type          string
-	Width, Height float64
+	Width  float64 `json:"width"`
+	Height float64 `json:"height"`
 }
 
+// TranslateToViewport takes the absolute model coordinates of the agent's position data and translates (and scales) them to the pixel coordinates of the Viewport v.
 func TranslateToViewport(ar AgentRender, v Viewport) (out AgentRender) {
 	// for now we have to assume that the range of x = (-1.0,+1.0) and y = (-1.0,+1.0)
-	out.Pos.X = absToView(ar.Pos.X, 1.0, v.Width)
-	out.Pos.Y = absToView(ar.Pos.Y, 1.0, v.Height)
-	out.Col = ar.Col
+	out.X = absToView(ar.X, 1.0, v.Width)
+	out.Y = absToView(ar.Y, 1.0, v.Height)
+	out.Heading = ar.Heading
+	out.RGB256 = ar.RGB256
 	return
 }
 
