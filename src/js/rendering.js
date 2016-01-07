@@ -1,33 +1,30 @@
-function DrawList(obj) {
+function DrawList (obj) {
   this.cpp = obj.data.cpp
   this.vp = obj.data.vp
   this.bg = obj.data.bg
 }
 
-var jsonValue = JSON.parse(jsonString)
-console.log(jsonValue)
-var drawlist = new DrawList(jsonValue)
-
+var initDrawObj = {type: 'drawlist', data: {cpp: [], vp: [], bg: {red: 0, green: 0, blue: 0}}}
+var drawlist = new DrawList(initDrawObj)
+var newWidth = 300
+var newHeight = 200
 
 var sketch = function (p) {
   p.setup = function () {
-    p.createCanvas(300, 200)
-    p.background(0.0, 0.0, 0.0)
-    p.noCursor()
-    p.frameRate(60)
-    // p.noLoop()
+    p.createCanvas(newWidth, newHeight)
+    p.background(255, 255, 0)
   }
 
   p.draw = function () {
-    for (i = 0; i < drawlist.cpp.length; i++) {
-      x = drawlist.cpp[i].position.x
-      y = drawlist.cpp[i].position.y
-      col = drawlist.cpp[i].colour
-      p.stroke(col.red, col.green, col.blue, 1.0)
-      p.strokeWeight(5.0)
-      p.point(x,y)
+    p.background(drawlist.bg.red, drawlist.bg.green, drawlist.bg.blue)
+    for (var i = 0; i < drawlist.cpp.length; i++) {
+      var x = drawlist.cpp[i].position.x
+      var y = drawlist.cpp[i].position.y
+      var col = p.color(drawlist.cpp[i].colour.red, drawlist.cpp[i].colour.green, drawlist.cpp[i].colour.blue)
+      p.fill(col)
+      p.ellipse(x, y, 15, 15)
+      p.strokeWeight(1)
+      p.stroke(255, 255, 255)
     }
   }
 }
-
-var viz = new p5(sketch, 'abm-viewport')

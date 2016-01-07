@@ -36,7 +36,9 @@ type ColourPolymorphicPrey struct {
 	ϸ           float64    //  position sorting value - vector distance between vp.pos and cpp.pos
 }
 
+// GetDrawInfo exports the data set needed for agent visualisation.
 func (c *ColourPolymorphicPrey) GetDrawInfo() (ar render.AgentRender) {
+	ar.Type = "cpp"
 	ar.X = c.pos[x]
 	ar.Y = c.pos[y]
 	ar.RGB256 = c.colouration.To256()

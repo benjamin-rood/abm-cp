@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"flag"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
@@ -14,6 +13,8 @@ import (
 	"github.com/benjamin-rood/abm-colour-polymorphism/render"
 	"github.com/gorilla/websocket"
 )
+
+type signal struct{}
 
 // inMsg – typestring wrapper for generic *received* msg
 type inMsg struct {
@@ -68,6 +69,11 @@ const (
 )
 
 var (
+	ping     = signal{}
+	om       = make(chan outMsg)
+	phase    = make(chan signal)
+	viewport = make(chan render.Viewport)
+	ctxt     = make(chan abm.Context)
 	addr     = flag.String("addr", ":8080", "http service address")
 	upgrader = websocket.Upgrader{
 		ReadBufferSize:  1024,
@@ -119,7 +125,7 @@ func reader(ws *websocket.Conn, context chan<- abm.Context, view chan<- render.V
 	ws.SetReadDeadline(time.Now().Add(pongWait))
 	ws.SetPongHandler(func(string) error { ws.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 	var msgIn interface{}
-	var rawIn JSONmsg
+	var rawIn inMsg
 	var err error
 	for {
 		if err = ws.ReadJSON(&rawIn); err != nil {
@@ -143,8 +149,7 @@ func reader(ws *websocket.Conn, context chan<- abm.Context, view chan<- render.V
 	}
 }
 
-func writer(ws *websocket.Conn, rm <-chan render.Msg) {
-	lastError := ""
+func writer(ws *websocket.Conn, om <-chan outMsg) {
 	pingTicker := time.NewTicker(pingPeriod)
 	defer func() {
 		pingTicker.Stop()
@@ -152,14 +157,9 @@ func writer(ws *websocket.Conn, rm <-chan render.Msg) {
 	}()
 	for {
 		select {
-		case msg := <-rm:
-			m, err := json.MarshalIndent(&msg, "", "  ")
-			if err != nil {
-				log.Fatalf("writer: failed when trying to marshal: %q", err)
-			}
-			err = ioutil.WriteFile("/tmp/dat1", m, 0644)
+		case msg := <-om:
 			ws.SetWriteDeadline(time.Now().Add(writeWait))
-			if err := ws.WriteJSON(&m); err != nil {
+			if err := ws.WriteJSON(&msg); err != nil {
 				return
 			}
 		case <-pingTicker.C:
@@ -179,9 +179,9 @@ func serveWS(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-
-	go writer(ws)
-	reader(ws)
+	initModel(context)
+	go writer(ws, om)
+	reader(ws, ctxt, viewport)
 }
 
 func cppRBB(pop []abm.ColourPolymorphicPrey, queue chan<- render.AgentRender) {
@@ -198,7 +198,7 @@ func cppRBB(pop []abm.ColourPolymorphicPrey, queue chan<- render.AgentRender) {
 	}
 }
 
-func runningModel(m abm.Model, rc chan<- render.AgentRender, quit chan<- interface{}) {
+func runningModel(m abm.Model, rc chan<- render.AgentRender, quit chan<- signal) {
 	for {
 		select {
 		default:
@@ -209,13 +209,10 @@ func runningModel(m abm.Model, rc chan<- render.AgentRender, quit chan<- interfa
 
 func initModel(context abm.Context) {
 	simple := setModel(context)
-	quit := make(chan interface{})
+	quit := make(chan signal)
 	rc := make(chan render.AgentRender)
-	viz := make(chan render.Viewport)
-	renderOut := make(chan render.Msg)
-
 	go runningModel(simple, rc, quit)
-	go visualiseModel(viz, rc, renderOut)
+	go visualiseModel(viewport, rc, om, phase)
 }
 
 func setModel(c abm.Context) (m abm.Model) {
@@ -227,19 +224,29 @@ func setModel(c abm.Context) (m abm.Model) {
 	return
 }
 
-func visualiseModel(view <-chan render.Viewport, queue <-chan render.AgentRender, out chan<- render.Msg) {
-	v := render.Viewport{"Viewport", 300, 200}
-	tick := time.Tick(time.Second)
-	var msg = render.Msg{"Render", nil, nil, e.BG}
+func visualiseModel(view <-chan render.Viewport, queue <-chan render.AgentRender, out chan<- outMsg, phase <-chan signal) {
+	v := render.Viewport{300, 200}
+	msg := outMsg{Type: "render", Data: nil}
+	dl := render.DrawList{nil, nil, colour.RGB256{Red: 0, Green: 0, Blue: 0}}
 	for {
 		select {
 		case job := <-queue:
-			job = render.TranslateToViewport(job, v)
-			msg.CPP = append(msg.CPP, job)
+			job.TranslateToViewport(v)
+			switch job.Type {
+			case "cpp":
+				dl.CPP = append(dl.CPP, job)
+			case "vp":
+				dl.VP = append(dl.VP, job)
+			default:
+				log.Fatalf("viz: failed to determine agent-render job type!")
+			}
+		case <-phase:
+			msg.Data = dl
 			out <- msg
-			msg = render.Msg{"Render", nil, nil, e.BG} // reset msg contents
-		case <-tick:
-			// msg = render.Msg{} // reset msg contents
+			// reset msg contents
+			msg = outMsg{Type: "render", Data: nil}
+			//	reset draw instructions
+			dl = render.DrawList{nil, nil, colour.RGB256{Red: 0, Green: 0, Blue: 0}}
 		case v = <-view:
 		}
 	}

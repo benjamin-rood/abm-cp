@@ -13,6 +13,7 @@ type Pos2D struct {
 
 // AgentRender holds the minimum required data for the data visualisation of an individual agent
 type AgentRender struct {
+	Type          string `json:"agent-type"`
 	Pos2D         `json:"position"`
 	Heading       float64 `json:"heading"`
 	colour.RGB256 `json:"colour"`
@@ -32,12 +33,10 @@ type Viewport struct {
 }
 
 // TranslateToViewport takes the absolute model coordinates of the agent's position data and translates (and scales) them to the pixel coordinates of the Viewport v.
-func TranslateToViewport(ar AgentRender, v Viewport) (out AgentRender) {
+func (ar *AgentRender) TranslateToViewport(v Viewport) {
 	// for now we have to assume that the range of x = (-1.0,+1.0) and y = (-1.0,+1.0)
-	out.X = absToView(ar.X, 1.0, v.Width)
-	out.Y = absToView(ar.Y, 1.0, v.Height)
-	out.Heading = ar.Heading
-	out.RGB256 = ar.RGB256
+	ar.X = absToView(ar.X, 1.0, v.Width)
+	ar.Y = absToView(ar.Y, 1.0, v.Height)
 	return
 }
 

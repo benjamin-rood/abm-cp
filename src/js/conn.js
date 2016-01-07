@@ -1,27 +1,21 @@
-var ws = new WebSocket("ws://localhost:8080/ws")
+var wsocket = new WebSocket('ws://localhost:8080/ws')
 
-wsocket.onopen = function() {
-  console.log("websocket connection init")
+wsocket.onopen = function () {
+  console.log('websocket connection init')
+  var viz = new p5(sketch, 'abm-viewport')
 }
 
-wsocket.onmessage = function(e) {
-  var rawmsg = e.data
-  if (rawmsg.type == "render") {
-    renderlist = rawmsg.data
+wsocket.onmessage = function (e) {
+  var rawmsg = JSON.parse(e.data)
+  // console.log(rawmsg)
+  if (rawmsg.type === 'render') {
+    drawlist = new DrawList(rawmsg)
   }
-  console.log("websocket message received")
-
-};
-
-wsocket.onerror = function(e) {
-  console.log("ERROR: " + e)
+  // if (rawmsg.type === 'statistics') {
+  //
+  // }
 }
 
-function sendData() {
-  // var insObj = {
-  //   'seedVal': seed,
-  //   'rangeVal': range
-  // };
-  // var msg = JSON.stringify(insObj);
-  // wsocket.send(msg);
+wsocket.onerror = function (e) {
+  console.log('ERROR: ' + e)
 }
