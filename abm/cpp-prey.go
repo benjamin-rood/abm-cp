@@ -2,6 +2,7 @@ package abm
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"math"
 	"math/rand"
@@ -66,7 +67,8 @@ func GeneratePopulation(size int, context Context) []ColourPolymorphicPrey {
 		agent.dir = geometry.UnitVector(agent.dir𝚯)
 		agent.Rτ = context.Cτ
 		agent.sr = context.CppSr
-		agent.fertility = 0
+		agent.hunger = 0
+		agent.fertility = 1
 		agent.gravid = false
 		agent.colouration = colour.RandRGB()
 		agent.𝛘 = 0.0
@@ -131,29 +133,51 @@ func (c *ColourPolymorphicPrey) Move() error {
 
 // Breeder interface:
 
+// Fertility implements the blessed phases of the moon
+func (c *ColourPolymorphicPrey) Fertility(Cȣ int) (jump string) {
+	c.fertility++
+	fmt.Println("c.fertility =", c.fertility)
+	switch {
+	case c.fertility == 0:
+		c.gravid = false
+		jump = "SPAWN"
+		return
+	case c.fertility >= Cȣ: // period / sexual cost
+		jump = "MATE SEARCH"
+		return
+	}
+	jump = "EXPLORE"
+	return
+}
+
 // MateSearch implements Breeder interface method for ColourPolymorphicPrey:
 // NEEDS BETTER HANDLING THAN JUST PUSHING THE ERROR UP!
 func (c *ColourPolymorphicPrey) MateSearch(pop []ColourPolymorphicPrey) (*ColourPolymorphicPrey, error) {
-	for i := 0; i < len(pop); i++ {
-		dist, err := geometry.VectorDistance(c.pos, pop[i].pos)
+	for _, p := range pop {
+		dist, err := geometry.VectorDistance(c.pos, p.pos)
 		if err != nil {
 			return nil, err
 		}
 		if dist <= c.sr {
-			return &pop[i], nil
+			fmt.Println("found mate")
+			return &p, nil
 		}
 	}
 	return nil, nil
 }
 
 // Copulation implemets Breeder interface method for ColourPolymorphicPrey:
-func (c *ColourPolymorphicPrey) Copulation(mate *ColourPolymorphicPrey, chance float64, gestation int) bool {
+func (c *ColourPolymorphicPrey) Copulation(mate *ColourPolymorphicPrey, chance float64, gestation int, sexualCost int) bool {
+	if mate == nil {
+		return false
+	}
 	ω := rand.Float64()
 	if ω <= chance {
 		c.gravid = true
 		c.fertility = -gestation
 		return true
 	}
+	c.fertility = -sexualCost
 	return false
 }
 
@@ -197,18 +221,36 @@ func (c *ColourPolymorphicPrey) spawn(n int) (progeny []ColourPolymorphicPrey) {
 	return
 }
 
-// Log prints the location and heading of c
+// Log prints all the internal values of the CPP agent
 func (c *ColourPolymorphicPrey) Log() {
-	log.Printf("cpp agent id{%d}: pos=(%v,%v)  heading=%v colour=%v\n", c.popIndex, c.pos[x], c.pos[y], c.dir𝚯, c.colouration)
+	log.Printf("cpp agent id{%d}:\n", c.popIndex)
+	log.Printf("pos=(%v,%v)\n", c.pos[x], c.pos[y])
+	log.Printf("movS=%v\n", c.movS)
+	log.Printf("movA=%v\n", c.movA)
+	log.Printf("dir𝚯=%v\n", c.dir𝚯)
+	log.Printf("dir=(%v,%v)\n", c.dir[x], c.dir[y])
+	log.Printf("Rτ=%v\n", c.Rτ)
+	log.Printf("sr=%v\n", c.sr)
+	log.Printf("lifespan=%v\n", c.lifespan)
+	log.Printf("hunger=%v\n", c.hunger)
+	log.Printf("fertility=%v\n", c.fertility)
+	log.Printf("gravid=%v\n", c.gravid)
+	log.Printf("colouration=%v\n", c.colouration)
 }
 
 // set of methods implementing Mortal interface
 
 // Age decrements the lifespan of an agent,
 // and applies the effects of ageing (if any)
-func (c *ColourPolymorphicPrey) Age() {
+func (c *ColourPolymorphicPrey) Age() (jump string) {
 	c.lifespan--
 	c.hunger++
+	if c.lifespan <= 0 {
+		jump = "DEATH"
+		return
+	}
+	jump = "HEALTHY"
+	return
 }
 
 // Death not implemented

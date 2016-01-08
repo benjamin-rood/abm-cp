@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"flag"
+	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
@@ -55,16 +56,17 @@ const (
 	vκ             = 0.0
 	v𝛔             = 0.0
 	v𝛂             = 0.0
-	cppS           = 0.01
+	cppS           = 0.2
 	cppA           = 1.0
 	cτ             = quarterpi
-	sr             = d / 8
+	sr             = 0.2
 	randomAges     = false
 	mf             = 0.5
 	cφ             = 5
-	cȣ             = 2
+	cȣ             = 5
 	cκ             = 1.0
 	cβ             = 5
+	cϱ             = 10
 	vpAge          = false
 	cppAge         = false
 )
@@ -118,6 +120,7 @@ var (
 		cȣ,
 		cκ,
 		cβ,
+		cϱ,
 	}
 )
 
@@ -186,22 +189,63 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 	reader(ws, ctxt, view)
 }
 
-func cppRBB(pop []abm.ColourPolymorphicPrey, queue chan<- render.AgentRender) {
-	for i := 0; i < len(pop); i++ {
-		c := &pop[i]
-		𝚯 := calc.RandFloatIn(-c.Rτ, c.Rτ)
-		c.Turn(𝚯)
-		c.Move()
+func cppRBB(pop []abm.ColourPolymorphicPrey, queue chan<- render.AgentRender) (newpop []abm.ColourPolymorphicPrey) {
+	newkids := []abm.ColourPolymorphicPrey{}
+	for i, c := range pop {
+		jump := ""
+		fmt.Println()
 		c.Log()
+		// BEGIN
+		if context.CppAgeing {
+			jump = c.Age()
+		}
+		switch jump {
+		case "DEATH":
+			fmt.Println("DEATH", jump)
+			goto End
+		}
+		jump = c.Fertility(context.Cȣ)
+		fmt.Println("JUMP to", jump)
+		switch jump {
+		case "SPAWN":
+			progeny := c.Birth(context.Cβ, context.Mf) //	max spawn size, mutation factor
+			newkids = append(newkids, progeny...)
+		case "MATE SEARCH":
+			mate, err := c.MateSearch(append(pop[:i], pop[i+1:]...)) // need to exclude self from search :-)
+			if err != nil {
+				log.Fatalln("cppRBB: MateSearch: Error:", err)
+			}
+			fmt.Println("mate = ", mate)
+			// ATTEMPT REPRODUCE
+			success := c.Copulation(mate, context.Cκ, context.Cϱ, context.Cȣ)
+			if success {
+				goto End
+			}
+			fallthrough // else, Jump to EXPLORE
+		case "EXPLORE":
+			𝚯 := calc.RandFloatIn(-context.Cτ, context.Cτ)
+			c.Turn(𝚯)
+			c.Move()
+		}
+
+		newpop = append(newpop, c)
 		queue <- c.GetDrawInfo()
+
+	End:
 		timeframe.Action++
+		timeframe.Log()
+		time.Sleep(time.Millisecond * 250)
 	}
+	newpop = append(newpop, newkids...) // add the newly created children to the returning population
+	return
 }
 
 func runningModel(m abm.Model, rc chan<- render.AgentRender, quit <-chan signal, phase chan<- signal) {
 	for {
-		cppRBB(m.PopCPP, rc)
+		m.PopCPP = cppRBB(m.PopCPP, rc) //	returns a replacement
+		timeframe.Action = 0            // reset at phase end.
 		timeframe.Phase++
+		timeframe.Log()
 		phase <- ping
 		time.Sleep(time.Millisecond * 100)
 	}

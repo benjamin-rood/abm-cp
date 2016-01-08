@@ -1,6 +1,10 @@
 package abm
 
-import "github.com/benjamin-rood/abm-colour-polymorphism/colour"
+import (
+	"log"
+
+	"github.com/benjamin-rood/abm-colour-polymorphism/colour"
+)
 
 // Model acts as the working instance of the 'game'
 type Model struct {
@@ -40,6 +44,11 @@ type Timeframe struct {
 	Turn   int
 	Phase  int
 	Action int
+}
+
+// Log prints the current state of time
+func (t *Timeframe) Log() {
+	log.Printf("%04dT : %04dP : %04dA\n", t.Turn, t.Phase, t.Action)
 }
 
 const (
@@ -89,4 +98,5 @@ type Context struct {
 	Cȣ            int     //	CPP sexual rest cost
 	Cκ            float64 //	chance of CPP copulation success.
 	Cβ            int     // 	CPP max spawn size (birth range)
+	Cϱ            int     //	CPP gestation period
 }
