@@ -7,10 +7,10 @@
 	IF fertility = 0:
 		gravid ⟵ false
 		Jump to SPAWN
-	ELSE IF fertility ≥ period: Jump to NEIGHBOUR SEARCH
+	ELSE IF fertility ≥ period: Jump to MATE SEARCH
 	ELSE: Jump to EXPLORE
 
-####2.  Neighbour Search ####
+####2.  Mate Search ⧸⧸(local) ####⧸⧸####⧸⧸
 	SEARCH PREY population of MICRO SECTORS within range
 	IF FOUND MATE: 
 		position ⟵ MATE(position)
@@ -18,8 +18,8 @@
 	ELSE: Jump to EXPLORE
 
 ####3. Attempt Reproduce ####
-	Let ω be a random real number in [0, 1]
-	IF ω ≥ sReproduceChance:
+	Let ω be a random real number in [0, 1)
+	IF ω ≤ sReproduceChance:
 		fertility ⟵ -gestation
 		gravid ⟵ true
 	Jump to END
