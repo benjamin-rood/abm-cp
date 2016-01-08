@@ -13,10 +13,10 @@ type Pos2D struct {
 
 // AgentRender holds the minimum required data for the data visualisation of an individual agent
 type AgentRender struct {
-	Type          string `json:"agent-type"`
-	Pos2D         `json:"position"`
-	Heading       float64 `json:"heading"`
-	colour.RGB256 `json:"colour"`
+	Type    string `json:"agent-type"`
+	Pos2D   `json:"position"`
+	Heading float64       `json:"heading"`
+	Colour  colour.RGB256 `json:"colour"`
 }
 
 // DrawList contains the draw instructions for front-end JS gfx API

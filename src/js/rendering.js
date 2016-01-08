@@ -6,8 +6,8 @@ function DrawList (obj) {
 
 var initDrawObj = {type: 'drawlist', data: {cpp: [], vp: [], bg: {red: 0, green: 0, blue: 0}}}
 var drawlist = new DrawList(initDrawObj)
-var newWidth = 300
-var newHeight = 200
+var newWidth = 600
+var newHeight = 400
 
 var sketch = function (p) {
   p.setup = function () {

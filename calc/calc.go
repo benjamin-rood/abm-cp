@@ -55,7 +55,7 @@ func WrapFloatIn(f float64, min float64, max float64) float64 {
 		return f
 	}
 	if f > max {
-		return f - max
+		return f - (max - min)
 	}
 	if f < min {
 		return (max - min) + f

@@ -2,7 +2,6 @@ package abm
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"math"
 	"math/rand"
@@ -41,13 +40,13 @@ func (c *ColourPolymorphicPrey) GetDrawInfo() (ar render.AgentRender) {
 	ar.Type = "cpp"
 	ar.X = c.pos[x]
 	ar.Y = c.pos[y]
-	ar.RGB256 = c.colouration.To256()
+	ar.Colour = c.colouration.To256()
 	return
 }
 
 // GeneratePopulation will create `size` number of agents
 func GeneratePopulation(size int, context Context) []ColourPolymorphicPrey {
-	var pop []ColourPolymorphicPrey
+	var pop = []ColourPolymorphicPrey{}
 	for i := 0; i < size; i++ {
 		agent := ColourPolymorphicPrey{}
 		agent.popIndex = i
@@ -73,7 +72,6 @@ func GeneratePopulation(size int, context Context) []ColourPolymorphicPrey {
 		agent.𝛘 = 0.0
 		agent.ϸ = 0.0
 		pop = append(pop, agent)
-		fmt.Println(agent)
 	}
 	return pop
 }

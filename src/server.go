@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"log"
+	"math/rand"
 	"net/http"
 	"time"
 
@@ -24,16 +25,16 @@ type inMsg struct {
 
 // outMsh - typestring wrapper for *exported* msg
 type outMsg struct {
-	Type string `json:"type"`
-	Data interface{}
+	Type string      `json:"type"`
+	Data interface{} `json:"data"`
 }
 
 const (
 	// Time allowed to write the file to the client.
-	writeWait = 20 * time.Millisecond
+	writeWait = 50 * time.Millisecond
 
 	// Time allowed to read the next pong message from the client.
-	pongWait = 100 * time.Millisecond
+	pongWait = 60 * time.Second
 
 	// Send pings to client with this period. Must be less than pongWait.
 	pingPeriod = (pongWait * 9) / 10
@@ -42,7 +43,7 @@ const (
 	eigthpi        = 0.3926990816987241548078304229099378605246461749218882
 	d              = 1.0
 	dimensionality = 2
-	cppPopSize     = 1
+	cppPopSize     = 20
 	vpPopSize      = 0
 	vsr            = d / 4
 	γ              = 1.0
@@ -72,7 +73,7 @@ var (
 	ping     = signal{}
 	om       = make(chan outMsg)
 	phase    = make(chan signal)
-	viewport = make(chan render.Viewport)
+	view     = make(chan render.Viewport)
 	ctxt     = make(chan abm.Context)
 	addr     = flag.String("addr", ":8080", "http service address")
 	upgrader = websocket.Upgrader{
@@ -90,7 +91,8 @@ var (
 	}
 
 	timeframe = abm.Timeframe{Turn: 0, Phase: 0, Action: 0}
-	context   = abm.Context{
+
+	context = abm.Context{
 		e.Bounds,
 		cppPopSize,
 		vpPopSize,
@@ -159,19 +161,19 @@ func writer(ws *websocket.Conn, om <-chan outMsg) {
 		select {
 		case msg := <-om:
 			ws.SetWriteDeadline(time.Now().Add(writeWait))
-			if err := ws.WriteJSON(&msg); err != nil {
-				return
+			if err := ws.WriteJSON(msg); err != nil {
+				log.Fatalln("writer: failed to WriteJSON:", err)
 			}
 		case <-pingTicker.C:
 			ws.SetWriteDeadline(time.Now().Add(writeWait))
 			if err := ws.WriteMessage(websocket.PingMessage, []byte{}); err != nil {
-				return
+				log.Fatalln("writer: failed to WriteJSON:", err)
 			}
 		}
 	}
 }
 
-func serveWS(w http.ResponseWriter, r *http.Request) {
+func serveWs(w http.ResponseWriter, r *http.Request) {
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		if _, ok := err.(websocket.HandshakeError); !ok {
@@ -181,38 +183,37 @@ func serveWS(w http.ResponseWriter, r *http.Request) {
 	}
 	initModel(context)
 	go writer(ws, om)
-	reader(ws, ctxt, viewport)
+	reader(ws, ctxt, view)
 }
 
 func cppRBB(pop []abm.ColourPolymorphicPrey, queue chan<- render.AgentRender) {
-	for {
-		for i := 0; i < len(pop); i++ {
-			c := &pop[i]
-			𝚯 := calc.RandFloatIn(-c.Rτ, c.Rτ)
-			c.Turn(𝚯)
-			c.Move()
-			c.Log()
-			queue <- c.GetDrawInfo()
-			time.Sleep(time.Second * 10)
-		}
+	for i := 0; i < len(pop); i++ {
+		c := &pop[i]
+		𝚯 := calc.RandFloatIn(-c.Rτ, c.Rτ)
+		c.Turn(𝚯)
+		c.Move()
+		c.Log()
+		queue <- c.GetDrawInfo()
+		timeframe.Action++
 	}
 }
 
-func runningModel(m abm.Model, rc chan<- render.AgentRender, quit chan<- signal) {
+func runningModel(m abm.Model, rc chan<- render.AgentRender, quit <-chan signal, phase chan<- signal) {
 	for {
-		select {
-		default:
-			cppRBB(m.PopCPP, rc)
-		}
+		cppRBB(m.PopCPP, rc)
+		timeframe.Phase++
+		phase <- ping
+		time.Sleep(time.Millisecond * 100)
 	}
 }
 
+// hack for testing only
 func initModel(context abm.Context) {
 	simple := setModel(context)
 	quit := make(chan signal)
 	rc := make(chan render.AgentRender)
-	go runningModel(simple, rc, quit)
-	go visualiseModel(viewport, rc, om, phase)
+	go runningModel(simple, rc, quit, phase)
+	go visualiseModel(view, rc, om, phase)
 }
 
 func setModel(c abm.Context) (m abm.Model) {
@@ -253,5 +254,11 @@ func visualiseModel(view <-chan render.Viewport, queue <-chan render.AgentRender
 }
 
 func main() {
-
+	rand.Seed(time.Now().UnixNano())
+	http.HandleFunc("/ws", serveWs)
+	http.Handle("/", http.FileServer(http.Dir(".")))
+	err := http.ListenAndServe(":8080", nil)
+	if err != nil {
+		panic("Error: " + err.Error())
+	}
 }
