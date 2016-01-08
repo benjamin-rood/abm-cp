@@ -10,7 +10,7 @@
 	ELSE IF fertility ≥ period: Jump to MATE SEARCH
 	ELSE: Jump to EXPLORE
 
-####2.  Mate Search ⧸⧸(local) ####⧸⧸####⧸⧸
+####2.  Mate Search  (local) ####
 	SEARCH PREY population of MICRO SECTORS within range
 	IF FOUND MATE: 
 		position ⟵ MATE(position)
