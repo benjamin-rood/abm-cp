@@ -1,20 +1,17 @@
 package abm
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
-	"log"
 	"math"
 	"math/rand"
 
+	"github.com/benjamin-rood/abm-colour-polymorphism/abm"
 	"github.com/benjamin-rood/abm-colour-polymorphism/calc"
 	"github.com/benjamin-rood/abm-colour-polymorphism/colour"
 	"github.com/benjamin-rood/abm-colour-polymorphism/geometry"
 	"github.com/benjamin-rood/abm-colour-polymorphism/render"
-)
-
-var (
-	cppLifespan = 20
 )
 
 // ColourPolymorphicPrey – Prey agent type for Predator-Prey ABM
@@ -36,6 +33,25 @@ type ColourPolymorphicPrey struct {
 	ϸ           float64    //  position sorting value - vector distance between vp.pos and cpp.pos
 }
 
+// String returns a clear textual presentation the internal values of the CPP agent
+func (c *ColourPolymorphicPrey) String() string {
+	var buffer bytes.Buffer
+	buffer.WriteString(fmt.Sprintf("cpp hereditary id{%d}:\n", c.popIndex))
+	buffer.WriteString(fmt.Sprintf("pos=(%v,%v)\n", c.pos[x], c.pos[y]))
+	buffer.WriteString(fmt.Sprintf("movS=%v\n", c.movS))
+	buffer.WriteString(fmt.Sprintf("movA=%v\n", c.movA))
+	buffer.WriteString(fmt.Sprintf("dir𝚯=%v\n", c.dir𝚯))
+	buffer.WriteString(fmt.Sprintf("dir=(%v,%v)\n", c.dir[x], c.dir[y]))
+	buffer.WriteString(fmt.Sprintf("Rτ=%v\n", c.Rτ))
+	buffer.WriteString(fmt.Sprintf("sr=%v\n", c.sr))
+	buffer.WriteString(fmt.Sprintf("lifespan=%v\n", c.lifespan))
+	buffer.WriteString(fmt.Sprintf("hunger=%v\n", c.hunger))
+	buffer.WriteString(fmt.Sprintf("fertility=%v\n", c.fertility))
+	buffer.WriteString(fmt.Sprintf("gravid=%v\n", c.gravid))
+	buffer.WriteString(fmt.Sprintf("colouration=%v\n", c.colouration))
+	return buffer.String()
+}
+
 // GetDrawInfo exports the data set needed for agent visualisation.
 func (c *ColourPolymorphicPrey) GetDrawInfo() (ar render.AgentRender) {
 	ar.Type = "cpp"
@@ -53,7 +69,7 @@ func GeneratePopulation(size int, context Context) []ColourPolymorphicPrey {
 		agent.popIndex = i
 		agent.pos = geometry.RandVector(context.Bounds)
 		if context.CppAgeing {
-			if context.RandomAges && (context.CppLifespan > 5) {
+			if context.RandomAges && (context.CppLifespan > 100) {
 				agent.lifespan = calc.RandIntIn(5, context.CppLifespan)
 			} else {
 				agent.lifespan = context.CppLifespan
@@ -136,7 +152,6 @@ func (c *ColourPolymorphicPrey) Move() error {
 // Fertility implements the blessed phases of the moon
 func (c *ColourPolymorphicPrey) Fertility(Cȣ int) (jump string) {
 	c.fertility++
-	fmt.Println("c.fertility =", c.fertility)
 	switch {
 	case c.fertility == 0:
 		c.gravid = false
@@ -152,18 +167,24 @@ func (c *ColourPolymorphicPrey) Fertility(Cȣ int) (jump string) {
 
 // MateSearch implements Breeder interface method for ColourPolymorphicPrey:
 // NEEDS BETTER HANDLING THAN JUST PUSHING THE ERROR UP!
-func (c *ColourPolymorphicPrey) MateSearch(pop []ColourPolymorphicPrey) (*ColourPolymorphicPrey, error) {
-	for _, p := range pop {
-		dist, err := geometry.VectorDistance(c.pos, p.pos)
+func (c *ColourPolymorphicPrey) MateSearch(pop []ColourPolymorphicPrey, skip int) (mate *ColourPolymorphicPrey, err error) {
+	mate = nil
+	err = nil
+	dist := 0.0
+	for i := 0; i < len(pop); i++ {
+		if i == skip {
+			continue
+		}
+		dist, err = geometry.VectorDistance(c.pos, pop[i].pos)
 		if err != nil {
-			return nil, err
+			return
 		}
 		if dist <= c.sr {
-			fmt.Println("found mate")
-			return &p, nil
+			mate = &pop[i]
+			return
 		}
 	}
-	return nil, nil
+	return
 }
 
 // Copulation implemets Breeder interface method for ColourPolymorphicPrey:
@@ -172,6 +193,7 @@ func (c *ColourPolymorphicPrey) Copulation(mate *ColourPolymorphicPrey, chance f
 		return false
 	}
 	ω := rand.Float64()
+	mate.fertility = -sexualCost // it takes two to tango, buddy!
 	if ω <= chance {
 		c.gravid = true
 		c.fertility = -gestation
@@ -182,60 +204,23 @@ func (c *ColourPolymorphicPrey) Copulation(mate *ColourPolymorphicPrey, chance f
 }
 
 // Birth implemets Breeder interface method for ColourPolymorphicPrey:
-func (c *ColourPolymorphicPrey) Birth(b int, mf float64) []ColourPolymorphicPrey {
+func (c *ColourPolymorphicPrey) Birth(ctxt abm.Context) []ColourPolymorphicPrey {
 	n := 1
-	if b > 1 {
-		n = rand.Intn(b-1) + 1 //	i.e. range [1, b]
+	if ctxt.Cβ > 1 {
+		n = rand.Intn(ctxt.Cβ) + 1 //	i.e. range [1, b]
 	}
-	progeny := c.spawn(n)
-	for i := 0; i < n; i++ {
-		progeny[i].mutation(mf)
+	progeny := GeneratePopulation(n, ctxt)
+	for _, child := range progeny {
+		child.mutation(c.colouration, ctxt.Mf)
+		child.pos, _ = geometry.FuzzifyVector(c.pos, 0.1)
 	}
 	c.gravid = false
 	return progeny
 }
 
-// set of actions only ColourPolymorphicPrey agents will perform
-type cppBehaviour interface {
-	newChild() ColourPolymorphicPrey
-	mutation(float64) // variation at time of birth
-	spawn(int) []ColourPolymorphicPrey
-}
-
-func (c *ColourPolymorphicPrey) newChild() ColourPolymorphicPrey {
-	child := *c
-	child.lifespan = cppLifespan
-	child.pos, _ = geometry.FuzzifyVector(c.pos, 0.1)
-	return child
-}
-
-func (c *ColourPolymorphicPrey) mutation(mf float64) {
-	c.colouration = colour.RandRGBClamped(c.colouration, mf)
-}
-
-func (c *ColourPolymorphicPrey) spawn(n int) (progeny []ColourPolymorphicPrey) {
-	for i := 0; i < n; i++ {
-		child := c.newChild()
-		progeny = append(progeny, child)
-	}
-	return
-}
-
-// Log prints all the internal values of the CPP agent
-func (c *ColourPolymorphicPrey) Log() {
-	log.Printf("cpp agent id{%d}:\n", c.popIndex)
-	log.Printf("pos=(%v,%v)\n", c.pos[x], c.pos[y])
-	log.Printf("movS=%v\n", c.movS)
-	log.Printf("movA=%v\n", c.movA)
-	log.Printf("dir𝚯=%v\n", c.dir𝚯)
-	log.Printf("dir=(%v,%v)\n", c.dir[x], c.dir[y])
-	log.Printf("Rτ=%v\n", c.Rτ)
-	log.Printf("sr=%v\n", c.sr)
-	log.Printf("lifespan=%v\n", c.lifespan)
-	log.Printf("hunger=%v\n", c.hunger)
-	log.Printf("fertility=%v\n", c.fertility)
-	log.Printf("gravid=%v\n", c.gravid)
-	log.Printf("colouration=%v\n", c.colouration)
+// For now, mutation only affects colouration, but could be extended to affect any other parameter.
+func (c *ColourPolymorphicPrey) mutation(parentColour colour.RGB, Mf float64) {
+	c.colouration = colour.RandRGBClamped(parentColour, Mf)
 }
 
 // set of methods implementing Mortal interface
@@ -253,7 +238,7 @@ func (c *ColourPolymorphicPrey) Age() (jump string) {
 	return
 }
 
-// Death not implemented
+// Death – no specific functionality required so far.
 func (c *ColourPolymorphicPrey) Death() {
 
 }
