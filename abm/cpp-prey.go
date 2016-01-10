@@ -7,7 +7,6 @@ import (
 	"math"
 	"math/rand"
 
-	"github.com/benjamin-rood/abm-colour-polymorphism/abm"
 	"github.com/benjamin-rood/abm-colour-polymorphism/calc"
 	"github.com/benjamin-rood/abm-colour-polymorphism/colour"
 	"github.com/benjamin-rood/abm-colour-polymorphism/geometry"
@@ -204,7 +203,7 @@ func (c *ColourPolymorphicPrey) Copulation(mate *ColourPolymorphicPrey, chance f
 }
 
 // Birth implemets Breeder interface method for ColourPolymorphicPrey:
-func (c *ColourPolymorphicPrey) Birth(ctxt abm.Context) []ColourPolymorphicPrey {
+func (c *ColourPolymorphicPrey) Birth(ctxt Context) []ColourPolymorphicPrey {
 	n := 1
 	if ctxt.Cβ > 1 {
 		n = rand.Intn(ctxt.Cβ) + 1 //	i.e. range [1, b]

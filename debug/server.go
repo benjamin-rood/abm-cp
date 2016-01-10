@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"flag"
+	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
@@ -195,11 +196,15 @@ func cppRBB(pop []abm.ColourPolymorphicPrey, queue chan<- render.AgentRender) (n
 	newkids := []abm.ColourPolymorphicPrey{}
 	for i := 0; i < len(pop); i++ {
 		jump := ""
+		// fmt.Println()
+		// log.Printf("agent{%d}\n", i)
+		//pop[i].Log()
 		// BEGIN
 		if context.CppAgeing {
 			jump = pop[i].Age()
 			switch jump {
 			case "DEATH":
+				fmt.Println("DEATH", pop[i].String())
 				goto End
 			}
 		}
@@ -208,7 +213,7 @@ func cppRBB(pop []abm.ColourPolymorphicPrey, queue chan<- render.AgentRender) (n
 		// fmt.Println("JUMP to", jump)
 		switch jump {
 		case "SPAWN":
-			progeny := pop[i].Birth(context) //	need max spawn size, mutation factor for initial and abm context which is needed to 'seed' new agents with the correct params ∴ send the whole thing.
+			progeny := pop[i].Birth(context.Cβ, context.Mf) //	max spawn size, mutation factor
 			newkids = append(newkids, progeny...)
 		case "MATE SEARCH":
 			if len(pop) < maxPopSize {
