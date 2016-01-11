@@ -33,10 +33,9 @@ type Viewport struct {
 }
 
 // TranslateToViewport takes the absolute model coordinates of the agent's position data and translates (and scales) them to the pixel coordinates of the Viewport v.
-func (ar *AgentRender) TranslateToViewport(v Viewport) {
-	// for now we have to assume that the range of x = (-1.0,+1.0) and y = (-1.0,+1.0)
-	ar.X = absToView(ar.X, 1.0, v.Width)
-	ar.Y = absToView(ar.Y, 1.0, v.Height)
+func (ar *AgentRender) TranslateToViewport(v Viewport, dw float64, dh float64) {
+	ar.X = absToView(ar.X, dw, v.Width)
+	ar.Y = absToView(ar.Y, dh, v.Height)
 	return
 }
 

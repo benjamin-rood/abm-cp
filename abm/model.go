@@ -2,8 +2,12 @@ package abm
 
 import (
 	"log"
+	"time"
 
+	"github.com/benjamin-rood/abm-colour-polymorphism/calc"
 	"github.com/benjamin-rood/abm-colour-polymorphism/colour"
+	"github.com/benjamin-rood/abm-colour-polymorphism/render"
+	"github.com/benjamin-rood/goio"
 )
 
 // Model acts as the working instance of the 'game'
@@ -47,15 +51,10 @@ type Timeframe struct {
 }
 
 // Log prints the current state of time
-func (t *Timeframe) Log() {
-	log.Printf("%04dT : %04dP : %04dA\n", t.Turn, t.Phase, t.Action)
+func (m *Model) Log() {
+	log.Printf("%04dT : %04dP : %04dA\n", m.Turn, m.Phase, m.Action)
+	log.Printf("cpp population size = %d\n", len(m.PopCPP))
 }
-
-const (
-	x = iota
-	y
-	z
-)
 
 /*
 Environment specifies the boundary / dimensions of the working model. They
@@ -94,9 +93,124 @@ type Context struct {
 	CppSr         float64 // CPP agent search range for mating
 	RandomAges    bool
 	Mf            float64 //	mutation factor
-	Cφ            int     //	CPP incubation cost
+	Cφ            int     //	CPP gestation period
 	Cȣ            int     //	CPP sexual rest cost
 	Cκ            float64 //	chance of CPP copulation success.
 	Cβ            int     // 	CPP max spawn size (birth range)
-	Cϱ            int     //	CPP gestation period
+}
+
+func cppRBB(ctxt Context, time Timeframe, pop []ColourPolymorphicPrey, queue chan<- render.AgentRender) (newpop []ColourPolymorphicPrey, newtime Timeframe) {
+	newkids := []ColourPolymorphicPrey{}
+	newtime = time
+	for i := range pop {
+		jump := ""
+		// BEGIN
+		if ctxt.CppAgeing {
+			jump = pop[i].Age()
+			switch jump {
+			case "DEATH":
+				goto End
+			}
+		}
+
+		jump = pop[i].Fertility(ctxt.Cȣ)
+		// fmt.Println("JUMP to", jump)
+		switch jump {
+		case "SPAWN":
+			progeny := pop[i].Birth(ctxt) //	max spawn size, mutation factor
+			newkids = append(newkids, progeny...)
+		case "MATE SEARCH":
+			if len(pop) < maxPopSize {
+				mate, err := pop[i].MateSearch(pop, i) // need to exclude self from search :-)
+				if err != nil {
+					log.Fatalln("cppRBB: MateSearch: Error:", err)
+				}
+				// fmt.Println("mate = ", mate)
+				// ATTEMPT REPRODUCE
+				success := pop[i].Copulation(mate, ctxt.Cκ, ctxt.Cφ, ctxt.Cȣ)
+				if success {
+					// fmt.Println("successful sex act!")
+					goto Add
+				}
+			}
+			fallthrough // no nearby sexual partners, EXPLORE
+		case "EXPLORE":
+			𝚯 := calc.RandFloatIn(-ctxt.Cτ, ctxt.Cτ)
+			pop[i].Turn(𝚯)
+			pop[i].Move()
+		}
+
+	Add:
+		newpop = append(newpop, pop[i])
+		queue <- pop[i].GetDrawInfo()
+
+	End:
+		newtime.Action++
+	}
+	newpop = append(newpop, newkids...) // add the newly created children to the returning population
+	return
+}
+
+func runningModel(m Model, rc chan<- render.AgentRender, quit <-chan struct{}, phase chan<- struct{}) {
+	for {
+		m.PopCPP, m.Timeframe = cppRBB(m.Context, m.Timeframe, m.PopCPP, rc) //	returns a replacement
+		m.Action = 0                                                         // reset at phase end.
+		m.Phase++
+		m.Log()
+		phase <- struct{}{}
+		time.Sleep(20)
+	}
+}
+
+// insufficient hack
+func InitModel(ctxt Context, e Environment, om chan goio.OutMsg, view chan render.Viewport, phase chan struct{}) {
+	simple := setModel(ctxt, e)
+	quit := make(chan struct{})
+	rc := make(chan render.AgentRender)
+	go runningModel(simple, rc, quit, phase)
+	go visualiseModel(ctxt, view, rc, om, phase)
+}
+
+func setModel(ctxt Context, e Environment) (m Model) {
+	m.PopCPP = GeneratePopulation(cppPopSize, ctxt)
+	m.DefinitionCPP = []string{"mover", "breeder", "mortal"}
+	m.Environment = e
+	m.Context = ctxt
+	return
+}
+
+func visualiseModel(ctxt Context, view <-chan render.Viewport, queue <-chan render.AgentRender, out chan<- goio.OutMsg, phase <-chan struct{}) {
+	v := DemoViewport
+	msg := goio.OutMsg{Type: "render", Data: nil}
+	dl := render.DrawList{
+		CPP: nil,
+		VP:  nil,
+		BG:  colour.RGB256{Red: 0, Green: 0, Blue: 0},
+	}
+	for {
+		select {
+		case job := <-queue:
+			job.TranslateToViewport(v, ctxt.Bounds[0], ctxt.Bounds[1])
+			switch job.Type {
+			case "cpp":
+				dl.CPP = append(dl.CPP, job)
+			case "vp":
+				dl.VP = append(dl.VP, job)
+			default:
+				log.Fatalf("viz: failed to determine agent-render job type!")
+			}
+		case <-phase:
+			msg.Data = dl
+			out <- msg
+			// reset msg contents
+			msg = goio.OutMsg{Type: "render", Data: nil}
+			//	reset draw instructions
+			dl = render.DrawList{
+				CPP: nil,
+				VP:  nil,
+				BG:  colour.RGB256{Red: 0, Green: 0, Blue: 0},
+			}
+		case v = <-view:
+		}
+	}
 }

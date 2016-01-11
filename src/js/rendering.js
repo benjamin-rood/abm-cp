@@ -6,14 +6,15 @@ function DrawList (obj) {
 
 var initDrawObj = {type: 'drawlist', data: {cpp: [], vp: [], bg: {red: 0, green: 0, blue: 0}}}
 var drawlist = new DrawList(initDrawObj)
-var newWidth = 600
-var newHeight = 400
+var newWidth = 800
+var newHeight = 600
 
 var sketch = function (p) {
   p.setup = function () {
     p.createCanvas(newWidth, newHeight)
+    p.strokeWeight(3)
+    // p.stroke(255, 255, 255)
     p.background(255, 255, 0)
-    p.frameRate(5)
   }
 
   p.draw = function () {
@@ -22,10 +23,10 @@ var sketch = function (p) {
       var x = drawlist.cpp[i].position.x
       var y = drawlist.cpp[i].position.y
       var col = p.color(drawlist.cpp[i].colour.red, drawlist.cpp[i].colour.green, drawlist.cpp[i].colour.blue)
-      p.fill(col)
-      p.ellipse(x, y, 15, 15)
-      p.strokeWeight(1)
-      p.stroke(255, 255, 255)
+      p.stroke(col)
+      p.point(x,y)
+      // p.fill(col)
+      // p.ellipse(x, y, 15, 15)
     }
   }
 }

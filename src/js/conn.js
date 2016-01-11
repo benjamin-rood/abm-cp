@@ -13,6 +13,7 @@ wsocket.onmessage = function (e) {
     drawlist.vp = rawmsg.data.vp
     drawlist.bg = rawmsg.data.bg
   }
+  viz.p.draw()
 }
 
 wsocket.onerror = function (e) {

@@ -61,15 +61,14 @@ func (c *ColourPolymorphicPrey) GetDrawInfo() (ar render.AgentRender) {
 }
 
 // GeneratePopulation will create `size` number of agents
-func GeneratePopulation(size int, context Context) []ColourPolymorphicPrey {
-	var pop = []ColourPolymorphicPrey{}
+func GeneratePopulation(size int, context Context) (pop []ColourPolymorphicPrey) {
 	for i := 0; i < size; i++ {
 		agent := ColourPolymorphicPrey{}
 		agent.popIndex = i
 		agent.pos = geometry.RandVector(context.Bounds)
 		if context.CppAgeing {
-			if context.RandomAges && (context.CppLifespan > 100) {
-				agent.lifespan = calc.RandIntIn(5, context.CppLifespan)
+			if context.RandomAges {
+				agent.lifespan = calc.RandIntIn(int(float64(context.CppLifespan)*0.7), int(float64(context.CppLifespan)*1.3))
 			} else {
 				agent.lifespan = context.CppLifespan
 			}
@@ -90,7 +89,38 @@ func GeneratePopulation(size int, context Context) []ColourPolymorphicPrey {
 		agent.ϸ = 0.0
 		pop = append(pop, agent)
 	}
-	return pop
+	return
+}
+
+func spawn(size int, parent ColourPolymorphicPrey, context Context) (pop []ColourPolymorphicPrey) {
+	for i := 0; i < size; i++ {
+		agent := parent
+		agent.popIndex = i
+		agent.pos, _ = geometry.FuzzifyVector(parent.pos, parent.movS)
+		if context.CppAgeing {
+			if context.RandomAges {
+				agent.lifespan = calc.RandIntIn(int(float64(context.CppLifespan)*0.7), int(float64(context.CppLifespan)*1.3))
+			} else {
+				agent.lifespan = context.CppLifespan
+			}
+		} else {
+			agent.lifespan = -1 //	i.e. Undead!
+		}
+		agent.movS = parent.movS
+		agent.movA = parent.movA
+		agent.dir𝚯 = rand.Float64() * (2 * math.Pi)
+		agent.dir = geometry.UnitVector(agent.dir𝚯)
+		agent.Rτ = parent.Rτ
+		agent.sr = parent.sr
+		agent.hunger = 0
+		agent.fertility = 1
+		agent.gravid = false
+		agent.colouration = parent.colouration
+		agent.𝛘 = 0.0
+		agent.ϸ = 0.0
+		pop = append(pop, agent)
+	}
+	return
 }
 
 // ProximitySort implements sort.Interface for []ColourPolymorphicPrey
@@ -191,6 +221,9 @@ func (c *ColourPolymorphicPrey) Copulation(mate *ColourPolymorphicPrey, chance f
 	if mate == nil {
 		return false
 	}
+	if mate.fertility < sexualCost { //	mate must be sufficiently fertile also
+		return false
+	}
 	ω := rand.Float64()
 	mate.fertility = -sexualCost // it takes two to tango, buddy!
 	if ω <= chance {
@@ -208,18 +241,23 @@ func (c *ColourPolymorphicPrey) Birth(ctxt Context) []ColourPolymorphicPrey {
 	if ctxt.Cβ > 1 {
 		n = rand.Intn(ctxt.Cβ) + 1 //	i.e. range [1, b]
 	}
-	progeny := GeneratePopulation(n, ctxt)
-	for _, child := range progeny {
-		child.mutation(c.colouration, ctxt.Mf)
-		child.pos, _ = geometry.FuzzifyVector(c.pos, 0.1)
+	progeny := spawn(n, *c, ctxt)
+	for i := 0; i < len(progeny); i++ {
+		progeny[i].mutation(ctxt.Mf)
+		progeny[i].pos, _ = geometry.FuzzifyVector(c.pos, 0.1)
 	}
 	c.gravid = false
 	return progeny
 }
 
 // For now, mutation only affects colouration, but could be extended to affect any other parameter.
-func (c *ColourPolymorphicPrey) mutation(parentColour colour.RGB, Mf float64) {
-	c.colouration = colour.RandRGBClamped(parentColour, Mf)
+func (c *ColourPolymorphicPrey) mutation(Mf float64) {
+	c.colouration = colour.RandRGBClamped(c.colouration, Mf)
+}
+
+// Mutation for external testing only
+func Mutation(c *ColourPolymorphicPrey, Mf float64) {
+	c.colouration = colour.RandRGBClamped(c.colouration, Mf)
 }
 
 // set of methods implementing Mortal interface
