@@ -79,7 +79,7 @@ func GeneratePopulation(size int, context Context) (pop []ColourPolymorphicPrey)
 		agent.movA = context.CppA
 		agent.dir𝚯 = rand.Float64() * (2 * math.Pi)
 		agent.dir = geometry.UnitVector(agent.dir𝚯)
-		agent.Rτ = context.Cτ
+		agent.Rτ = context.CppTurn
 		agent.sr = context.CppSr
 		agent.hunger = 0
 		agent.fertility = 1
@@ -187,7 +187,7 @@ func (c *ColourPolymorphicPrey) Fertility(Cȣ int) (jump string) {
 		jump = "SPAWN"
 		return
 	case c.fertility >= Cȣ: // period / sexual cost
-		jump = "MATE SEARCH"
+		jump = "FERTILE"
 		return
 	}
 	jump = "EXPLORE"
@@ -216,6 +216,19 @@ func (c *ColourPolymorphicPrey) MateSearch(pop []ColourPolymorphicPrey, skip int
 	return
 }
 
+// Reproduction implements Breeder interface method - ASEXUAL (self-reproduction)
+func (c *ColourPolymorphicPrey) Reproduction(chance float64, gestation int, sexualCost int) bool {
+	c.hunger++ //	energy cost
+	ω := rand.Float64()
+	if ω <= chance {
+		c.gravid = true
+		c.fertility = -gestation
+		return true
+	}
+	c.fertility = -sexualCost
+	return false
+}
+
 // Copulation implemets Breeder interface method for ColourPolymorphicPrey:
 func (c *ColourPolymorphicPrey) Copulation(mate *ColourPolymorphicPrey, chance float64, gestation int, sexualCost int) bool {
 	if mate == nil {
@@ -238,14 +251,15 @@ func (c *ColourPolymorphicPrey) Copulation(mate *ColourPolymorphicPrey, chance f
 // Birth implemets Breeder interface method for ColourPolymorphicPrey:
 func (c *ColourPolymorphicPrey) Birth(ctxt Context) []ColourPolymorphicPrey {
 	n := 1
-	if ctxt.Cβ > 1 {
-		n = rand.Intn(ctxt.Cβ) + 1 //	i.e. range [1, b]
+	if ctxt.CppSpawnSize > 1 {
+		n = rand.Intn(ctxt.CppSpawnSize) + 1 //	i.e. range [1, b]
 	}
 	progeny := spawn(n, *c, ctxt)
 	for i := 0; i < len(progeny); i++ {
-		progeny[i].mutation(ctxt.Mf)
+		progeny[i].mutation(ctxt.MutationFactor)
 		progeny[i].pos, _ = geometry.FuzzifyVector(c.pos, 0.1)
 	}
+	c.hunger++ //	energy cost
 	c.gravid = false
 	return progeny
 }

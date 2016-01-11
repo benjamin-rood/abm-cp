@@ -72,31 +72,31 @@ type Environment struct {
 // Context contains the local model context;
 type Context struct {
 	// Type          string    `json:"type"` //	json flag for deserialisation
-	Bounds        []float64 // d value for each axis
-	CppPopulation int       // starting CPP agent population size
-	VpPopulation  uint      //	starting VP agent population size
-	VpAgeing      bool
-	VpLifespan    int     //	Visual Predator lifespan
-	VS            float64 // Visual Predator speed
-	VA            float64 // Visual Predator acceleration
-	Vτ            float64 //	Visual Predator turn rate / range (in radians)
-	Vsr           float64 //	VP agent visual search range
-	Vγ            float64 //	visual acuity in environments
-	Vκ            float64 //	chance of VP copulation success.
-	V𝛔            float64 // VsrSearchChance
-	V𝛂            float64 // VpAttackChance
-	CppAgeing     bool
-	CppLifespan   int     //	CPP agent lifespan
-	CppS          float64 // CPP agent speed
-	CppA          float64 // CPP agent acceleration
-	Cτ            float64 //	CPP agent turn rate / range (in radians)
-	CppSr         float64 // CPP agent search range for mating
-	RandomAges    bool
-	Mf            float64 //	mutation factor
-	Cφ            int     //	CPP gestation period
-	Cȣ            int     //	CPP sexual rest cost
-	Cκ            float64 //	chance of CPP copulation success.
-	Cβ            int     // 	CPP max spawn size (birth range)
+	Bounds                []float64 // d value for each axis
+	CppPopulation         int       // starting CPP agent population size
+	VpPopulation          uint      //	starting VP agent population size
+	VpAgeing              bool
+	VpLifespan            int     //	Visual Predator lifespan
+	VS                    float64 // Visual Predator speed
+	VA                    float64 // Visual Predator acceleration
+	Vτ                    float64 //	Visual Predator turn rate / range (in radians)
+	Vsr                   float64 //	VP agent visual search range
+	Vγ                    float64 //	visual acuity in environments
+	Vκ                    float64 //	chance of VP copulation success.
+	V𝛔                    float64 // VsrSearchChance
+	V𝛂                    float64 // VpAttackChance
+	CppAgeing             bool
+	CppLifespan           int     //	CPP agent lifespan
+	CppS                  float64 // CPP agent speed
+	CppA                  float64 // CPP agent acceleration
+	CppTurn               float64 //	CPP agent turn rate / range (in radians)
+	CppSr                 float64 // CPP agent search range for mating
+	RandomAges            bool
+	MutationFactor        float64 //	mutation factor
+	CppGestation          int     //	CPP gestation period
+	CppSexualCost         int     //	CPP sexual rest cost
+	CppReproductiveChance float64 //	chance of CPP copulation success.
+	CppSpawnSize          int     // 	CPP max spawn size s.t. possible number of progeny = [1, max]
 }
 
 func cppRBB(ctxt Context, time Timeframe, pop []ColourPolymorphicPrey, queue chan<- render.AgentRender) (newpop []ColourPolymorphicPrey, newtime Timeframe) {
@@ -112,35 +112,23 @@ func cppRBB(ctxt Context, time Timeframe, pop []ColourPolymorphicPrey, queue cha
 				goto End
 			}
 		}
-
-		jump = pop[i].Fertility(ctxt.Cȣ)
-		// fmt.Println("JUMP to", jump)
+		jump = pop[i].Fertility(ctxt.CppSexualCost)
+		_ = "breakpoint" // godebug
 		switch jump {
 		case "SPAWN":
 			progeny := pop[i].Birth(ctxt) //	max spawn size, mutation factor
 			newkids = append(newkids, progeny...)
-		case "MATE SEARCH":
+		case "FERTILE":
 			if len(pop) < maxPopSize {
-				mate, err := pop[i].MateSearch(pop, i) // need to exclude self from search :-)
-				if err != nil {
-					log.Fatalln("cppRBB: MateSearch: Error:", err)
-				}
-				// fmt.Println("mate = ", mate)
-				// ATTEMPT REPRODUCE
-				success := pop[i].Copulation(mate, ctxt.Cκ, ctxt.Cφ, ctxt.Cȣ)
-				if success {
-					// fmt.Println("successful sex act!")
-					goto Add
-				}
+				pop[i].Reproduction(ctxt.CppReproductiveChance, ctxt.CppGestation, ctxt.CppSexualCost)
 			}
-			fallthrough // no nearby sexual partners, EXPLORE
+			fallthrough
 		case "EXPLORE":
-			𝚯 := calc.RandFloatIn(-ctxt.Cτ, ctxt.Cτ)
+			𝚯 := calc.RandFloatIn(-ctxt.CppTurn, ctxt.CppTurn)
 			pop[i].Turn(𝚯)
 			pop[i].Move()
 		}
 
-	Add:
 		newpop = append(newpop, pop[i])
 		queue <- pop[i].GetDrawInfo()
 

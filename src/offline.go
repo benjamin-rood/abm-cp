@@ -25,7 +25,6 @@ func writer(om <-chan goio.OutMsg) {
 			// if err := ws.WriteJSON(msg); err != nil {
 			// 	log.Println("writer: failed to WriteJSON:", err)
 			// }
-			_ = "breakpoint" // godebug
 			time.Sleep(time.Millisecond * 5)
 		}
 	}
