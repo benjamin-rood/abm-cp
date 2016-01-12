@@ -12,7 +12,7 @@ const (
 	y
 	z
 
-	maxPopSize     = 10000
+	maxPopSize     = 1000
 	quarterpi      = 0.7853981633974483096156608458198757210492923498437764
 	eigthpi        = 0.3926990816987241548078304229099378605246461749218882
 	d              = 1.0
@@ -29,12 +29,12 @@ const (
 	vκ             = 0.0
 	v𝛔             = 0.0
 	v𝛂             = 0.0
-	cppS           = 0.001
+	cppS           = 0.01
 	cppA           = 1.0
 	cτ             = quarterpi
-	sr             = 0.002
+	sr             = 0.02
 	randomAges     = true
-	mf             = 0.05
+	mf             = 0.1
 	cφ             = 3
 	cȣ             = 5
 	cκ             = 0.1
@@ -52,7 +52,7 @@ var (
 		BG:             colour.RandRGB(),
 	}
 
-	DemoViewport = render.Viewport{Width: 800, Height: 600}
+	DemoViewport = render.Viewport{Width: 1600, Height: 1300}
 
 	// DemoContext to be used as a baseline example
 	DemoContext = Context{

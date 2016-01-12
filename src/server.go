@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"flag"
-	"io/ioutil"
 	"log"
 	"math/rand"
 	"net/http"
@@ -17,7 +16,7 @@ import (
 
 const (
 	// Time allowed to write the file to the client.
-	writeWait = 50 * time.Millisecond
+	writeWait = 3000 * time.Millisecond
 
 	// Time allowed to read the next pong message from the client.
 	pongWait = 60 * time.Second
@@ -78,13 +77,10 @@ func writer(ws *websocket.Conn, om <-chan goio.OutMsg) {
 		select {
 		case msg := <-om:
 			ws.SetWriteDeadline(time.Now().Add(writeWait))
-			jsonMsg, _ := json.MarshalIndent(msg, "", " ")
-			ioutil.WriteFile("/tmp/outMsg", jsonMsg, 0644)
-			// if err := ws.WriteJSON(msg); err != nil {
-			// 	log.Println("writer: failed to WriteJSON:", err)
-			// }
+			if err := ws.WriteJSON(msg); err != nil {
+				log.Println("writer: failed to WriteJSON:", err)
+			}
 			_ = "breakpoint" // godebug
-			time.Sleep(time.Millisecond * 100)
 		case <-pingTicker.C:
 			ws.SetWriteDeadline(time.Now().Add(writeWait))
 			if err := ws.WriteMessage(websocket.PingMessage, []byte{}); err != nil {

@@ -144,9 +144,10 @@ func runningModel(m Model, rc chan<- render.AgentRender, quit <-chan struct{}, p
 		m.PopCPP, m.Timeframe = cppRBB(m.Context, m.Timeframe, m.PopCPP, rc) //	returns a replacement
 		m.Action = 0                                                         // reset at phase end.
 		m.Phase++
+		time.Sleep(time.Millisecond * 100)
 		m.Log()
 		phase <- struct{}{}
-		time.Sleep(20)
+		time.Sleep(time.Millisecond * 100)
 	}
 }
 
