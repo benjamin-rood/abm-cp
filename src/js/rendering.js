@@ -6,8 +6,8 @@ function DrawList (obj) {
 
 var initDrawObj = {type: 'drawlist', data: {cpp: [], vp: [], bg: {red: 0, green: 0, blue: 0}}}
 var drawlist = new DrawList(initDrawObj)
-var newWidth = 1600
-var newHeight = 1300
+var newWidth = 1920
+var newHeight = 1080
 
 var sketch = function (p) {
   p.setup = function () {
@@ -26,7 +26,7 @@ var sketch = function (p) {
       // p.stroke(col)
       // p.point(x,y)
       p.fill(col)
-      p.ellipse(x, y, 20, 20)
+      p.ellipse(x, y, 45, 45)
     }
   }
 }

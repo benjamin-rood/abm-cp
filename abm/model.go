@@ -2,6 +2,7 @@ package abm
 
 import (
 	"log"
+	"math/rand"
 	"time"
 
 	"github.com/benjamin-rood/abm-colour-polymorphism/calc"
@@ -119,8 +120,12 @@ func cppRBB(ctxt Context, time Timeframe, pop []ColourPolymorphicPrey, queue cha
 			progeny := pop[i].Birth(ctxt) //	max spawn size, mutation factor
 			newkids = append(newkids, progeny...)
 		case "FERTILE":
-			if len(pop) < maxPopSize {
-				pop[i].Reproduction(ctxt.CppReproductiveChance, ctxt.CppGestation, ctxt.CppSexualCost)
+			if len(pop) <= maxPopSize {
+				mate, _ := pop[i].MateSearch(pop, i)
+				success := pop[i].Copulation(mate, ctxt.CppReproductiveChance, ctxt.CppGestation, ctxt.CppSexualCost)
+				if success {
+					goto Add
+				}
 			}
 			fallthrough
 		case "EXPLORE":
@@ -128,7 +133,7 @@ func cppRBB(ctxt Context, time Timeframe, pop []ColourPolymorphicPrey, queue cha
 			pop[i].Turn(𝚯)
 			pop[i].Move()
 		}
-
+	Add:
 		newpop = append(newpop, pop[i])
 		queue <- pop[i].GetDrawInfo()
 
@@ -155,7 +160,7 @@ func runningModel(m Model, rc chan<- render.AgentRender, quit <-chan struct{}, p
 func InitModel(ctxt Context, e Environment, om chan goio.OutMsg, view chan render.Viewport, phase chan struct{}) {
 	simple := setModel(ctxt, e)
 	quit := make(chan struct{})
-	rc := make(chan render.AgentRender)
+	rc := make(chan render.AgentRender, 2000)
 	go runningModel(simple, rc, quit, phase)
 	go visualiseModel(ctxt, view, rc, om, phase)
 }
@@ -170,11 +175,13 @@ func setModel(ctxt Context, e Environment) (m Model) {
 
 func visualiseModel(ctxt Context, view <-chan render.Viewport, queue <-chan render.AgentRender, out chan<- goio.OutMsg, phase <-chan struct{}) {
 	v := DemoViewport
+	rand.Seed(time.Now().UnixNano())
+	bg := colour.RGB256{Red: 30, Green: 30, Blue: 50}
 	msg := goio.OutMsg{Type: "render", Data: nil}
 	dl := render.DrawList{
 		CPP: nil,
 		VP:  nil,
-		BG:  colour.RGB256{Red: 0, Green: 0, Blue: 0},
+		BG:  bg,
 	}
 	for {
 		select {
@@ -197,7 +204,7 @@ func visualiseModel(ctxt Context, view <-chan render.Viewport, queue <-chan rend
 			dl = render.DrawList{
 				CPP: nil,
 				VP:  nil,
-				BG:  colour.RGB256{Red: 0, Green: 0, Blue: 0},
+				BG:  bg,
 			}
 		case v = <-view:
 		}

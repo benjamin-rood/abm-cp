@@ -16,7 +16,7 @@ import (
 
 const (
 	// Time allowed to write the file to the client.
-	writeWait = 3000 * time.Millisecond
+	writeWait = 60 * time.Second
 
 	// Time allowed to read the next pong message from the client.
 	pongWait = 60 * time.Second
@@ -26,7 +26,7 @@ const (
 )
 
 var (
-	om       = make(chan goio.OutMsg)
+	om       = make(chan goio.OutMsg, 20)
 	phase    = make(chan struct{})
 	view     = make(chan render.Viewport)
 	ctxt     = make(chan abm.Context)
