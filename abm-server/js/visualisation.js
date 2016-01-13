@@ -1,26 +1,3 @@
-var wsocket = new WebSocket('ws://localhost:8080/ws')
-
-var viz = new p5(sketch, 'abm-viewport')
-
-wsocket.onopen = function () {
-  console.log('websocket connection init')
-}
-
-wsocket.onmessage = function (e) {
-  var rawmsg = JSON.parse(e.data)
-  console.log(rawmsg)
-  if (rawmsg.type === 'render') {
-    drawlist.cpp = rawmsg.data.cpp
-    drawlist.vp = rawmsg.data.vp
-    drawlist.bg = rawmsg.data.bg
-  }
-  viz.draw()
-}
-
-wsocket.onerror = function (e) {
-  console.log('ERROR: ' + e)
-}
-
 function DrawList (obj) {
   this.cpp = obj.data.cpp
   this.vp = obj.data.vp
@@ -37,8 +14,8 @@ var sketch = function (p) {
     p.createCanvas(newWidth, newHeight)
     p.strokeWeight(3)
     // p.stroke(255, 255, 255)
-    p.background(0, 0, 255)
     p.noLoop()
+    p.background(0, 0, 255)
   }
 
   p.draw = function () {
@@ -53,4 +30,27 @@ var sketch = function (p) {
       // p.ellipse(x, y, 15, 15)
     }
   }
+}
+
+var wsocket = new WebSocket('ws://localhost:8080/ws')
+
+var viz = new p5(sketch, 'abm-viewport')
+
+wsocket.onopen = function () {
+  console.log('websocket connection init')
+}
+
+wsocket.onmessage = function (e) {
+  var rawmsg = JSON.parse(e.data)
+  console.log(rawmsg)
+  if (rawmsg.type === 'render') {
+    drawlist.cpp = rawmsg.data.cpp
+    drawlist.vp = rawmsg.data.vp
+    drawlist.bg = rawmsg.data.bg
+  }
+  viz.redraw()
+}
+
+wsocket.onerror = function (e) {
+  console.log('ERROR: ' + e)
 }
