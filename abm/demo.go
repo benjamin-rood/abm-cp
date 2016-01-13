@@ -12,7 +12,7 @@ const (
 	y
 	z
 
-	maxPopSize     = 200
+	maxPopSize     = 3000
 	quarterpi      = 0.7853981633974483096156608458198757210492923498437764
 	eigthpi        = 0.3926990816987241548078304229099378605246461749218882
 	d              = 1.0
@@ -29,10 +29,10 @@ const (
 	vκ             = 0.0
 	v𝛔             = 0.0
 	v𝛂             = 0.0
-	cppS           = 0.001
+	cppS           = 0.005
 	cppA           = 1.0
 	cτ             = quarterpi
-	sr             = 0.001
+	sr             = 0.005
 	randomAges     = true
 	fuzzy          = 0.3
 	mf             = 0.1
