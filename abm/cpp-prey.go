@@ -219,14 +219,13 @@ func (c *ColourPolymorphicPrey) MateSearch(pop []ColourPolymorphicPrey, skip int
 // Reproduction implements Breeder interface method - ASEXUAL (self-reproduction)
 func (c *ColourPolymorphicPrey) Reproduction(chance float64, gestation int, sexualCost int) bool {
 	c.hunger++ //	energy cost
-	fmt.Println("r chance =", chance)
 	ω := rand.Float64()
-	fmt.Println("ω =", ω)
-	fmt.Println("ω <= chance =", ω <= chance)
 	if ω <= chance {
+		fmt.Println("r chance =", chance)
+		fmt.Println("ω =", ω)
+		fmt.Println("ω <= chance =", ω <= chance)
 		c.gravid = true
 		c.fertility = -gestation
-		_ = "breakpoint" //	godebug
 		return true
 	}
 	c.fertility = -sexualCost
