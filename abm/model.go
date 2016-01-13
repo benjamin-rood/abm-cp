@@ -92,12 +92,13 @@ type Context struct {
 	CppA                  float64 // CPP agent acceleration
 	CppTurn               float64 //	CPP agent turn rate / range (in radians)
 	CppSr                 float64 // CPP agent search range for mating
-	RandomAges            bool
 	MutationFactor        float64 //	mutation factor
 	CppGestation          int     //	CPP gestation period
 	CppSexualCost         int     //	CPP sexual rest cost
 	CppReproductiveChance float64 //	chance of CPP copulation success.
 	CppSpawnSize          int     // 	CPP max spawn size s.t. possible number of progeny = [1, max]
+	RandomAges            bool
+	Fuzzy                 float64
 }
 
 func cppRBB(ctxt Context, time Timeframe, pop []ColourPolymorphicPrey, queue chan<- render.AgentRender) (newpop []ColourPolymorphicPrey, newtime Timeframe) {
@@ -114,18 +115,19 @@ func cppRBB(ctxt Context, time Timeframe, pop []ColourPolymorphicPrey, queue cha
 			}
 		}
 		jump = pop[i].Fertility(ctxt.CppSexualCost)
-		_ = "breakpoint" // godebug
+		// _ = "breakpoint" // godebug
 		switch jump {
 		case "SPAWN":
 			progeny := pop[i].Birth(ctxt) //	max spawn size, mutation factor
 			newkids = append(newkids, progeny...)
 		case "FERTILE":
 			if len(pop) <= maxPopSize {
-				mate, _ := pop[i].MateSearch(pop, i)
-				success := pop[i].Copulation(mate, ctxt.CppReproductiveChance, ctxt.CppGestation, ctxt.CppSexualCost)
-				if success {
-					goto Add
-				}
+				// mate, _ := pop[i].MateSearch(pop, i)
+				// success := pop[i].Copulation(mate, ctxt.CppReproductiveChance, ctxt.CppGestation, ctxt.CppSexualCost)
+				// if success {
+				// 	goto Add
+				// }
+				pop[i].Reproduction(ctxt.CppReproductiveChance, ctxt.CppGestation, ctxt.CppSexualCost)
 			}
 			fallthrough
 		case "EXPLORE":
@@ -133,7 +135,7 @@ func cppRBB(ctxt Context, time Timeframe, pop []ColourPolymorphicPrey, queue cha
 			pop[i].Turn(𝚯)
 			pop[i].Move()
 		}
-	Add:
+		// Add:
 		newpop = append(newpop, pop[i])
 		queue <- pop[i].GetDrawInfo()
 
@@ -146,13 +148,19 @@ func cppRBB(ctxt Context, time Timeframe, pop []ColourPolymorphicPrey, queue cha
 
 func runningModel(m Model, rc chan<- render.AgentRender, quit <-chan struct{}, phase chan<- struct{}) {
 	for {
-		m.PopCPP, m.Timeframe = cppRBB(m.Context, m.Timeframe, m.PopCPP, rc) //	returns a replacement
-		m.Action = 0                                                         // reset at phase end.
-		m.Phase++
-		time.Sleep(time.Millisecond * 100)
-		m.Log()
-		phase <- struct{}{}
-		time.Sleep(time.Millisecond * 100)
+		select {
+		case <-quit:
+			// clean up, then...
+			return
+		default:
+			m.PopCPP, m.Timeframe = cppRBB(m.Context, m.Timeframe, m.PopCPP, rc) //	returns a replacement
+			m.Action = 0                                                         // reset at phase end.
+			m.Phase++
+			time.Sleep(time.Millisecond * 100)
+			m.Log()
+			phase <- struct{}{}
+			time.Sleep(time.Millisecond * 100)
+		}
 	}
 }
 

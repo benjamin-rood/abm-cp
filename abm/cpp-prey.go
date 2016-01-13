@@ -96,7 +96,7 @@ func spawn(size int, parent ColourPolymorphicPrey, context Context) (pop []Colou
 	for i := 0; i < size; i++ {
 		agent := parent
 		agent.popIndex = i
-		agent.pos, _ = geometry.FuzzifyVector(parent.pos, parent.movS)
+		agent.pos = parent.pos
 		if context.CppAgeing {
 			if context.RandomAges {
 				agent.lifespan = calc.RandIntIn(int(float64(context.CppLifespan)*0.7), int(float64(context.CppLifespan)*1.3))
@@ -219,10 +219,14 @@ func (c *ColourPolymorphicPrey) MateSearch(pop []ColourPolymorphicPrey, skip int
 // Reproduction implements Breeder interface method - ASEXUAL (self-reproduction)
 func (c *ColourPolymorphicPrey) Reproduction(chance float64, gestation int, sexualCost int) bool {
 	c.hunger++ //	energy cost
+	fmt.Println("r chance =", chance)
 	ω := rand.Float64()
+	fmt.Println("ω =", ω)
+	fmt.Println("ω <= chance =", ω <= chance)
 	if ω <= chance {
 		c.gravid = true
 		c.fertility = -gestation
+		_ = "breakpoint" //	godebug
 		return true
 	}
 	c.fertility = -sexualCost

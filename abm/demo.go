@@ -12,16 +12,16 @@ const (
 	y
 	z
 
-	maxPopSize     = 500
+	maxPopSize     = 200
 	quarterpi      = 0.7853981633974483096156608458198757210492923498437764
 	eigthpi        = 0.3926990816987241548078304229099378605246461749218882
 	d              = 1.0
 	dimensionality = 2
-	cppPopSize     = 30
+	cppPopSize     = 100
 	vpPopSize      = 0
 	vsr            = d / 4
 	γ              = 1.0
-	cpplife        = 30
+	cpplife        = 25
 	vplife         = 250
 	vpS            = 0.1
 	vpA            = 1.0
@@ -29,17 +29,18 @@ const (
 	vκ             = 0.0
 	v𝛔             = 0.0
 	v𝛂             = 0.0
-	cppS           = 0.02
+	cppS           = 0.001
 	cppA           = 1.0
 	cτ             = quarterpi
-	sr             = 0.02
+	sr             = 0.001
 	randomAges     = true
-	mf             = 0.065
-	cφ             = 6
+	fuzzy          = 0.3
+	mf             = 0.1
+	cφ             = 3
 	cȣ             = 3
-	cκ             = 0.0001
-	cβ             = 10
-	vpAgeing       = false
+	cκ             = 0.1
+	cβ             = 5
+	vpAgeing       = true
 	cppAgeing      = true
 )
 
@@ -51,7 +52,7 @@ var (
 		BG:             colour.RandRGB(),
 	}
 
-	DemoViewport = render.Viewport{Width: 1920, Height: 1080}
+	DemoViewport = render.Viewport{Width: 1440, Height: 900}
 
 	// DemoContext to be used as a baseline example
 	DemoContext = Context{
@@ -74,11 +75,12 @@ var (
 		CppA:                  cppA,
 		CppTurn:               cτ,
 		CppSr:                 sr,
-		RandomAges:            randomAges,
 		MutationFactor:        mf,
 		CppGestation:          cφ,
 		CppSexualCost:         cȣ,
 		CppReproductiveChance: cκ,
 		CppSpawnSize:          cβ,
+		RandomAges:            randomAges,
+		Fuzzy:                 fuzzy,
 	}
 )

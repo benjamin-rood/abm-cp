@@ -1,8 +1,10 @@
 var wsocket = new WebSocket('ws://localhost:8080/ws')
 
+var viz = Object
+
 wsocket.onopen = function () {
   console.log('websocket connection init')
-  var viz = new p5(sketch, 'abm-viewport')
+  viz = new p5(sketch, 'abm-viewport')
 }
 
 wsocket.onmessage = function (e) {
