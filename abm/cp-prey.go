@@ -15,7 +15,6 @@ import (
 
 // ColourPolymorphicPrey – Prey agent type for Predator-Prey ABM
 type ColourPolymorphicPrey struct {
-	popIndex    int             //	index to the master population array.
 	pos         geometry.Vector //	position in the environment
 	movS        float64         //	speed
 	movA        float64         //	acceleration
@@ -35,7 +34,6 @@ type ColourPolymorphicPrey struct {
 // String returns a clear textual presentation the internal values of the CPP agent
 func (c *ColourPolymorphicPrey) String() string {
 	var buffer bytes.Buffer
-	buffer.WriteString(fmt.Sprintf("cpp hereditary id{%d}:\n", c.popIndex))
 	buffer.WriteString(fmt.Sprintf("pos=(%v,%v)\n", c.pos[x], c.pos[y]))
 	buffer.WriteString(fmt.Sprintf("movS=%v\n", c.movS))
 	buffer.WriteString(fmt.Sprintf("movA=%v\n", c.movA))
@@ -60,11 +58,10 @@ func (c *ColourPolymorphicPrey) GetDrawInfo() (ar render.AgentRender) {
 	return
 }
 
-// GeneratePopulation will create `size` number of agents
-func GeneratePopulation(size int, context Context) (pop []ColourPolymorphicPrey) {
+// GeneratePopulationCPP will create `size` number of Colour Polymorphic Prey agents
+func GeneratePopulationCPP(size int, context Context) (pop []ColourPolymorphicPrey) {
 	for i := 0; i < size; i++ {
 		agent := ColourPolymorphicPrey{}
-		agent.popIndex = i
 		agent.pos = geometry.RandVector(context.Bounds)
 		if context.CppAgeing {
 			if context.RandomAges {
@@ -73,7 +70,7 @@ func GeneratePopulation(size int, context Context) (pop []ColourPolymorphicPrey)
 				agent.lifespan = context.CppLifespan
 			}
 		} else {
-			agent.lifespan = -1 //	i.e. Undead!
+			agent.lifespan = 1
 		}
 		agent.movS = context.CppS
 		agent.movA = context.CppA
@@ -95,7 +92,6 @@ func GeneratePopulation(size int, context Context) (pop []ColourPolymorphicPrey)
 func spawn(size int, parent ColourPolymorphicPrey, context Context) (pop []ColourPolymorphicPrey) {
 	for i := 0; i < size; i++ {
 		agent := parent
-		agent.popIndex = i
 		agent.pos = parent.pos
 		if context.CppAgeing {
 			if context.RandomAges {
@@ -263,10 +259,12 @@ func Mutation(c *ColourPolymorphicPrey, Mf float64) {
 // Age decrements the lifespan of an agent,
 // and applies the effects of ageing (if any)
 func (c *ColourPolymorphicPrey) Age(ctxt Context) (jump string) {
-	c.lifespan--
 	c.hunger++
+	if ctxt.CppAgeing {
+		c.lifespan--
+	}
 	switch {
-	case (ctxt.CppAgeing) && (c.lifespan <= 0):
+	case c.lifespan <= 0:
 		jump = "DEATH"
 	case c.fertility == 0:
 		c.gravid = false

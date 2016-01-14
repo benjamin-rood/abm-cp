@@ -6,6 +6,7 @@ import (
 	"math"
 	"math/rand"
 
+	"github.com/benjamin-rood/abm-colour-polymorphism/calc"
 	"github.com/benjamin-rood/abm-colour-polymorphism/colour"
 	"github.com/benjamin-rood/abm-colour-polymorphism/geometry"
 	"github.com/benjamin-rood/abm-colour-polymorphism/render"
@@ -13,20 +14,46 @@ import (
 
 // VisualPredator - Predator agent type for Predator-Prey ABM
 type VisualPredator struct {
-	populationIndex uint            //	index to the master population array.
-	pos             geometry.Vector //	position in the environment
-	movS            float64         //	speed
-	movA            float64         //	acceleration
-	τ               float64         // turn rate / range (in radians)
-	dir             geometry.Vector //	must be implemented as a unit vector
-	dir𝚯            float64         //	 heading angle
-	lifespan        int
-	hunger          int     //	counter for interval between needing food
-	fertility       int     //	counter for interval between birth and sex
-	gravid          bool    //	i.e. pregnant
-	vsr             float64 //	visual search range
-	γ               float64 //	visual acuity (initially, use 1.0)
-	colImprint      colour.RGB
+	pos        geometry.Vector //	position in the environment
+	movS       float64         //	speed
+	movA       float64         //	acceleration
+	Rτ         float64         // turn rate / range (in radians)
+	dir        geometry.Vector //	must be implemented as a unit vector
+	dir𝚯       float64         //	 heading angle
+	lifespan   int
+	hunger     int     //	counter for interval between needing food
+	fertility  int     //	counter for interval between birth and sex
+	gravid     bool    //	i.e. pregnant
+	vsr        float64 //	visual search range
+	γ          float64 //	visual acuity (initially, use 1.0)
+	colImprint colour.RGB
+}
+
+// GeneratePopulationVP will create `size` number of Visual Predator agents
+func GeneratePopulationVP(size int, context Context) (pop []VisualPredator) {
+	for i := 0; i < size; i++ {
+		agent := VisualPredator{}
+		agent.pos = geometry.RandVector(context.Bounds)
+		if context.VpAgeing {
+			if context.RandomAges {
+				agent.lifespan = calc.RandIntIn(int(float64(context.VpLifespan)*0.7), int(float64(context.VpLifespan)*1.3))
+			} else {
+				agent.lifespan = 1
+			}
+			agent.movS = context.VS
+			agent.movA = context.VA
+			agent.dir𝚯 = rand.Float64() * (2 * math.Pi)
+			agent.dir = geometry.UnitVector(agent.dir𝚯)
+			agent.Rτ = context.VpTurn
+			agent.vsr = context.Vsr
+			agent.γ = context.Vγ //	visual acuity
+			agent.fertility = 1
+			agent.gravid = false
+			agent.colImprint = colour.RandRGB()
+			pop = append(pop, agent)
+		}
+	}
+	return
 }
 
 // GetDrawInfo exports the data set needed for agent visualisation.
@@ -34,6 +61,7 @@ func (vp *VisualPredator) GetDrawInfo() (ar render.AgentRender) {
 	ar.Type = "vp"
 	ar.X = vp.pos[x]
 	ar.Y = vp.pos[y]
+	ar.Heading = vp.dir𝚯
 	ar.Colour = vp.colImprint.To256()
 	return
 }
@@ -158,14 +186,18 @@ func (vp *VisualPredator) colourImprinting(target colour.RGB, 𝜎 float64) erro
 // animal-agent Mortal interface methods:
 
 // Age the vp agent
-func (vp *VisualPredator) Age(ctxt Context) string {
+func (vp *VisualPredator) Age(ctxt Context) (jump string) {
 	vp.hunger++
-	vp.lifespan--
-	if (ctxt.VpAgeing) && (vp.lifespan <= 0) {
-		return "DEATH"
+	if ctxt.VpAgeing {
+		vp.lifespan--
 	}
-	if vp.hunger > 0 {
-		return "PREY SEARCH"
+	switch {
+	case vp.lifespan <= 0:
+		jump = "DEATH"
+	case vp.hunger > 0:
+		jump = "PREY SEARCH"
+	default:
+		jump = "PATROL"
 	}
-	return "PATROL"
+	return
 }

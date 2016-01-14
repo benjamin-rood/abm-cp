@@ -168,7 +168,7 @@ func InitModel(ctxt Context, e Environment, om chan goio.OutMsg, view chan rende
 }
 
 func setModel(ctxt Context, e Environment) (m Model) {
-	m.PopCPP = GeneratePopulation(cppPopSize, ctxt)
+	m.PopCPP = GeneratePopulationCPP(cppPopSize, ctxt)
 	m.DefinitionCPP = []string{"mover", "breeder", "mortal"}
 	m.Environment = e
 	m.Context = ctxt
