@@ -3,9 +3,9 @@ package abm
 import (
 	"log"
 	"math/rand"
+	"sync"
 	"time"
 
-	"github.com/benjamin-rood/abm-colour-polymorphism/calc"
 	"github.com/benjamin-rood/abm-colour-polymorphism/colour"
 	"github.com/benjamin-rood/abm-colour-polymorphism/render"
 	"github.com/benjamin-rood/goio"
@@ -80,12 +80,12 @@ type Context struct {
 	VpLifespan            int     //	Visual Predator lifespan
 	VS                    float64 // Visual Predator speed
 	VA                    float64 // Visual Predator acceleration
-	Vτ                    float64 //	Visual Predator turn rate / range (in radians)
+	VpTurn                float64 //	Visual Predator turn rate / range (in radians)
 	Vsr                   float64 //	VP agent visual search range
 	Vγ                    float64 //	visual acuity in environments
-	Vκ                    float64 //	chance of VP copulation success.
-	V𝛔                    float64 // VsrSearchChance
-	V𝛂                    float64 // VpAttackChance
+	VpReproductiveChance  float64 //	chance of VP copulation success.
+	VsrSearchChance       float64
+	VpAttackChance        float64
 	CppAgeing             bool
 	CppLifespan           int     //	CPP agent lifespan
 	CppS                  float64 // CPP agent speed
@@ -101,65 +101,51 @@ type Context struct {
 	Fuzzy                 float64
 }
 
-func cppRBB(ctxt Context, time Timeframe, pop []ColourPolymorphicPrey, queue chan<- render.AgentRender) (newpop []ColourPolymorphicPrey, newtime Timeframe) {
-	newkids := []ColourPolymorphicPrey{}
-	newtime = time
-	for i := range pop {
-		jump := ""
-		// BEGIN
-		if ctxt.CppAgeing {
-			jump = pop[i].Age()
-			switch jump {
-			case "DEATH":
-				goto End
-			}
-		}
-		jump = pop[i].Fertility(ctxt.CppSexualCost)
-		// _ = "breakpoint" // godebug
-		switch jump {
-		case "SPAWN":
-			progeny := pop[i].Birth(ctxt) //	max spawn size, mutation factor
-			newkids = append(newkids, progeny...)
-		case "FERTILE":
-			if len(pop) <= maxPopSize {
-				// mate, _ := pop[i].MateSearch(pop, i)
-				// success := pop[i].Copulation(mate, ctxt.CppReproductiveChance, ctxt.CppGestation, ctxt.CppSexualCost)
-				// if success {
-				// 	goto Add
-				// }
-				pop[i].Reproduction(ctxt.CppReproductiveChance, ctxt.CppGestation, ctxt.CppSexualCost)
-			}
-			fallthrough
-		case "EXPLORE":
-			𝚯 := calc.RandFloatIn(-ctxt.CppTurn, ctxt.CppTurn)
-			pop[i].Turn(𝚯)
-			pop[i].Move()
-		}
-		// Add:
-		newpop = append(newpop, pop[i])
-		queue <- pop[i].GetDrawInfo()
-
-	End:
-		newtime.Action++
-	}
-	newpop = append(newpop, newkids...) // add the newly created children to the returning population
-	return
-}
-
-func runningModel(m Model, rc chan<- render.AgentRender, quit <-chan struct{}, phase chan<- struct{}) {
+func runningModel(m Model, render chan<- render.AgentRender, quit <-chan struct{}, phase chan<- struct{}) {
+	var am sync.Mutex
+	var cppAgentWg sync.WaitGroup
+	var vpAgentWg sync.WaitGroup
 	for {
 		select {
 		case <-quit:
 			// clean up, then...
 			return
 		default:
-			m.PopCPP, m.Timeframe = cppRBB(m.Context, m.Timeframe, m.PopCPP, rc) //	returns a replacement
-			m.Action = 0                                                         // reset at phase end.
+			agents := []ColourPolymorphicPrey{}
+			result := []ColourPolymorphicPrey{}
+			for i := range m.PopCPP {
+				cppAgentWg.Add(1)
+				go func(i int) {
+					defer cppAgentWg.Done()
+					result = m.PopCPP[i].RBB(m.Context, render, len(m.PopCPP))
+					am.Lock()
+					agents = append(agents, result...)
+					am.Unlock()
+					m.Action++
+				}(i)
+			}
+			cppAgentWg.Wait()
+			m.PopCPP = agents //	replace the previous population with the updated one from this turn.
 			m.Phase++
-			time.Sleep(time.Millisecond * 100)
+			m.Action = 0 // reset at phase end
 			m.Log()
 			phase <- struct{}{}
-			time.Sleep(time.Millisecond * 100)
+
+			for i := range m.PopVP {
+				var eaten *ColourPolymorphicPrey
+				m.PopVP[i].RBB(m.Context, render, m.PopCPP, eaten)
+				m.Action++
+				if eaten != nil {
+
+				}
+			}
+			m.Phase++
+			m.Action = 0 // reset at phase end
+			m.Log()
+			phase <- struct{}{}
+			m.Phase = 0 //	reset at Turn end
+			m.Turn++
+			m.Log()
 		}
 	}
 }

@@ -2,8 +2,11 @@ package abm
 
 import (
 	"errors"
+	"log"
 	"math"
+	"math/rand"
 
+	"github.com/benjamin-rood/abm-colour-polymorphism/abm"
 	"github.com/benjamin-rood/abm-colour-polymorphism/colour"
 	"github.com/benjamin-rood/abm-colour-polymorphism/geometry"
 )
@@ -90,8 +93,8 @@ func (vp *VisualPredator) VSRSectorSamples(d float64, n int) ([4][2]int, error) 
 	return sectorSamples, nil
 }
 
-// VisualSearch tries to 'recognise' a nearby prey agent to attack.
-func (vp *VisualPredator) VisualSearch(population []ColourPolymorphicPrey, vsrSearchChance float64) (*ColourPolymorphicPrey, error) {
+// PreySearch – uses Visual Search to try to 'recognise' a nearby prey agent within model Environment to attack.
+func (vp *VisualPredator) PreySearch(population []ColourPolymorphicPrey, searchChance float64) (target *ColourPolymorphicPrey, err error) {
 	for i := range population {
 		population[i].𝛘 = colour.RGBDistance(vp.colImprint, population[i].colouration)
 	}
@@ -99,25 +102,47 @@ func (vp *VisualPredator) VisualSearch(population []ColourPolymorphicPrey, vsrSe
 	population = VisualSort(population)
 
 	for i := range population {
-		distanceToTarget, err := geometry.VectorDistance(vp.pos, population[i].pos)
+		var distanceToTarget float64
+		distanceToTarget, err = geometry.VectorDistance(vp.pos, population[i].pos)
 		if err != nil {
-			return nil, err
+			return
 		}
 		if distanceToTarget > vp.vsr {
-			return nil, errors.New("VisualSearch failed")
+			return
 		}
-		if (distanceToTarget * vp.γ * population[i].𝛘) > vsrSearchChance {
-			return &population[i], nil
+		if (distanceToTarget * vp.γ * population[i].𝛘) > searchChance {
+			target = &population[i]
+			return
 		}
 	}
-
-	return nil, errors.New("VisualSearch failed")
+	return
 }
 
-// ColourImprinting updates VP colour / visual recognition bias
+// Attack VP agent attempts to attack CP prey agent
+func (vp *VisualPredator) Attack(prey *ColourPolymorphicPrey, vpAttackChance float64) bool {
+	if prey == nil {
+		return false
+	}
+	vpAttackChance = 1 - vpAttackChance
+	α := rand.Float64()
+	if α > vpAttackChance {
+		angle, err := geometry.RelativeAngle(vp.pos, prey.pos)
+		if err != nil {
+			log.Println("geometry.RelativeAngle fail:", err)
+			return false
+		}
+		vp.dir𝚯 = angle
+		vp.dir = UnitAngle(angle)
+		vp.pos = prey.pos
+		return true
+	}
+	return false
+}
+
+// colourImprinting updates VP colour / visual recognition bias
 // Uses a bias / weighting value, 𝜎 (sigma) to control the degree of
 // adaptation VP will make to differences in 'eaten' CPP colours.
-func (vp *VisualPredator) ColourImprinting(target colour.RGB, 𝜎 float64) error {
+func (vp *VisualPredator) colourImprinting(target colour.RGB, 𝜎 float64) error {
 	𝚫red := (vp.colImprint.Red - target.Red) * 𝜎
 	𝚫green := (vp.colImprint.Green - target.Green) * 𝜎
 	𝚫blue := (vp.colImprint.Blue - target.Blue) * 𝜎
@@ -125,4 +150,19 @@ func (vp *VisualPredator) ColourImprinting(target colour.RGB, 𝜎 float64) erro
 	vp.colImprint.Green = vp.colImprint.Green - 𝚫green
 	vp.colImprint.Blue = vp.colImprint.Blue - 𝚫blue
 	return nil
+}
+
+// animal-agent Mortal interface methods:
+
+// Age the vp agent
+func (vp *VisualPredator) Age(ctxt abm.Context) string {
+	vp.hunger++
+	vp.lifetime--
+	if (ctxt.VpAgeing) && (vp.lifetime <= 0) {
+		return "DEATH"
+	}
+	if vp.hunger > 0 {
+		return "PREY SEARCH"
+	}
+	return "PATROL"
 }

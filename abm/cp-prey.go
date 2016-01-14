@@ -178,22 +178,6 @@ func (c *ColourPolymorphicPrey) Move() error {
 
 // Breeder interface:
 
-// Fertility implements the blessed phases of the moon
-func (c *ColourPolymorphicPrey) Fertility(Cȣ int) (jump string) {
-	c.fertility++
-	switch {
-	case c.fertility == 0:
-		c.gravid = false
-		jump = "SPAWN"
-		return
-	case c.fertility >= Cȣ: // period / sexual cost
-		jump = "FERTILE"
-		return
-	}
-	jump = "EXPLORE"
-	return
-}
-
 // MateSearch implements Breeder interface method for ColourPolymorphicPrey:
 // NEEDS BETTER HANDLING THAN JUST PUSHING THE ERROR UP!
 func (c *ColourPolymorphicPrey) MateSearch(pop []ColourPolymorphicPrey, skip int) (mate *ColourPolymorphicPrey, err error) {
@@ -216,8 +200,8 @@ func (c *ColourPolymorphicPrey) MateSearch(pop []ColourPolymorphicPrey, skip int
 	return
 }
 
-// Reproduction implements Breeder interface method - ASEXUAL (self-reproduction)
-func (c *ColourPolymorphicPrey) Reproduction(chance float64, gestation int, sexualCost int) bool {
+// Reproduction implements Breeder interface method - ASEXUAL (self-reproduction) ColourPolymorphicPrey:
+func (c *ColourPolymorphicPrey) Reproduction(chance float64, gestation int) bool {
 	c.hunger++ //	energy cost
 	ω := rand.Float64()
 	if ω <= chance {
@@ -230,7 +214,7 @@ func (c *ColourPolymorphicPrey) Reproduction(chance float64, gestation int, sexu
 }
 
 // Copulation implemets Breeder interface method for ColourPolymorphicPrey:
-func (c *ColourPolymorphicPrey) Copulation(mate *ColourPolymorphicPrey, chance float64, gestation int, sexualCost int) bool {
+func (c *ColourPolymorphicPrey) copulation(mate *ColourPolymorphicPrey, chance float64, gestation int, sexualCost int) bool {
 	if mate == nil {
 		return false
 	}
@@ -278,18 +262,19 @@ func Mutation(c *ColourPolymorphicPrey, Mf float64) {
 
 // Age decrements the lifespan of an agent,
 // and applies the effects of ageing (if any)
-func (c *ColourPolymorphicPrey) Age() (jump string) {
+func (c *ColourPolymorphicPrey) Age(ctxt Context) (jump string) {
 	c.lifespan--
 	c.hunger++
-	if c.lifespan <= 0 {
+	switch {
+	case (ctxt.CppAgeing) && (c.lifespan <= 0):
 		jump = "DEATH"
-		return
+	case c.fertility == 0:
+		c.gravid = false
+		jump = "SPAWN"
+	case c.fertility >= Cȣ: // period / sexual cost
+		jump = "FERTILE"
+	default:
+		jump = "EXPLORE"
 	}
-	jump = "HEALTHY"
 	return
-}
-
-// Death – no specific functionality required so far.
-func (c *ColourPolymorphicPrey) Death() {
-
 }

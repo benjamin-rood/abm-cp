@@ -12,7 +12,7 @@ type Mover interface {
 
 // Hunter defines an agent which looks for sustinence by going after prey agents.
 type Hunter interface {
-	PreySearch() Hunted
+	PreySearch(pop []Hunted, searchChance float64) (*Hunted, error)
 	Attack(Hunted) bool
 	Eat(Hunted) bool
 }
@@ -48,7 +48,7 @@ type Defender interface {
 // Breeder defines an agent which breeds sexually with other agents of the same type.
 type Breeder interface {
 	Fertility() bool
-	MateSearch([]Breeder) *Breeder
+	Reproduction(chance float64, gestation int) bool
 	Copulation(mate *Breeder, chance float64, gestation int) bool
 	Birth(int, float64) []Breeder
 }
@@ -56,5 +56,4 @@ type Breeder interface {
 // Mortal defines an agent which ages and dies.
 type Mortal interface {
 	Age()
-	Death()
 }
