@@ -271,7 +271,7 @@ func (c *ColourPolymorphicPrey) Age(ctxt Context) (jump string) {
 	case c.fertility == 0:
 		c.gravid = false
 		jump = "SPAWN"
-	case c.fertility >= Cȣ: // period / sexual cost
+	case c.fertility >= ctxt.CppSexualCost: // period / sexual cost
 		jump = "FERTILE"
 	default:
 		jump = "EXPLORE"

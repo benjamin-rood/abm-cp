@@ -1,12 +1,9 @@
 package abm
 
-import (
-	"github.com/benjamin-rood/abm-colour-polymorphism/calc"
-	"github.com/benjamin-rood/abm-colour-polymorphism/render"
-)
+import "github.com/benjamin-rood/abm-colour-polymorphism/calc"
 
 // RBB = Rule Based Behaviour that each cpp agent engages in once per turn, counts as the agent's action for that turn/phase.
-func (c *ColourPolymorphicPrey) RBB(ctxt Context, render chan<- render.AgentRender, popSize int) (newpop []ColourPolymorphicPrey) {
+func (c *ColourPolymorphicPrey) RBB(ctxt Context, popSize int) (newpop []ColourPolymorphicPrey) {
 	newkids := []ColourPolymorphicPrey{}
 	jump := ""
 	// BEGIN
@@ -30,7 +27,6 @@ func (c *ColourPolymorphicPrey) RBB(ctxt Context, render chan<- render.AgentRend
 	}
 
 	newpop = append(newpop, *c)
-	render <- c.GetDrawInfo()
 
 End:
 	newpop = append(newpop, newkids...) // add the newly created children to the returning population

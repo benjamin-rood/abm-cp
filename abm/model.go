@@ -101,7 +101,7 @@ type Context struct {
 	Fuzzy                 float64
 }
 
-func runningModel(m Model, render chan<- render.AgentRender, quit <-chan struct{}, phase chan<- struct{}) {
+func runningModel(m Model, viz chan<- render.AgentRender, quit <-chan struct{}, phase chan<- struct{}) {
 	var am sync.Mutex
 	var cppAgentWg sync.WaitGroup
 	var vpAgentWg sync.WaitGroup
@@ -117,7 +117,8 @@ func runningModel(m Model, render chan<- render.AgentRender, quit <-chan struct{
 				cppAgentWg.Add(1)
 				go func(i int) {
 					defer cppAgentWg.Done()
-					result = m.PopCPP[i].RBB(m.Context, render, len(m.PopCPP))
+					result = m.PopCPP[i].RBB(m.Context, len(m.PopCPP))
+					viz <- m.PopCPP[i].GetDrawInfo()
 					am.Lock()
 					agents = append(agents, result...)
 					am.Unlock()
@@ -132,12 +133,19 @@ func runningModel(m Model, render chan<- render.AgentRender, quit <-chan struct{
 			phase <- struct{}{}
 
 			for i := range m.PopVP {
-				var eaten *ColourPolymorphicPrey
-				m.PopVP[i].RBB(m.Context, render, m.PopCPP, eaten)
-				m.Action++
-				if eaten != nil {
+				vpAgentWg.Add(1)
+				go func(i int) {
+					defer vpAgentWg.Done()
+					var eaten *ColourPolymorphicPrey
+					m.PopVP[i] = *m.PopVP[i].RBB(m.Context, m.PopCPP, eaten)
+					if &m.PopVP[i] != nil {
+						viz <- m.PopVP[i].GetDrawInfo()
+					}
+					m.Action++
+					if eaten != nil {
 
-				}
+					}
+				}(i)
 			}
 			m.Phase++
 			m.Action = 0 // reset at phase end

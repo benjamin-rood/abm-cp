@@ -6,9 +6,9 @@ import (
 	"math"
 	"math/rand"
 
-	"github.com/benjamin-rood/abm-colour-polymorphism/abm"
 	"github.com/benjamin-rood/abm-colour-polymorphism/colour"
 	"github.com/benjamin-rood/abm-colour-polymorphism/geometry"
+	"github.com/benjamin-rood/abm-colour-polymorphism/render"
 )
 
 // VisualPredator - Predator agent type for Predator-Prey ABM
@@ -20,20 +20,22 @@ type VisualPredator struct {
 	τ               float64         // turn rate / range (in radians)
 	dir             geometry.Vector //	must be implemented as a unit vector
 	dir𝚯            float64         //	 heading angle
-	hunger          uint            //	counter for interval between needing food
-	fertility       uint            //	counter for interval between birth and sex
-	gravid          bool            //	i.e. pregnant
-	vsr             float64         //	visual search range
-	γ               float64         //	visual acuity (initially, use 1.0)
+	lifespan        int
+	hunger          int     //	counter for interval between needing food
+	fertility       int     //	counter for interval between birth and sex
+	gravid          bool    //	i.e. pregnant
+	vsr             float64 //	visual search range
+	γ               float64 //	visual acuity (initially, use 1.0)
 	colImprint      colour.RGB
 }
 
-// vpBehaviour – set of actions only VisualPredator agents will perform – unexported!
-type vpBehaviour interface {
-	visualSearch([]ColourPolymorphicPrey, float64) (*ColourPolymorphicPrey, error)
-	// ColourImprinting updates VP colour / visual recognition bias
-	colourImprinting(colour.RGB, float64) error
-	vsrSectorSamples(float64, int) ([4][2]int, error)
+// GetDrawInfo exports the data set needed for agent visualisation.
+func (vp *VisualPredator) GetDrawInfo() (ar render.AgentRender) {
+	ar.Type = "vp"
+	ar.X = vp.pos[x]
+	ar.Y = vp.pos[y]
+	ar.Colour = vp.colImprint.To256()
+	return
 }
 
 // Turn updates dir𝚯 and dir vector to the new heading offset by 𝚯
@@ -132,8 +134,9 @@ func (vp *VisualPredator) Attack(prey *ColourPolymorphicPrey, vpAttackChance flo
 			return false
 		}
 		vp.dir𝚯 = angle
-		vp.dir = UnitAngle(angle)
+		vp.dir = geometry.UnitVector(angle)
 		vp.pos = prey.pos
+		vp.colourImprinting(prey.colouration, 0.2)
 		return true
 	}
 	return false
@@ -155,10 +158,10 @@ func (vp *VisualPredator) colourImprinting(target colour.RGB, 𝜎 float64) erro
 // animal-agent Mortal interface methods:
 
 // Age the vp agent
-func (vp *VisualPredator) Age(ctxt abm.Context) string {
+func (vp *VisualPredator) Age(ctxt Context) string {
 	vp.hunger++
-	vp.lifetime--
-	if (ctxt.VpAgeing) && (vp.lifetime <= 0) {
+	vp.lifespan--
+	if (ctxt.VpAgeing) && (vp.lifespan <= 0) {
 		return "DEATH"
 	}
 	if vp.hunger > 0 {
