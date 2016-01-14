@@ -10,7 +10,7 @@ import (
 Eat(Hunted) bool */
 
 // RBB : Rule-Based-Behaviour for Visual Predator Agent
-func (vp *VisualPredator) RBB(ctxt Context, cppPop []ColourPolymorphicPrey, eaten *ColourPolymorphicPrey) *VisualPredator {
+func (vp *VisualPredator) RBB(ctxt Context, cppPop []ColourPolymorphicPrey) (returning []VisualPredator) {
 	jump := ""
 	jump = vp.Age(ctxt)
 
@@ -22,20 +22,20 @@ func (vp *VisualPredator) RBB(ctxt Context, cppPop []ColourPolymorphicPrey, eate
 		}
 		success := vp.Attack(target, ctxt.VpAttackChance)
 		if success {
-			eaten = target
-			vp.hunger -= 5
-			return vp
+			goto Add
 		}
 		fallthrough
 	case "PATROL":
 		𝚯 := calc.RandFloatIn(-ctxt.VpTurn, ctxt.VpTurn)
 		vp.Turn(𝚯)
 		vp.Move()
-		return vp
 	case "DEATH":
-		return nil
+		goto End
 	default:
 		log.Println("vp.RBB Switch: FAIL: jump =", jump)
-		return vp
 	}
+Add:
+	returning = append(returning, *vp)
+End:
+	return
 }

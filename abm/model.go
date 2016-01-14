@@ -55,6 +55,7 @@ type Timeframe struct {
 func (m *Model) Log() {
 	log.Printf("%04dT : %04dP : %04dA\n", m.Turn, m.Phase, m.Action)
 	log.Printf("cpp population size = %d\n", len(m.PopCPP))
+	log.Printf("vp population size = %d\n", len(m.PopVP))
 }
 
 /*
@@ -103,54 +104,55 @@ type Context struct {
 
 func runningModel(m Model, viz chan<- render.AgentRender, quit <-chan struct{}, phase chan<- struct{}) {
 	var am sync.Mutex
-	var cppAgentWg sync.WaitGroup
-	var vpAgentWg sync.WaitGroup
+	// var cppAgentWg sync.WaitGroup
+	// var vpAgentWg sync.WaitGroup
 	for {
 		select {
 		case <-quit:
 			// clean up, then...
 			return
-		default:
-			agents := []ColourPolymorphicPrey{}
-			result := []ColourPolymorphicPrey{}
+		default: //	PROCEED WITH TURN
+			var cppAgents []ColourPolymorphicPrey
 			for i := range m.PopCPP {
-				cppAgentWg.Add(1)
-				go func(i int) {
-					defer cppAgentWg.Done()
-					result = m.PopCPP[i].RBB(m.Context, len(m.PopCPP))
+				// cppAgentWg.Add(1)
+				func(i int) {
+					// defer cppAgentWg.Done()
+					result := m.PopCPP[i].RBB(m.Context, len(m.PopCPP))
 					viz <- m.PopCPP[i].GetDrawInfo()
 					am.Lock()
-					agents = append(agents, result...)
+					cppAgents = append(cppAgents, result...)
 					am.Unlock()
 					m.Action++
 				}(i)
 			}
-			cppAgentWg.Wait()
-			m.PopCPP = agents //	replace the previous population with the updated one from this turn.
+			// cppAgentWg.Wait()
+			m.PopCPP = cppAgents //	update the population based on the results from each agent's rule-based behaviour of the turn.
 			m.Phase++
 			m.Action = 0 // reset at phase end
 			m.Log()
 			phase <- struct{}{}
-
-			for i := range m.PopVP {
-				vpAgentWg.Add(1)
-				go func(i int) {
-					defer vpAgentWg.Done()
-					var eaten *ColourPolymorphicPrey
-					m.PopVP[i] = *m.PopVP[i].RBB(m.Context, m.PopCPP, eaten)
-					if &m.PopVP[i] != nil {
-						viz <- m.PopVP[i].GetDrawInfo()
-					}
-					m.Action++
-					if eaten != nil {
-
-					}
-				}(i)
+			{
+				// var vpAgents []VisualPredator
+				// for i := range m.PopVP {
+				// 	// vpAgentWg.Add(1)
+				// 	func(i int) {
+				// 		// defer vpAgentWg.Done()
+				// 		result := m.PopVP[i].RBB(m.Context, m.PopCPP)
+				// 		viz <- m.PopVP[i].GetDrawInfo()
+				// 		am.Lock()
+				// 		vpAgents = append(vpAgents, result...)
+				// 		am.Unlock()
+				// 		m.Action++
+				// 	}(i)
+				// }
+				// // vpAgentWg.Wait()
+				// m.PopVP = vpAgents //	update the population based on the results from each agent's rule-based behaviour of the turn.
+				// m.Phase++
+				// m.Action = 0 // reset at phase end
+				// m.Log()
+				// phase <- struct{}{}
 			}
-			m.Phase++
-			m.Action = 0 // reset at phase end
-			m.Log()
-			phase <- struct{}{}
+
 			m.Phase = 0 //	reset at Turn end
 			m.Turn++
 			m.Log()

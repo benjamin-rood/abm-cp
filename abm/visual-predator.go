@@ -154,17 +154,21 @@ func (vp *VisualPredator) Attack(prey *ColourPolymorphicPrey, vpAttackChance flo
 		return false
 	}
 	vpAttackChance = 1 - vpAttackChance
+	// Predator moves to prey position...
+	angle, err := geometry.RelativeAngle(vp.pos, prey.pos)
+	if err != nil {
+		log.Println("geometry.RelativeAngle fail:", err)
+		return false
+	}
+	vp.dir𝚯 = angle
+	vp.dir = geometry.UnitVector(angle)
+	vp.pos = prey.pos
+	// ...Predatory tries to eat prey!
 	α := rand.Float64()
 	if α > vpAttackChance {
-		angle, err := geometry.RelativeAngle(vp.pos, prey.pos)
-		if err != nil {
-			log.Println("geometry.RelativeAngle fail:", err)
-			return false
-		}
-		vp.dir𝚯 = angle
-		vp.dir = geometry.UnitVector(angle)
-		vp.pos = prey.pos
 		vp.colourImprinting(prey.colouration, 0.2)
+		vp.hunger -= 5
+		prey.lifespan = 0 //	i.e. prey agent flagged for removal at the next turn.
 		return true
 	}
 	return false

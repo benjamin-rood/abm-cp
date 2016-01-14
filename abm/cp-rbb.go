@@ -16,7 +16,7 @@ func (c *ColourPolymorphicPrey) RBB(ctxt Context, popSize int) (newpop []ColourP
 		progeny := c.Birth(ctxt) //	max spawn size, mutation factor
 		newkids = append(newkids, progeny...)
 	case "FERTILE":
-		if popSize <= maxPopSize {
+		if popSize <= demoMaxCPP {
 			c.Reproduction(ctxt.CppReproductiveChance, ctxt.CppGestation)
 		}
 		fallthrough

@@ -12,7 +12,9 @@ const (
 	y
 	z
 
-	maxPopSize     = 100
+	demoMaxCPP = 100
+	demoMaxVP  = 10
+
 	quarterpi      = 0.7853981633974483096156608458198757210492923498437764
 	eigthpi        = 0.3926990816987241548078304229099378605246461749218882
 	d              = 1.0
@@ -38,7 +40,7 @@ const (
 	mf             = 0.05
 	cφ             = 3
 	cȣ             = 3
-	cκ             = 0.05
+	cκ             = 0.1
 	cβ             = 5
 	vpAgeing       = true
 	cppAgeing      = true
@@ -51,8 +53,8 @@ var (
 		Dimensionality: dimensionality,
 		BG:             colour.RandRGB(),
 	}
-
-	DemoViewport = render.Viewport{Width: 1440, Height: 900}
+	// DemoViewport to be used as a baseline reference
+	DemoViewport = render.Viewport{Width: 600, Height: 400}
 
 	// DemoContext to be used as a baseline example
 	DemoContext = Context{
