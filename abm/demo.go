@@ -12,7 +12,7 @@ const (
 	y
 	z
 
-	demoMaxCPP = 100
+	demoMaxCPP = 500
 	demoMaxVP  = 10
 
 	quarterpi      = 0.7853981633974483096156608458198757210492923498437764
@@ -23,7 +23,7 @@ const (
 	vpPopSize      = 0
 	vsr            = d / 4
 	γ              = 1.0
-	cpplife        = 25
+	cpplife        = 30
 	vplife         = 250
 	vpS            = 0.1
 	vpA            = 1.0
@@ -42,7 +42,7 @@ const (
 	cȣ             = 3
 	cκ             = 0.1
 	cβ             = 5
-	vpAgeing       = true
+	vpAgeing       = false
 	cppAgeing      = true
 )
 

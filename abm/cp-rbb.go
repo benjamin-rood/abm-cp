@@ -8,7 +8,6 @@ func (c *ColourPolymorphicPrey) RBB(ctxt Context, popSize int) (newpop []ColourP
 	jump := ""
 	// BEGIN
 	jump = c.Age(ctxt)
-
 	switch jump {
 	case "DEATH":
 		goto End

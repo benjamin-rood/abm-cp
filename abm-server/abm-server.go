@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"flag"
+	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
@@ -102,11 +103,15 @@ func writer(conn *websocket.Conn, ws chan struct{}, om <-chan goio.OutMsg) {
 	for {
 		select {
 		case msg := <-om:
+			fmt.Println(msg.Data.(render.DrawList).CPP)
+			fmt.Println(len(msg.Data.(render.DrawList).CPP))
+			_ = "breakpoint" // godebug
 			conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if err := conn.WriteJSON(msg); err != nil {
 				log.Println("writer: failed to WriteJSON:")
 				networkError(err, ws)
 			}
+			time.Sleep(time.Millisecond * 100)
 		case <-pingTicker.C:
 			conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if err := conn.WriteMessage(websocket.PingMessage, []byte{}); err != nil {

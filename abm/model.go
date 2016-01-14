@@ -104,7 +104,7 @@ type Context struct {
 
 func runningModel(m Model, viz chan<- render.AgentRender, quit <-chan struct{}, phase chan<- struct{}) {
 	var am sync.Mutex
-	// var cppAgentWg sync.WaitGroup
+	var cppAgentWg sync.WaitGroup
 	// var vpAgentWg sync.WaitGroup
 	for {
 		select {
@@ -114,22 +114,26 @@ func runningModel(m Model, viz chan<- render.AgentRender, quit <-chan struct{}, 
 		default: //	PROCEED WITH TURN
 			var cppAgents []ColourPolymorphicPrey
 			for i := range m.PopCPP {
-				// cppAgentWg.Add(1)
-				func(i int) {
-					// defer cppAgentWg.Done()
+				cppAgentWg.Add(1)
+				go func(i int) {
+					defer cppAgentWg.Done()
 					result := m.PopCPP[i].RBB(m.Context, len(m.PopCPP))
+					_ = "breakpoint" // godebug
 					viz <- m.PopCPP[i].GetDrawInfo()
+					time.Sleep(time.Millisecond * 25)
 					am.Lock()
 					cppAgents = append(cppAgents, result...)
 					am.Unlock()
 					m.Action++
 				}(i)
 			}
-			// cppAgentWg.Wait()
+			cppAgentWg.Wait()
 			m.PopCPP = cppAgents //	update the population based on the results from each agent's rule-based behaviour of the turn.
+			_ = "breakpoint"     // godebug
 			m.Phase++
 			m.Action = 0 // reset at phase end
 			m.Log()
+			time.Sleep(time.Millisecond * 100)
 			phase <- struct{}{}
 			{
 				// var vpAgents []VisualPredator
@@ -177,7 +181,7 @@ func setModel(ctxt Context, e Environment) (m Model) {
 	return
 }
 
-func visualiseModel(ctxt Context, view <-chan render.Viewport, queue <-chan render.AgentRender, out chan<- goio.OutMsg, phase <-chan struct{}) {
+func visualiseModel(ctxt Context, view <-chan render.Viewport, ar <-chan render.AgentRender, out chan<- goio.OutMsg, phase <-chan struct{}) {
 	v := DemoViewport
 	rand.Seed(time.Now().UnixNano())
 	bg := colour.RGB256{Red: 30, Green: 30, Blue: 50}
@@ -189,11 +193,13 @@ func visualiseModel(ctxt Context, view <-chan render.Viewport, queue <-chan rend
 	}
 	for {
 		select {
-		case job := <-queue:
+		case job := <-ar:
+			_ = "breakpoint" // godebug
 			job.TranslateToViewport(v, ctxt.Bounds[0], ctxt.Bounds[1])
 			switch job.Type {
 			case "cpp":
 				dl.CPP = append(dl.CPP, job)
+				_ = "breakpoint" // godebug
 			case "vp":
 				dl.VP = append(dl.VP, job)
 			default:

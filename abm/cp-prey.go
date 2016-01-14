@@ -260,6 +260,7 @@ func Mutation(c *ColourPolymorphicPrey, Mf float64) {
 // and applies the effects of ageing (if any)
 func (c *ColourPolymorphicPrey) Age(ctxt Context) (jump string) {
 	c.hunger++
+	c.fertility++
 	if ctxt.CppAgeing {
 		c.lifespan--
 	}
