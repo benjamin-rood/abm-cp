@@ -12,7 +12,8 @@ var newHeight = 900
 var sketch = function (p) {
   p.setup = function () {
     p.createCanvas(newWidth, newHeight)
-    p.strokeWeight(3)
+    p.noLoop()
+    p.strokeWeight(5)
     // p.stroke(255, 255, 255)
     p.background(0, 0, 255)
   }

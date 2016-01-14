@@ -1,13 +1,21 @@
-var wsocket = new WebSocket('ws://localhost:8080/ws')
+var websocket = new WebSocket('ws://localhost:8080/ws')
+var viz = new p5(sketch, 'abm-viewport')
 
-var viz = Object
-
-wsocket.onopen = function () {
-  console.log('websocket connection init')
-  viz = new p5(sketch, 'abm-viewport')
+window.onbeforeunload = function() {
+  websocket.onclose = function () {}
+  websocket.close()
 }
 
-wsocket.onmessage = function (e) {
+websocket.onopen = function () {
+  console.log('websocket connection init')
+  websocket.send('Client listening...')
+
+  websocket.onlose = function (e) {
+
+  }
+}
+
+websocket.onmessage = function (e) {
   var rawmsg = JSON.parse(e.data)
   console.log(rawmsg)
   if (rawmsg.type === 'render') {
@@ -15,9 +23,13 @@ wsocket.onmessage = function (e) {
     drawlist.vp = rawmsg.data.vp
     drawlist.bg = rawmsg.data.bg
   }
-  viz.p.draw()
+  viz.redraw()
 }
 
-wsocket.onerror = function (e) {
+websocket.onerror = function (e) {
   console.log('ERROR: ' + e)
+}
+
+websocket.onclose = function(close) {
+
 }

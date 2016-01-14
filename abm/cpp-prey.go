@@ -221,14 +221,11 @@ func (c *ColourPolymorphicPrey) Reproduction(chance float64, gestation int, sexu
 	c.hunger++ //	energy cost
 	ω := rand.Float64()
 	if ω <= chance {
-		fmt.Println("r chance =", chance)
-		fmt.Println("ω =", ω)
-		fmt.Println("ω <= chance =", ω <= chance)
 		c.gravid = true
 		c.fertility = -gestation
 		return true
 	}
-	c.fertility = -sexualCost
+	c.fertility = 1
 	return false
 }
 
@@ -247,7 +244,7 @@ func (c *ColourPolymorphicPrey) Copulation(mate *ColourPolymorphicPrey, chance f
 		c.fertility = -gestation
 		return true
 	}
-	c.fertility = -sexualCost
+	c.fertility = 1
 	return false
 }
 
