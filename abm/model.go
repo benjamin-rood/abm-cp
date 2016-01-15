@@ -129,7 +129,6 @@ func runningModel(m Model, viz chan<- render.AgentRender, quit <-chan struct{}, 
 				}(i)
 			}
 			cppAgentWg.Wait()
-			_ = "breakpoint"     // godebug
 			m.PopCPP = cppAgents //	update the population based on the results from each agent's rule-based behaviour of the turn.
 			m.Phase++
 			m.Action = 0 // reset at phase end
@@ -176,7 +175,7 @@ func InitModel(ctxt Context, e Environment, om chan goio.OutMsg, view chan rende
 
 func setModel(ctxt Context, e Environment) (m Model) {
 	m.PopCPP = GeneratePopulationCPP(ctxt.StartCppPopSize, ctxt)
-	// m.PopVP = GeneratePopulationVP(ctxt.StartVpPopSize, ctxt)
+	m.PopVP = GeneratePopulationVP(ctxt.StartVpPopSize, ctxt)
 	m.DefinitionCPP = []string{"mover", "breeder", "mortal"}
 	m.DefinitionVP = []string{"mover", "hunter", "mortal"}
 	m.Environment = e

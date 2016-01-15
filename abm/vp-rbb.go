@@ -1,9 +1,7 @@
 package abm
 
 import (
-	"fmt"
 	"log"
-	"time"
 
 	"github.com/benjamin-rood/abm-colour-polymorphism/calc"
 )
@@ -15,8 +13,6 @@ Eat(Hunted) bool */
 func (vp *VisualPredator) RBB(ctxt Context, cppPop []ColourPolymorphicPrey) (returning []VisualPredator) {
 	jump := ""
 	jump = vp.Age(ctxt)
-	fmt.Println(jump)
-	time.Sleep(time.Second)
 	switch jump {
 	case "PREY SEARCH":
 		target, err := vp.PreySearch(cppPop, ctxt.VsrSearchChance)

@@ -134,12 +134,13 @@ func (vp *VisualPredator) VSRSectorSamples(d float64, n int) ([4][2]int, error) 
 func (vp *VisualPredator) PreySearch(population []ColourPolymorphicPrey, searchChance float64) (target *ColourPolymorphicPrey, err error) {
 
 	searchChance = 1.0 - searchChance
-
+	_ = "breakpoint" // godebug
 	for i := range population {
 		population[i].𝛘 = colour.RGBDistance(vp.colImprint, population[i].colouration)
 	}
 
 	population = VisualSort(population)
+	_ = "breakpoint" // godebug
 
 	for i := range population {
 		var distanceToTarget float64
@@ -150,8 +151,11 @@ func (vp *VisualPredator) PreySearch(population []ColourPolymorphicPrey, searchC
 		if distanceToTarget > vp.vsr {
 			return
 		}
+		fmt.Println("distanceToTarget * vp.γ * population[i].𝛘 =", (distanceToTarget * vp.γ * population[i].𝛘))
 		if (distanceToTarget * vp.γ * population[i].𝛘) > searchChance {
 			target = &population[i]
+			fmt.Println("target found =", *target)
+			time.Sleep(time.Second)
 			return
 		}
 	}

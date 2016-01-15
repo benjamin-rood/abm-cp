@@ -19,8 +19,8 @@ const (
 	eigthpi        = 0.3926990816987241548078304229099378605246461749218882
 	d              = 1.0
 	dimensionality = 2
-	cppPopSize     = 1
-	vpPopSize      = 4
+	cppPopSize     = 3
+	vpPopSize      = 10
 	vsr            = d / 4
 	γ              = 1.0
 	cpplife        = 50
@@ -43,7 +43,7 @@ const (
 	cκ             = 0.1
 	cβ             = 5
 	vpAgeing       = false
-	cppAgeing      = true
+	cppAgeing      = false
 )
 
 var (
