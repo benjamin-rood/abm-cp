@@ -28,8 +28,7 @@ const (
 
 var (
 	om       = make(chan goio.OutMsg)
-	phase    = make(chan struct{})
-	view     = make(chan render.Viewport)
+	turn     = make(chan struct{})
 	ctxt     = make(chan abm.Context)
 	mdl      = make(chan struct{}) // to send close to running processes on socket failure.
 	addr     = flag.String("addr", ":8080", "http service address")
@@ -58,7 +57,7 @@ func dataError(err error, c chan struct{}) {
 	close(c)
 }
 
-func reader(conn *websocket.Conn, ws chan struct{}, model chan struct{}, ctxt chan<- abm.Context, view chan<- render.Viewport) {
+func reader(conn *websocket.Conn, ws chan struct{}, model chan struct{}, ctxt chan<- abm.Context) {
 	defer conn.Close()
 	conn.SetReadLimit(512)
 	conn.SetReadDeadline(time.Now().Add(pongWait))
@@ -83,12 +82,6 @@ func reader(conn *websocket.Conn, ws chan struct{}, model chan struct{}, ctxt ch
 					dataError(err, ws)
 				}
 				ctxt <- msgIn.(abm.Context)
-			case rawIn.Type == "viewport":
-				msgIn = render.Viewport{}
-				if err = json.Unmarshal(data, &msgIn); err != nil {
-					dataError(err, ws)
-				}
-				view <- msgIn.(render.Viewport)
 			}
 		}
 	}
@@ -132,9 +125,9 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	ws := make(chan struct{}) //	websocket signalling channel
-	abm.InitModel(abm.DemoContext, abm.DemoEnvironment, om, view, phase)
+	abm.InitModel(abm.DemoContext, abm.DemoEnvironment, om, turn)
 	go writer(conn, ws, om)
-	reader(conn, ws, mdl, ctxt, view)
+	reader(conn, ws, mdl, ctxt)
 }
 
 func main() {

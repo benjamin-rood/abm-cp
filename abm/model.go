@@ -166,12 +166,12 @@ func runningModel(m Model, viz chan<- render.AgentRender, quit <-chan struct{}, 
 }
 
 // insufficient hack
-func InitModel(ctxt Context, e Environment, om chan goio.OutMsg, view chan render.Viewport, phase chan struct{}) {
+func InitModel(ctxt Context, e Environment, om chan goio.OutMsg, phase chan struct{}) {
 	simple := setModel(ctxt, e)
 	quit := make(chan struct{})
 	ar := make(chan render.AgentRender, 2000)
 	go runningModel(simple, ar, quit, phase)
-	go visualiseModel(ctxt, view, ar, om, phase)
+	go visualiseModel(ctxt, ar, om, phase)
 }
 
 func setModel(ctxt Context, e Environment) (m Model) {
@@ -184,8 +184,8 @@ func setModel(ctxt Context, e Environment) (m Model) {
 	return
 }
 
-func visualiseModel(ctxt Context, view <-chan render.Viewport, ar <-chan render.AgentRender, out chan<- goio.OutMsg, turn <-chan struct{}) {
-	v := DemoViewport
+func visualiseModel(ctxt Context, ar <-chan render.AgentRender, out chan<- goio.OutMsg, turn <-chan struct{}) {
+	// v := DemoViewport
 	rand.Seed(time.Now().UnixNano())
 	bg := colour.RGB256{Red: 30, Green: 30, Blue: 30}
 	msg := goio.OutMsg{Type: "render", Data: nil}
@@ -197,7 +197,8 @@ func visualiseModel(ctxt Context, view <-chan render.Viewport, ar <-chan render.
 	for {
 		select {
 		case job := <-ar:
-			job.TranslateToViewport(v, ctxt.Bounds[0], ctxt.Bounds[1])
+			// offload the viewport translation to client (browser) side.
+			//job.TranslateToViewport(v, ctxt.Bounds[0], ctxt.Bounds[1])
 			switch job.Type {
 			case "cpp":
 				dl.CPP = append(dl.CPP, job)
@@ -217,7 +218,7 @@ func visualiseModel(ctxt Context, view <-chan render.Viewport, ar <-chan render.
 				VP:  nil,
 				BG:  bg,
 			}
-		case v = <-view:
+			// removed viewport update case – switching this responsibility completely to client side.
 		}
 	}
 }
