@@ -28,9 +28,10 @@ const (
 	vpS            = 0.05
 	vpA            = 1.0
 	vτ             = eigthpi / 2
-	vκ             = 0.0
+	vΓ             = 0.0
 	v𝛔             = 1.0
 	v𝛂             = 1.0
+	v𝛘             = 0.2
 	cppS           = 0.004
 	cppA           = 1.0
 	cτ             = quarterpi
@@ -70,9 +71,10 @@ var (
 		VpTurn:                vτ,
 		Vsr:                   vsr,
 		Vγ:                    γ,
-		VpReproductiveChance:  vκ,
+		VpReproductiveChance:  vΓ,
 		VsrSearchChance:       v𝛔,
 		VpAttackChance:        v𝛂,
+		VpColImprintFactor:    v𝛘,
 		CppAgeing:             cppAgeing,
 		CppLifespan:           cpplife,
 		CppS:                  cppS,

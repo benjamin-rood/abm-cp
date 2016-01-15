@@ -19,7 +19,7 @@ func (vp *VisualPredator) RBB(ctxt Context, cppPop []ColourPolymorphicPrey) (ret
 		if err != nil {
 			log.Println("vp.RBB:", err)
 		}
-		success := vp.Attack(target, ctxt.VpAttackChance)
+		success := vp.Attack(target, ctxt.VpAttackChance, ctxt.VpColImprintFactor)
 		if success {
 			goto Add
 		}

@@ -89,6 +89,7 @@ type Context struct {
 	VpReproductiveChance  float64 //	chance of VP copulation success.
 	VsrSearchChance       float64
 	VpAttackChance        float64
+	VpColImprintFactor    float64
 	CppAgeing             bool
 	CppLifespan           int     //	CPP agent lifespan
 	CppS                  float64 // CPP agent speed

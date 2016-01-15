@@ -163,7 +163,7 @@ func (vp *VisualPredator) PreySearch(population []ColourPolymorphicPrey, searchC
 }
 
 // Attack VP agent attempts to attack CP prey agent
-func (vp *VisualPredator) Attack(prey *ColourPolymorphicPrey, vpAttackChance float64) bool {
+func (vp *VisualPredator) Attack(prey *ColourPolymorphicPrey, vpAttackChance float64, imprintFactor float64) bool {
 	if prey == nil {
 		return false
 	}
@@ -180,7 +180,7 @@ func (vp *VisualPredator) Attack(prey *ColourPolymorphicPrey, vpAttackChance flo
 	// ...Predatory tries to eat prey!
 	α := rand.Float64()
 	if α > vpAttackChance {
-		vp.colourImprinting(prey.colouration, 1.0)
+		vp.colourImprinting(prey.colouration, imprintFactor)
 		vp.hunger -= 5
 		prey.lifespan = 0 //	i.e. prey agent flagged for removal at the next turn.
 		time.Sleep(1 * time.Second)
