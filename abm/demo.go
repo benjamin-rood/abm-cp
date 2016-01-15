@@ -12,25 +12,25 @@ const (
 	y
 	z
 
-	demoMaxCPP = 500
+	demoMaxCPP = 1000
 	demoMaxVP  = 10
 
 	quarterpi      = 0.7853981633974483096156608458198757210492923498437764
 	eigthpi        = 0.3926990816987241548078304229099378605246461749218882
 	d              = 1.0
 	dimensionality = 2
-	cppPopSize     = 25
-	vpPopSize      = 0
+	cppPopSize     = 1
+	vpPopSize      = 4
 	vsr            = d / 4
 	γ              = 1.0
-	cpplife        = 30
+	cpplife        = 50
 	vplife         = 250
-	vpS            = 0.1
+	vpS            = 0.05
 	vpA            = 1.0
-	vτ             = quarterpi
+	vτ             = eigthpi / 2
 	vκ             = 0.0
-	v𝛔             = 0.0
-	v𝛂             = 0.0
+	v𝛔             = 1.0
+	v𝛂             = 1.0
 	cppS           = 0.004
 	cppA           = 1.0
 	cτ             = quarterpi
@@ -38,8 +38,8 @@ const (
 	randomAges     = true
 	fuzzy          = 0.3
 	mf             = 0.05
-	cφ             = 3
-	cȣ             = 3
+	cφ             = 1
+	cȣ             = 1
 	cκ             = 0.1
 	cβ             = 5
 	vpAgeing       = false
@@ -54,13 +54,15 @@ var (
 		BG:             colour.RandRGB(),
 	}
 	// DemoViewport to be used as a baseline reference
-	DemoViewport = render.Viewport{Width: 600, Height: 400}
+	DemoViewport = render.Viewport{Width: 1200, Height: 800}
 
 	// DemoContext to be used as a baseline example
 	DemoContext = Context{
 		Bounds:                DemoEnvironment.Bounds,
-		CppPopulation:         cppPopSize,
-		VpPopulation:          vpPopSize,
+		MaxCppPopSize:         demoMaxCPP,
+		MaxVpPopSize:          demoMaxVP,
+		StartCppPopSize:       cppPopSize,
+		StartVpPopSize:        vpPopSize,
 		VpAgeing:              vpAgeing,
 		VpLifespan:            vplife,
 		VS:                    vpS,

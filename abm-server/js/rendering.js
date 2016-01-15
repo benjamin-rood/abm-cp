@@ -6,17 +6,16 @@ function DrawList (obj) {
 
 var initDrawObj = {type: 'drawlist', data: {cpp: [], vp: [], bg: {red: 0, green: 0, blue: 0}}}
 var drawlist = new DrawList(initDrawObj)
-var newWidth = 600
-var newHeight = 400
+var newWidth = 1200
+var newHeight = 800
 
 var sketch = function (p) {
+  var vSize = 40
+
   p.setup = function () {
     p.createCanvas(newWidth, newHeight)
     p.noLoop()
-    p.strokeWeight(5)
-    // p.stroke(255, 255, 255)
     p.background(0, 0, 255)
-    var triangleSize = 20
   }
 
   p.draw = function () {
@@ -25,22 +24,24 @@ var sketch = function (p) {
       var x = drawlist.cpp[i].position.x
       var y = drawlist.cpp[i].position.y
       var col = p.color(drawlist.cpp[i].colour.red, drawlist.cpp[i].colour.green, drawlist.cpp[i].colour.blue)
+      p.strokeWeight(8)
       p.stroke(col)
       p.point(x,y)
-      // p.fill(col)
-      // p.ellipse(x, y, 15, 15)
     }
     for (var i = 0; i < drawlist.vp.length; i++) {
       var x = drawlist.vp[i].position.x
       var y = drawlist.vp[i].position.y
-      var angle = -drawlist.vp[i].heading //  because positive rotations here happen clockwise, rather than the convention of the unit circle
+      var angle = 0 //  because positive rotations here happen clockwise, rather than the convention of the unit circle
       var col = p.color(drawlist.vp[i].colour.red, drawlist.vp[i].colour.green, drawlist.vp[i].colour.blue)
-      translate(x, y)
-      rotate(angle)
-      fill(col)
-      triangle(0-tSize, 0+tSize, 0, 0-(2*tSize), 0+tSize, 0+tSize)
-      rotate(-angle)
-      translate(-x, -y)
+      p.push()
+      p.translate(x, y)
+      p.rotate(angle)
+      p.fill(col)
+      p.strokeWeight(1)
+      p.stroke(255)
+      p.ellipse(0, 0, vSize, vSize)
+      // p.triangle(0-tSize, 0+tSize, 0, 0-(2*tSize), 0+tSize, 0+tSize)
+      p.pop()
     }
   }
 }

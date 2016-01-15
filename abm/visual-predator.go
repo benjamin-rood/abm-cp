@@ -2,9 +2,11 @@ package abm
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"math"
 	"math/rand"
+	"time"
 
 	"github.com/benjamin-rood/abm-colour-polymorphism/calc"
 	"github.com/benjamin-rood/abm-colour-polymorphism/colour"
@@ -38,20 +40,23 @@ func GeneratePopulationVP(size int, context Context) (pop []VisualPredator) {
 			if context.RandomAges {
 				agent.lifespan = calc.RandIntIn(int(float64(context.VpLifespan)*0.7), int(float64(context.VpLifespan)*1.3))
 			} else {
-				agent.lifespan = 1
+				agent.lifespan = context.VpLifespan
 			}
-			agent.movS = context.VS
-			agent.movA = context.VA
-			agent.dir𝚯 = rand.Float64() * (2 * math.Pi)
-			agent.dir = geometry.UnitVector(agent.dir𝚯)
-			agent.Rτ = context.VpTurn
-			agent.vsr = context.Vsr
-			agent.γ = context.Vγ //	visual acuity
-			agent.fertility = 1
-			agent.gravid = false
-			agent.colImprint = colour.RandRGB()
-			pop = append(pop, agent)
+		} else {
+			agent.lifespan = 99999
 		}
+		agent.movS = context.VS
+		agent.movA = context.VA
+		agent.dir𝚯 = rand.Float64() * (2 * math.Pi)
+		agent.dir = geometry.UnitVector(agent.dir𝚯)
+		agent.Rτ = context.VpTurn
+		agent.vsr = context.Vsr
+		agent.γ = context.Vγ //	visual acuity
+		agent.hunger = 0
+		agent.fertility = 1
+		agent.gravid = false
+		agent.colImprint = colour.RandRGB()
+		pop = append(pop, agent)
 	}
 	return
 }
@@ -86,6 +91,8 @@ func (vp *VisualPredator) Move() error {
 	if err != nil {
 		return errors.New("agent move failed: " + err.Error())
 	}
+	newPos[x] = calc.WrapFloatIn(newPos[x], -1.0, 1.0)
+	newPos[y] = calc.WrapFloatIn(newPos[y], -1.0, 1.0)
 	vp.pos = newPos
 	return nil
 }
@@ -125,6 +132,9 @@ func (vp *VisualPredator) VSRSectorSamples(d float64, n int) ([4][2]int, error) 
 
 // PreySearch – uses Visual Search to try to 'recognise' a nearby prey agent within model Environment to attack.
 func (vp *VisualPredator) PreySearch(population []ColourPolymorphicPrey, searchChance float64) (target *ColourPolymorphicPrey, err error) {
+
+	searchChance = 1.0 - searchChance
+
 	for i := range population {
 		population[i].𝛘 = colour.RGBDistance(vp.colImprint, population[i].colouration)
 	}
@@ -166,9 +176,11 @@ func (vp *VisualPredator) Attack(prey *ColourPolymorphicPrey, vpAttackChance flo
 	// ...Predatory tries to eat prey!
 	α := rand.Float64()
 	if α > vpAttackChance {
-		vp.colourImprinting(prey.colouration, 0.2)
+		vp.colourImprinting(prey.colouration, 1.0)
 		vp.hunger -= 5
 		prey.lifespan = 0 //	i.e. prey agent flagged for removal at the next turn.
+		time.Sleep(1 * time.Second)
+		fmt.Println("eaten =", *prey)
 		return true
 	}
 	return false

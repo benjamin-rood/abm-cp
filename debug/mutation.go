@@ -85,9 +85,7 @@ func main() {
 	agents := abm.GeneratePopulation(1, context)
 	for {
 		for i := range agents {
-			_ = "breakpoint" // godebug
 			abm.Mutation(&agents[i], context.Mf)
-			_ = "breakpoint" //  godebug
 		}
 	}
 }

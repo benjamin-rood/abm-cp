@@ -70,7 +70,7 @@ func GeneratePopulationCPP(size int, context Context) (pop []ColourPolymorphicPr
 				agent.lifespan = context.CppLifespan
 			}
 		} else {
-			agent.lifespan = 1
+			agent.lifespan = 99999
 		}
 		agent.movS = context.CppS
 		agent.movA = context.CppA
@@ -100,7 +100,7 @@ func spawn(size int, parent ColourPolymorphicPrey, context Context) (pop []Colou
 				agent.lifespan = context.CppLifespan
 			}
 		} else {
-			agent.lifespan = -1 //	i.e. Undead!
+			agent.lifespan = 99999 //	i.e. Undead!
 		}
 		agent.movS = parent.movS
 		agent.movA = parent.movA

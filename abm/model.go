@@ -75,8 +75,10 @@ type Environment struct {
 type Context struct {
 	// Type          string    `json:"type"` //	json flag for deserialisation
 	Bounds                []float64 // d value for each axis
-	CppPopulation         int       // starting CPP agent population size
-	VpPopulation          uint      //	starting VP agent population size
+	MaxCppPopSize         int
+	MaxVpPopSize          int
+	StartCppPopSize       int // starting CPP agent population size
+	StartVpPopSize        int //	starting VP agent population size
 	VpAgeing              bool
 	VpLifespan            int     //	Visual Predator lifespan
 	VS                    float64 // Visual Predator speed
@@ -118,7 +120,6 @@ func runningModel(m Model, viz chan<- render.AgentRender, quit <-chan struct{}, 
 				go func(i int) {
 					defer cppAgentWg.Done()
 					result := m.PopCPP[i].RBB(m.Context, len(m.PopCPP))
-					_ = "breakpoint" // godebug
 					viz <- m.PopCPP[i].GetDrawInfo()
 					time.Sleep(time.Millisecond * 25)
 					am.Lock()
@@ -128,34 +129,34 @@ func runningModel(m Model, viz chan<- render.AgentRender, quit <-chan struct{}, 
 				}(i)
 			}
 			cppAgentWg.Wait()
-			m.PopCPP = cppAgents //	update the population based on the results from each agent's rule-based behaviour of the turn.
 			_ = "breakpoint"     // godebug
+			m.PopCPP = cppAgents //	update the population based on the results from each agent's rule-based behaviour of the turn.
 			m.Phase++
 			m.Action = 0 // reset at phase end
 			m.Log()
-			time.Sleep(time.Millisecond * 100)
-			phase <- struct{}{}
-			{
-				// var vpAgents []VisualPredator
-				// for i := range m.PopVP {
-				// 	// vpAgentWg.Add(1)
-				// 	func(i int) {
-				// 		// defer vpAgentWg.Done()
-				// 		result := m.PopVP[i].RBB(m.Context, m.PopCPP)
-				// 		viz <- m.PopVP[i].GetDrawInfo()
-				// 		am.Lock()
-				// 		vpAgents = append(vpAgents, result...)
-				// 		am.Unlock()
-				// 		m.Action++
-				// 	}(i)
-				// }
-				// // vpAgentWg.Wait()
-				// m.PopVP = vpAgents //	update the population based on the results from each agent's rule-based behaviour of the turn.
-				// m.Phase++
-				// m.Action = 0 // reset at phase end
-				// m.Log()
-				// phase <- struct{}{}
+			time.Sleep(time.Millisecond * 50)
+
+			var vpAgents []VisualPredator
+			for i := range m.PopVP {
+				// vpAgentWg.Add(1)
+				func(i int) {
+					// defer vpAgentWg.Done()
+					result := m.PopVP[i].RBB(m.Context, m.PopCPP)
+					viz <- m.PopVP[i].GetDrawInfo()
+					am.Lock()
+					vpAgents = append(vpAgents, result...)
+					am.Unlock()
+					m.Action++
+				}(i)
 			}
+			// vpAgentWg.Wait()
+			m.PopVP = vpAgents //	update the population based on the results from each agent's rule-based behaviour of the turn.
+
+			m.Phase++
+			m.Action = 0 // reset at phase end
+			m.Log()
+			time.Sleep(time.Millisecond * 50)
+			phase <- struct{}{}
 
 			m.Phase = 0 //	reset at Turn end
 			m.Turn++
@@ -168,23 +169,25 @@ func runningModel(m Model, viz chan<- render.AgentRender, quit <-chan struct{}, 
 func InitModel(ctxt Context, e Environment, om chan goio.OutMsg, view chan render.Viewport, phase chan struct{}) {
 	simple := setModel(ctxt, e)
 	quit := make(chan struct{})
-	rc := make(chan render.AgentRender, 2000)
-	go runningModel(simple, rc, quit, phase)
-	go visualiseModel(ctxt, view, rc, om, phase)
+	ar := make(chan render.AgentRender, 2000)
+	go runningModel(simple, ar, quit, phase)
+	go visualiseModel(ctxt, view, ar, om, phase)
 }
 
 func setModel(ctxt Context, e Environment) (m Model) {
-	m.PopCPP = GeneratePopulationCPP(cppPopSize, ctxt)
+	m.PopCPP = GeneratePopulationCPP(ctxt.StartCppPopSize, ctxt)
+	// m.PopVP = GeneratePopulationVP(ctxt.StartVpPopSize, ctxt)
 	m.DefinitionCPP = []string{"mover", "breeder", "mortal"}
+	m.DefinitionVP = []string{"mover", "hunter", "mortal"}
 	m.Environment = e
 	m.Context = ctxt
 	return
 }
 
-func visualiseModel(ctxt Context, view <-chan render.Viewport, ar <-chan render.AgentRender, out chan<- goio.OutMsg, phase <-chan struct{}) {
+func visualiseModel(ctxt Context, view <-chan render.Viewport, ar <-chan render.AgentRender, out chan<- goio.OutMsg, turn <-chan struct{}) {
 	v := DemoViewport
 	rand.Seed(time.Now().UnixNano())
-	bg := colour.RGB256{Red: 30, Green: 30, Blue: 50}
+	bg := colour.RGB256{Red: 30, Green: 30, Blue: 30}
 	msg := goio.OutMsg{Type: "render", Data: nil}
 	dl := render.DrawList{
 		CPP: nil,
@@ -194,18 +197,16 @@ func visualiseModel(ctxt Context, view <-chan render.Viewport, ar <-chan render.
 	for {
 		select {
 		case job := <-ar:
-			_ = "breakpoint" // godebug
 			job.TranslateToViewport(v, ctxt.Bounds[0], ctxt.Bounds[1])
 			switch job.Type {
 			case "cpp":
 				dl.CPP = append(dl.CPP, job)
-				_ = "breakpoint" // godebug
 			case "vp":
 				dl.VP = append(dl.VP, job)
 			default:
 				log.Fatalf("viz: failed to determine agent-render job type!")
 			}
-		case <-phase:
+		case <-turn:
 			msg.Data = dl
 			out <- msg
 			// reset msg contents
