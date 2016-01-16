@@ -6,8 +6,6 @@ function DrawList (obj) {
 
 var initDrawObj = {type: 'drawlist', data: {cpp: [], vp: [], bg: {red: 0, green: 0, blue: 0}}}
 var drawlist = new DrawList(initDrawObj)
-var newWidth = 1200
-var newHeight = 800
 var modelDw = 1.0
 var modelDh = 1.0
 
@@ -15,7 +13,7 @@ var sketch = function (p) {
   var vSize = 40
 
   p.setup = function () {
-    p.createCanvas(newWidth, newHeight)
+    p.createCanvas(p.windowWidth, p.windowWidth)
     p.noLoop()
     p.background(0, 0, 255)
   }
@@ -45,6 +43,10 @@ var sketch = function (p) {
     //   // p.triangle(0-tSize, 0+tSize, 0, 0-(2*tSize), 0+tSize, 0+tSize)
     //   p.pop()
     // }
+  }
+
+  p.windowResized = function () {
+    p.resizeCanvas(p.windowWidth, p.windowHeight)
   }
 }
 
