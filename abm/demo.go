@@ -44,7 +44,7 @@ const (
 	cκ             = 0.1
 	cβ             = 5
 	vpAgeing       = false
-	cppAgeing      = false
+	cppAgeing      = true
 )
 
 var (

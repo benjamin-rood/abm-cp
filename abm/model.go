@@ -73,7 +73,8 @@ type Environment struct {
 
 // Context contains the local model context;
 type Context struct {
-	// Type          string    `json:"type"` //	json flag for deserialisation
+	RandomSeed            bool      //	flag for using server-set random seed val.
+	Seed                  int       //	RNG seed value
 	Bounds                []float64 // d value for each axis
 	MaxCppPopSize         int
 	MaxVpPopSize          int
@@ -176,7 +177,7 @@ func InitModel(ctxt Context, e Environment, om chan goio.OutMsg, phase chan stru
 
 func setModel(ctxt Context, e Environment) (m Model) {
 	m.PopCPP = GeneratePopulationCPP(ctxt.StartCppPopSize, ctxt)
-	m.PopVP = GeneratePopulationVP(ctxt.StartVpPopSize, ctxt)
+	//m.PopVP = GeneratePopulationVP(ctxt.StartVpPopSize, ctxt)
 	m.DefinitionCPP = []string{"mover", "breeder", "mortal"}
 	m.DefinitionVP = []string{"mover", "hunter", "mortal"}
 	m.Environment = e
