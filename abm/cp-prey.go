@@ -28,7 +28,7 @@ type ColourPolymorphicPrey struct {
 	gravid      bool       //	i.e. pregnant
 	colouration colour.RGB //	colour
 	𝛘           float64    //	 colour sorting value - colour distance/difference between vp.imprimt and cpp.colouration
-	ϸ           float64    //  position sorting value - vector distance between vp.pos and cpp.pos
+	δ           float64    //  position sorting value - vector distance between vp.pos and cpp.pos
 }
 
 // String returns a clear textual presentation the internal values of the CPP agent
@@ -83,7 +83,7 @@ func GeneratePopulationCPP(size int, context Context) (pop []ColourPolymorphicPr
 		agent.gravid = false
 		agent.colouration = colour.RandRGB()
 		agent.𝛘 = 0.0
-		agent.ϸ = 0.0
+		agent.δ = 0.0
 		pop = append(pop, agent)
 	}
 	return
@@ -113,7 +113,7 @@ func spawn(size int, parent ColourPolymorphicPrey, context Context) (pop []Colou
 		agent.gravid = false
 		agent.colouration = parent.colouration
 		agent.𝛘 = 0.0
-		agent.ϸ = 0.0
+		agent.δ = 0.0
 		pop = append(pop, agent)
 	}
 	return
@@ -125,7 +125,7 @@ type ProximitySort []ColourPolymorphicPrey
 
 func (ps ProximitySort) Len() int           { return len(ps) }
 func (ps ProximitySort) Swap(i, j int)      { ps[i], ps[j] = ps[j], ps[i] }
-func (ps ProximitySort) Less(i, j int) bool { return ps[i].ϸ < ps[j].ϸ }
+func (ps ProximitySort) Less(i, j int) bool { return ps[i].δ < ps[j].δ }
 
 // VisualSort implements sort.Interface for []ColourPolymorphicPrey
 // based on 𝛘 field – to assert visual bias of a VisualPredator based on it's colour imprinting value.
