@@ -15,7 +15,7 @@ func (vp *VisualPredator) RBB(ctxt Context, cppPop []ColourPolymorphicPrey) (ret
 	jump = vp.Age(ctxt)
 	switch jump {
 	case "PREY SEARCH":
-		target, err := vp.PreySearch(cppPop, ctxt.VsrSearchChance)
+		target, err := vp.PreySearch(cppPop, ctxt.VpSearchChance)
 		if err != nil {
 			log.Println("vp.RBB:", err)
 		}

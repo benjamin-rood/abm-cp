@@ -1,13 +1,22 @@
 body {
+  background: #f4f3f1;
   padding-top: 50px;
   padding-left: 50px;
   padding-right: 50px;
   padding-bottom: 50px;
 }
 
+main-block {
+        height: 600px;
+      }
+
 .form-padded{
     margin-left:5px;
     margin-right:5px;
+}
+
+.panel-abm{
+    background: #fff;
 }
 
 .top-buffer { margin-top:20px; }

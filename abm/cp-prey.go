@@ -236,7 +236,7 @@ func (c *ColourPolymorphicPrey) Birth(ctxt Context) []ColourPolymorphicPrey {
 	}
 	progeny := spawn(n, *c, ctxt)
 	for i := 0; i < len(progeny); i++ {
-		progeny[i].mutation(ctxt.MutationFactor)
+		progeny[i].mutation(ctxt.CppMutationFactor)
 		progeny[i].pos, _ = geometry.FuzzifyVector(c.pos, c.movS)
 	}
 	c.hunger++ //	energy cost

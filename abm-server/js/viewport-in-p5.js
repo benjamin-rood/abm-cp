@@ -13,7 +13,7 @@ var sketch = function (p) {
   var vSize = 40
 
   p.setup = function () {
-    p.createCanvas(p.windowWidth, p.windowWidth)
+    p.createCanvas($('#abm-viewport').innerWidth(), $('#abm-params-panel').innerHeight())
     p.noLoop()
     p.background(0, 0, 255)
   }
@@ -46,7 +46,7 @@ var sketch = function (p) {
   }
 
   p.windowResized = function () {
-    p.resizeCanvas(p.windowWidth, p.windowHeight)
+    p.resizeCanvas($('#abm-viewport').innerWidth(), $('#abm-params-panel').innerHeight())
   }
 }
 

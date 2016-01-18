@@ -73,36 +73,36 @@ type Environment struct {
 
 // Context contains the local model context;
 type Context struct {
-	RandomSeed            bool      //	flag for using server-set random seed val.
-	Seed                  int       //	RNG seed value
 	Bounds                []float64 // d value for each axis
-	MaxCppPopSize         int
-	MaxVpPopSize          int
-	StartCppPopSize       int // starting CPP agent population size
-	StartVpPopSize        int //	starting VP agent population size
-	VpAgeing              bool
-	VpLifespan            int     //	Visual Predator lifespan
-	VS                    float64 // Visual Predator speed
-	VA                    float64 // Visual Predator acceleration
-	VpTurn                float64 //	Visual Predator turn rate / range (in radians)
-	Vsr                   float64 //	VP agent visual search range
-	Vγ                    float64 //	visual acuity in environments
-	VpReproductiveChance  float64 //	chance of VP copulation success.
-	VsrSearchChance       float64
-	VpAttackChance        float64
-	VpColImprintFactor    float64
-	CppAgeing             bool
-	CppLifespan           int     //	CPP agent lifespan
-	CppS                  float64 // CPP agent speed
-	CppA                  float64 // CPP agent acceleration
-	CppTurn               float64 //	CPP agent turn rate / range (in radians)
-	CppSr                 float64 // CPP agent search range for mating
-	MutationFactor        float64 //	mutation factor
-	CppGestation          int     //	CPP gestation period
-	CppSexualCost         int     //	CPP sexual rest cost
-	CppReproductiveChance float64 //	chance of CPP copulation success.
-	CppSpawnSize          int     // 	CPP max spawn size s.t. possible number of progeny = [1, max]
-	RandomAges            bool
+	CppPopulationStart    int       `json:"abm-cpp-pop-start"` // starting CPP agent population size
+	CppPopulationCap      int       `json:"abm-cpp-pop-cap"`
+	CppAgeing             bool      `json:"abm-cpp-ageing"`
+	CppLifespan           int       `json:"abm-cpp-lifespan"` //	CPP agent lifespan
+	CppS                  float64   `json:"abm-cpp-speed"`    // CPP agent speed
+	CppA                  float64   // CPP agent acceleration
+	CppTurn               float64   `json:"abm-cpp-turn"` //	CPP agent turn rate / range (in radians)
+	CppSr                 float64   // CPP agent search range for mating
+	CppGestation          int       `json:"abm-cpp-gestation"`           //	CPP gestation period
+	CppSexualCost         int       `json:"abm-cpp-sexual-cost"`         //	CPP sexual rest cost
+	CppReproductionChance float64   `json:"abm-cpp-reproduction-chance"` //	chance of CPP copulation success.
+	CppSpawnSize          int       `json:"abm-cpp-spawn-size"`          // 	CPP max spawn size s.t. possible number of progeny = [1, max]
+	VpPopulationStart     int       `json:"abm-vp-pop-start"`            //	starting VP agent population size
+	VpPopulationCap       int       `json:"abm-vp-pop-cap"`
+	VpAgeing              bool      `json:"abm-vp-ageing"`
+	VpLifespan            int       `json:"abm-vp-lifespan"` //	Visual Predator lifespan
+	VS                    float64   `json:"abm-vp-speed"`    // Visual Predator speed
+	VA                    float64   // Visual Predator acceleration
+	VpTurn                float64   `json:"abm-vp-turn"` //	Visual Predator turn rate / range (in radians)
+	Vsr                   float64   `json:"abm-vp-vsr"`  //	VP agent visual search range
+	Vγ                    float64   //	visual acuity in environments
+	VpReproductiveChance  float64   //	chance of VP copulation success.
+	VpSearchChance        float64   `json:"abm-vp-vsr-chance"`
+	VpAttackChance        float64   `json:"abm-vp-attack-chance"`
+	VpColImprintFactor    float64   `json:"abm-vp-col-imprinting"`
+	CppMutationFactor     float64   `json:"abm-cpp-mf"` //	mutation factor
+	RandomAges            bool      `json:"abm-random-ages"`
+	RNGRandomSeed         bool      `json:"abm-rng-random-seed"` //	flag for using server-set random seed val.
+	RNGSeedVal            int       `json:"abm-rng-seedval"`     //	RNG seed value
 	Fuzzy                 float64
 }
 
@@ -176,7 +176,7 @@ func InitModel(ctxt Context, e Environment, om chan goio.OutMsg, phase chan stru
 }
 
 func setModel(ctxt Context, e Environment) (m Model) {
-	m.PopCPP = GeneratePopulationCPP(ctxt.StartCppPopSize, ctxt)
+	m.PopCPP = GeneratePopulationCPP(ctxt.CppPopulationStart, ctxt)
 	//m.PopVP = GeneratePopulationVP(ctxt.StartVpPopSize, ctxt)
 	m.DefinitionCPP = []string{"mover", "breeder", "mortal"}
 	m.DefinitionVP = []string{"mover", "hunter", "mortal"}

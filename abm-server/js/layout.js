@@ -1,0 +1,8 @@
+$cppAgeingParam = $("[name='abm-cpp-ageing']")
+$cppAgeingParam.bootstrapSwitch()
+$vpAgeingParam = $("[name='abm-vp-ageing']")
+$vpAgeingParam.bootstrapSwitch()
+$RNGrandomSeed = $("[name='abm-rng-random-seed']")
+$RNGrandomSeed.bootstrapSwitch()
+$randomAgesParam = $("[name='abm-random-ages']")
+$randomAgesParam.bootstrapSwitch()
