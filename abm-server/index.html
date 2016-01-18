@@ -6,11 +6,14 @@
     <link rel="shortcut icon" href="#" />
     <script src=js/jquery-2.1.4.min.js charset=utf-8></script>
     <script src=js/bootstrap/bootstrap.min.js charset=utf-8></script>
+    <script src=js/bootstrap-switch/bootstrap-switch.js charset=utf8></script>
     <script src=js/p5-release/p5.min.js charset=utf-8></script>
     <script src=js/p5-release/addons/p5.dom.js charset=utf-8></script>
     <script src=js/viewport-in-p5.js charset=utf-8></script>
     <script src=js/conn.js charset=utf-8></script>
+    <script src=js/layout.js charset=utf8></script>
     <link rel=stylesheet href=css/bootstrap/bootstrap.css>
+    <link rel=stylesheet href=css/bootstrap-switch/bootstrap-switch.css media="screen" title="no title" charset="utf-8">
     <link rel=stylesheet href=css/none.css>
   </head>
   <body>
@@ -18,7 +21,7 @@
     <!--MAIN VIZ AND PARAMS-->
       <div class="container-fluid" name="main" style="padding: 25px;">
           <div class="row" name="vizAndParanms">
-              <div class="col-md-8">
+              <div class="col-md-9">
                   <div class="container-fluid">
                       <div class="row">
                         <div id="abm-viewport"style="margin-right: 50px;">
@@ -26,7 +29,7 @@
                       </div>
                   </div>
               </div>
-              <div class="col-md-4" name="paramsColumn">
+              <div class="col-md-3" name="paramsColumn">
                   <div class="row">
                       <div class="panel panel-default" id="abm-params-panel">
                           <div class="panel-heading"><h4>ABM Parameters</h4></div>
