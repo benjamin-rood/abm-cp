@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/benjamin-rood/abm-colour-polymorphism/abm"
-	"github.com/benjamin-rood/abm-colour-polymorphism/render"
 	"github.com/benjamin-rood/goio"
 	"github.com/gorilla/websocket"
 )
@@ -37,6 +36,8 @@ var (
 		WriteBufferSize: 1024,
 	}
 )
+
+var timeMark time.Time
 
 func networkError(err error, c chan struct{}) {
 	log.Println(err)
@@ -96,13 +97,13 @@ func writer(conn *websocket.Conn, ws chan struct{}, om <-chan goio.OutMsg) {
 	for {
 		select {
 		case msg := <-om:
-			fmt.Println(len(msg.Data.(render.DrawList).CPP))
-			fmt.Println(len(msg.Data.(render.DrawList).VP))
+			timeMark = time.Now()
 			conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if err := conn.WriteJSON(msg); err != nil {
 				log.Println("writer: failed to WriteJSON:")
 				networkError(err, ws)
 			}
+			fmt.Println("conn.WriteJSON(msg) elapsed:", time.Since(timeMark))
 		case <-pingTicker.C:
 			conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if err := conn.WriteMessage(websocket.PingMessage, []byte{}); err != nil {

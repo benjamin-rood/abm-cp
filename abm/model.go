@@ -1,6 +1,7 @@
 package abm
 
 import (
+	"fmt"
 	"log"
 	"math/rand"
 	"sync"
@@ -106,7 +107,9 @@ type Context struct {
 	Fuzzy                 float64
 }
 
-func runningModel(m Model, viz chan<- render.AgentRender, quit <-chan struct{}, phase chan<- struct{}) {
+var timeMark time.Time
+
+func runningModel(m Model, ar chan<- render.AgentRender, quit <-chan struct{}, turn chan<- struct{}) {
 	var am sync.Mutex
 	var cppAgentWg sync.WaitGroup
 	// var vpAgentWg sync.WaitGroup
@@ -117,33 +120,37 @@ func runningModel(m Model, viz chan<- render.AgentRender, quit <-chan struct{}, 
 			return
 		default: //	PROCEED WITH TURN
 			var cppAgents []ColourPolymorphicPrey
+			cInterval := time.Now()
 			for i := range m.PopCPP {
 				cppAgentWg.Add(1)
+				timeMark = time.Now()
 				go func(i int) {
 					defer cppAgentWg.Done()
 					result := m.PopCPP[i].RBB(m.Context, len(m.PopCPP))
-					viz <- m.PopCPP[i].GetDrawInfo()
-					time.Sleep(time.Millisecond * 25)
+					ar <- m.PopCPP[i].GetDrawInfo()
 					am.Lock()
 					cppAgents = append(cppAgents, result...)
 					am.Unlock()
+					time.Sleep(time.Millisecond * 10)
 					m.Action++
 				}(i)
+				fmt.Printf("cp-rbb: %04d elapsed: %v\n", i, time.Since(timeMark))
 			}
+			fmt.Printf("m.PopCPP: %04d total cp-rbb elapsed: %v\n", len(m.PopCPP), time.Since(cInterval))
 			cppAgentWg.Wait()
 			m.PopCPP = cppAgents //	update the population based on the results from each agent's rule-based behaviour of the turn.
 			m.Phase++
 			m.Action = 0 // reset at phase end
-			m.Log()
+			// m.Log()
 			time.Sleep(time.Millisecond * 50)
 
 			var vpAgents []VisualPredator
 			for i := range m.PopVP {
 				// vpAgentWg.Add(1)
-				func(i int) {
+				go func(i int) {
 					// defer vpAgentWg.Done()
 					result := m.PopVP[i].RBB(m.Context, m.PopCPP)
-					viz <- m.PopVP[i].GetDrawInfo()
+					ar <- m.PopVP[i].GetDrawInfo()
 					am.Lock()
 					vpAgents = append(vpAgents, result...)
 					am.Unlock()
@@ -155,13 +162,13 @@ func runningModel(m Model, viz chan<- render.AgentRender, quit <-chan struct{}, 
 
 			m.Phase++
 			m.Action = 0 // reset at phase end
-			m.Log()
+			// m.Log()
 			time.Sleep(time.Millisecond * 50)
-			phase <- struct{}{}
+			turn <- struct{}{}
 
 			m.Phase = 0 //	reset at Turn end
 			m.Turn++
-			m.Log()
+			// m.Log()
 		}
 	}
 }
