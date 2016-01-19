@@ -4,17 +4,18 @@
     <meta charset="utf-8">
     <title>abm</title>
     <link rel="shortcut icon" href="#" />
-    <script src=js/jquery-2.1.4.min.js charset=utf-8></script>
+    <link rel=stylesheet href=https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css>
+    <link rel=stylesheet href=https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css>
+    <link rel=stylesheet href=css/none.css>
+    <script src="https://code.jquery.com/jquery-2.2.0.min.js" defer></script>
+    <script src="dist/js/bootstrap-checkbox.min.js" defer></script>
     <script src=js/bootstrap/bootstrap.min.js charset=utf-8></script>
-    <script src=js/bootstrap-switch/bootstrap-switch.js charset=utf8></script>
+    <script src=https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/js/bootstrap-switch.js charset=utf8></script>
     <script src=js/p5-release/p5.min.js charset=utf-8></script>
     <script src=js/p5-release/addons/p5.dom.js charset=utf-8></script>
     <script src=js/viewport-in-p5.js charset=utf-8></script>
     <script src=js/conn.js charset=utf-8></script>
     <script src=js/layout.js charset=utf8></script>
-    <link rel=stylesheet href=css/bootstrap/bootstrap.css>
-    <link rel=stylesheet href=css/bootstrap-switch/bootstrap-switch.css media="screen" title="no title" charset="utf-8">
-    <link rel=stylesheet href=css/none.css>
   </head>
   <body>
     <div class="container-fluid" style="padding: 25px;">
@@ -34,104 +35,128 @@
                       <div class="panel panel-default" id="abm-params-panel">
                           <div class="panel-heading"><h4>ABM Parameters</h4></div>
                           <div class="panel-body">
-                              <div class="input-group">
-                                  <span class="input-group-addon" id="basic-addon1">CP-Prey Starting Population</span>
-                                  <input type="number" class="form-control" name="abm-cpp-pop-start" placeholder="10" min="1" max="10000" aria-describedby="basic-addon1">
+                            <div class="input-group">
+                              <span class="input-group-addon" id="basic-addon1">CP Prey Starting Population</span>
+                              <input type="number" class="form-control" name="abm-cpp-pop-start" placeholder="10" min="1" max="10000" aria-describedby="basic-addon1">
+                          </div>
+                          <div class="input-group">
+                              <span class="input-group-addon" id="basic-addon1">CP Prey Population Cap</span>
+                              <input type="number" class="form-control" name="abm-cpp-pop-cap" placeholder="1000" min="1" max="10000" aria-describedby="basic-addon1">
+                          </div>
+                          <div class="input-group" id="cpp-ageing-param">
+                              <span class="input-group-addon" id="basic-addon1">CP Prey Ageing</span>
+                              <!--<input type="checkbox" class="form-control" name="abm-cpp-ageing" aria-describedby="basic-addon1">-->
+                              <div class="form-group">
+                                  <select class="form-control" id="abm-cpp-ageing" aria-describedby="basic-addon1">
+                                      <option>true</option>
+                                      <option>false</option>
+                                  </select>
                               </div>
-                              <div class="input-group">
-                                  <span class="input-group-addon" id="basic-addon1">CP-Prey Population Cap</span>
-                                  <input type="number" class="form-control" name="abm-cpp-pop-cap" placeholder="1000" min="1" max="10000" aria-describedby="basic-addon1">
+                          </div>
+                          <div class="input-group">
+                              <span class="input-group-addon" id="basic-addon1">CP Prey Lifespan</span>
+                              <input type="number" class="form-control" name="abm-cpp-lifespan" placeholder="35" min="1" aria-describedby="basic-addon1">
+                          </div>
+                          <div class="input-group">
+                              <span class="input-group-addon" id="basic-addon1">CP Prey Speed</span>
+                              <input type="number" class="form-control" name="abm-cpp-speed" placeholder="0.01" min="0.0" max="1.0" step="0.001" aria-describedby="basic-addon1">
+                          </div>
+                          <div class="input-group">
+                              <span class="input-group-addon" id="basic-addon1">CP Prey Turn Rate</span>
+                              <input type="number" class="form-control" name="abm-cpp-turn" placeholder="0.01" min="0.0" max="1.0" step="0.001" aria-describedby="basic-addon1">
+                          </div>
+                          <div class="input-group">
+                              <span class="input-group-addon" id="basic-addon1">CP Prey Sexual Cost</span>
+                              <input type="number" class="form-control" name="abm-cpp-sexual-cost" placeholder="3" min="1" aria-describedby="basic-addon1">
+                          </div>
+                          <div class="input-group">
+                              <span class="input-group-addon" id="basic-addon1">CP Prey Reproduction Chance</span>
+                              <input type="number" class="form-control" name="abm-cpp-reproduction-chance" placeholder="0.01" min="0.0" max="1.0" step="0.001" aria-describedby="basic-addon1">
+                          </div>
+                          <div class="input-group">
+                              <span class="input-group-addon" id="basic-addon1">CP Prey Gestation Period</span>
+                              <input type="number" class="form-control" name="abm-cpp-gestation" placeholder="5" min="1" aria-describedby="basic-addon1">
+                          </div>
+                          <div class="input-group">
+                              <span class="input-group-addon" id="basic-addon1">CP Prey Spawn Size</span>
+                              <input type="number" class="form-control" name="abm-cpp-spawn-size" placeholder="3" min="1" aria-describedby="basic-addon1">
+                          </div>
+                          <div class="input-group">
+                              <span class="input-group-addon" id="basic-addon1">CP Prey Mutation Factor</span>
+                              <input type="number" class="form-control" name="abm-cpp-mf" placeholder="0.01" min="0.0" max="1.0" step="0.001" aria-describedby="basic-addon1">
+                          </div>
+                          <div class="input-group">
+                              <span class="input-group-addon" id="basic-addon1">Visual Predator Starting Population</span>
+                              <input type="number" class="form-control" name="abm-vp-pop-start" placeholder="10" min="1" max="1000" aria-describedby="basic-addon1">
+                          </div>
+                          <div class="input-group">
+                              <span class="input-group-addon" id="basic-addon1">Visual Predator Population Cap</span>
+                              <input type="number" class="form-control" name="abm-vp-pop-cap" placeholder="10" min="1" max="1000" aria-describedby="basic-addon1">
+                          </div>
+                          <div class="input-group" id="vp-ageing-param">
+                              <span class="input-group-addon" id="basic-addon1">Visual Predator Ageing</span>
+                              <!--<input type="checkbox" class="form-control" name="abm-vp-ageing" aria-describedby="basic-addon1">-->
+                              <div class="form-group">
+                                  <select class="form-control" id="abm-vp-ageing" aria-describedby="basic-addon1">
+                                      <option>true</option>
+                                      <option>false</option>
+                                  </select>
                               </div>
-                              <div class="input-group" id="cpp-ageing-param">
-                                  <span class="input-group-addon" id="basic-addon1">CP-Prey Ageing</span>
-                                  <input type="checkbox" class="form-control" name="abm-cpp-ageing" aria-describedby="basic-addon1">
+                          </div>
+                          <div class="input-group">
+                              <span class="input-group-addon" id="basic-addon1">Visual Predator Lifespan</span>
+                              <input type="number" class="form-control" name="abm-vp-lifespan" placeholder="10" min="1" max="1000" aria-describedby="basic-addon1">
+                          </div>
+                          <div class="input-group">
+                              <span class="input-group-addon" id="basic-addon1">Visual Predator Speed</span>
+                              <input type="number" class="form-control" name="abm-vp-speed" placeholder="0.01" min="0.0" max="1.0" step="0.001" aria-describedby="basic-addon1">
+                          </div>
+                          <div class="input-group">
+                              <span class="input-group-addon" id="basic-addon1">Visual Predator Turn Rate</span>
+                              <input type="number" class="form-control" name="abm-vp-turn" placeholder="0.01" min="0.0" max="1.0" step="0.001" aria-describedby="basic-addon1">
+                          </div>
+                          <div class="input-group">
+                              <span class="input-group-addon" id="basic-addon1">Visual Predator Visual Search Range</span>
+                              <input type="number" class="form-control" name="abm-vp-vsr" placeholder="0.01" min="0.0" max="1.0" step="0.001" aria-describedby="basic-addon1">
+                          </div>
+                          <div class="input-group">
+                              <span class="input-group-addon" id="basic-addon1">Visual Predator Visual Search Chance</span>
+                              <input type="number" class="form-control" name="abm-vp-vsr-chance" placeholder="0.01" min="0.0" max="1.0" step="0.001" aria-describedby="basic-addon1">
+                          </div>
+                          <div class="input-group">
+                              <span class="input-group-addon" id="basic-addon1">Visual Predator Visual Attack Chance</span>
+                              <input type="number" class="form-control" name="abm-vp-attack-chance" placeholder="0.01" min="0.0" max="1.0" step="0.001" aria-describedby="basic-addon1">
+                          </div>
+                          <div class="input-group">
+                              <span class="input-group-addon" id="basic-addon1">Visual Predator Colour Imprinting</span>
+                              <input type="number" class="form-control" name="abm-vp-col-imprinting" placeholder="0.01" min="0.0" max="1.0" step="0.001" aria-describedby="basic-addon1">
+                          </div>
+                          <div class="input-group">
+                              <span class="input-group-addon" id="basic-addon1">Randomise Ages</span>
+                              <!--<input type="checkbox" class="form-control" name="abm-random-ages" aria-describedby="basic-addon1">-->
+                              <div class="form-group">
+                                  <select class="form-control" id="abm-random-ages" aria-describedby="basic-addon1">
+                                      <option>true</option>
+                                      <option>false</option>
+                                  </select>
                               </div>
-                              <div class="input-group">
-                                  <span class="input-group-addon" id="basic-addon1">CP-Prey Lifespan</span>
-                                  <input type="number" class="form-control" name="abm-cpp-lifespan" placeholder="35" min="1" aria-describedby="basic-addon1">
+                          </div>
+                          <div class="input-group">
+                              <span class="input-group-addon" id="basic-addon1">RNG Random Seed</span>
+                              <!--<input type="checkbox" class="form-control" name="abm-rng-random-seed" aria-describedby="basic-addon1">-->
+                              <div class="form-group">
+                                  <select class="form-control" id="abm-rng-random-seed" aria-describedby="basic-addon1">
+                                      <option>true</option>
+                                      <option>false</option>
+                                  </select>
                               </div>
-                              <div class="input-group">
-                                  <span class="input-group-addon" id="basic-addon1">CP-Prey Speed</span>
-                                  <input type="number" class="form-control" name="abm-cpp-speed" placeholder="0.01" min="0.0" max="1.0" step="0.001" aria-describedby="basic-addon1">
-                              </div>
-                              <div class="input-group">
-                                  <span class="input-group-addon" id="basic-addon1">CP-Prey Turn Rate</span>
-                                  <input type="number" class="form-control" name="abm-cpp-turn" placeholder="0.01" min="0.0" max="1.0" step="0.001" aria-describedby="basic-addon1">
-                              </div>
-                              <div class="input-group">
-                                  <span class="input-group-addon" id="basic-addon1">CP-Prey Sexual Cost</span>
-                                  <input type="number" class="form-control" name="abm-cpp-sexual-cost" placeholder="3" min="1" aria-describedby="basic-addon1">
-                              </div>
-                              <div class="input-group">
-                                  <span class="input-group-addon" id="basic-addon1">CP-Prey Reproduction Chance</span>
-                                  <input type="number" class="form-control" name="abm-cpp-reproduction-chance" placeholder="0.01" min="0.0" max="1.0" step="0.001" aria-describedby="basic-addon1">
-                              </div>
-                              <div class="input-group">
-                                  <span class="input-group-addon" id="basic-addon1">CP-Prey Gestation Period</span>
-                                  <input type="number" class="form-control" name="abm-cpp-gestation" placeholder="5" min="1" aria-describedby="basic-addon1">
-                              </div>
-                              <div class="input-group">
-                                  <span class="input-group-addon" id="basic-addon1">CP-Prey Spawn Size</span>
-                                  <input type="number" class="form-control" name="abm-cpp-spawn-size" placeholder="3" min="1" aria-describedby="basic-addon1">
-                              </div>
-                              <div class="input-group">
-                                  <span class="input-group-addon" id="basic-addon1">CP-Prey Mutation Factor</span>
-                                  <input type="number" class="form-control" name="abm-cpp-mf" placeholder="0.01" min="0.0" max="1.0" step="0.001" aria-describedby="basic-addon1">
-                              </div>
-                              <div class="input-group">
-                                  <span class="input-group-addon" id="basic-addon1">V-Predator Starting Population</span>
-                                  <input type="number" class="form-control" name="abm-vp-pop-start" placeholder="10" min="1" max="1000" aria-describedby="basic-addon1">
-                              </div>
-                              <div class="input-group">
-                                  <span class="input-group-addon" id="basic-addon1">V-Predator Population Cap</span>
-                                  <input type="number" class="form-control" name="abm-vp-pop-cap" placeholder="10" min="1" max="1000" aria-describedby="basic-addon1">
-                              </div>
-                              <div class="input-group" id="vp-ageing-param">
-                                  <span class="input-group-addon" id="basic-addon1">V-Predator Ageing</span>
-                                  <input type="checkbox" class="form-control" name="abm-vp-ageing" aria-describedby="basic-addon1">
-                              </div>
-                              <div class="input-group">
-                                  <span class="input-group-addon" id="basic-addon1">V-Predator Lifespan</span>
-                                  <input type="number" class="form-control" name="abm-vp-lifespan" placeholder="10" min="1" max="1000" aria-describedby="basic-addon1">
-                              </div>
-                              <div class="input-group">
-                                  <span class="input-group-addon" id="basic-addon1">V-Predator Speed</span>
-                                  <input type="number" class="form-control" name="abm-vp-speed" placeholder="0.01" min="0.0" max="1.0" step="0.001" aria-describedby="basic-addon1">
-                              </div>
-                              <div class="input-group">
-                                  <span class="input-group-addon" id="basic-addon1">V-Predator Turn Rate</span>
-                                  <input type="number" class="form-control" name="abm-vp-turn" placeholder="0.01" min="0.0" max="1.0" step="0.001" aria-describedby="basic-addon1">
-                              </div>
-                              <div class="input-group">
-                                  <span class="input-group-addon" id="basic-addon1">V-Predator Visual Search Range</span>
-                                  <input type="number" class="form-control" name="abm-vp-vsr" placeholder="0.01" min="0.0" max="1.0" step="0.001" aria-describedby="basic-addon1">
-                              </div>
-                               <div class="input-group">
-                                  <span class="input-group-addon" id="basic-addon1">V-Predator Visual Search Chance</span>
-                                  <input type="number" class="form-control" name="abm-vp-vsr-chance" placeholder="0.01" min="0.0" max="1.0" step="0.001" aria-describedby="basic-addon1">
-                              </div>
-                               <div class="input-group">
-                                  <span class="input-group-addon" id="basic-addon1">V-Predator Visual Attack Chance</span>
-                                  <input type="number" class="form-control" name="abm-vp-attack-chance" placeholder="0.01" min="0.0" max="1.0" step="0.001" aria-describedby="basic-addon1">
-                              </div>
-                              <div class="input-group">
-                                  <span class="input-group-addon" id="basic-addon1">V-Predator Colour Imprinting</span>
-                                  <input type="number" class="form-control" name="abm-vp-col-imprinting" placeholder="0.01" min="0.0" max="1.0" step="0.001" aria-describedby="basic-addon1">
-                              </div>
-                              <div class="input-group" id="vp-ageing-param">
-                                  <span class="input-group-addon" id="basic-addon1">Randomise Ages</span>
-                                  <input type="checkbox" class="form-control" name="abm-random-ages" aria-describedby="basic-addon1">
-                              </div>
-                              <div class="input-group" id="vp-ageing-param">
-                                  <span class="input-group-addon" id="basic-addon1">RNG Random Seed</span>
-                                  <input type="checkbox" class="form-control" name="abm-rng-random-seed" aria-describedby="basic-addon1">
-                              </div>
-                              <div class="input-group" id="vp-ageing-param">
-                                  <span class="input-group-addon" id="basic-addon1">RNG Seed Value</span>
-                                  <input type="number" class="form-control" name="abm-rng-seedval" placeholder="0" min="0" aria-describedby="basic-addon1">
-                              </div>
-                              <br>
-                              <button type="button" class="btn btn-primary btn-lg btn-block">Start ABM with these settings</button>
+                          </div>
+                          <div class="input-group" id="vp-ageing-param">
+                              <span class="input-group-addon" id="basic-addon1">RNG Seed Value</span>
+                              <input type="number" class="form-control" name="abm-rng-seedval" placeholder="0" min="0" aria-describedby="basic-addon1">
+                          </div>
+                          <br>
+                          <button type="button" class="btn btn-primary btn-lg btn-block">Start ABM with these settings</button>
                           </div>
                       </div>
                   </div>
