@@ -82,6 +82,7 @@ func RandRGB256() RGB256 {
 
 // RandRGBClamped will return a random valid RGB object within some differential of `col`
 func RandRGBClamped(col RGB, diff float64) RGB {
+	diff = rand.NormFloat64() * diff
 	red := col.Red + calc.RandFloatIn(-diff, diff)
 	green := col.Green + calc.RandFloatIn(-diff, diff)
 	blue := col.Blue + calc.RandFloatIn(-diff, diff)

@@ -12,7 +12,7 @@ const (
 	y
 	z
 
-	demoMaxCPP = 1000
+	demoMaxCPP = 10000
 	demoMaxVP  = 10
 
 	quarterpi      = 0.7853981633974483096156608458198757210492923498437764

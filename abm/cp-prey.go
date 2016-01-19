@@ -251,7 +251,9 @@ func (c *ColourPolymorphicPrey) mutation(Mf float64) {
 
 // Mutation for external testing only
 func Mutation(c *ColourPolymorphicPrey, Mf float64) {
+	fmt.Println("Before:", c.colouration)
 	c.colouration = colour.RandRGBClamped(c.colouration, Mf)
+	fmt.Println("After:", c.colouration)
 }
 
 // set of methods implementing Mortal interface
