@@ -1,63 +1,19 @@
 package abm
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"math/rand"
+	"net/http"
 	"sync"
 	"time"
 
+	"github.com/JanBerktold/sse"
 	"github.com/benjamin-rood/abm-colour-polymorphism/colour"
 	"github.com/benjamin-rood/abm-colour-polymorphism/render"
 	"github.com/benjamin-rood/goio"
 )
-
-// Model acts as the working instance of the 'game'
-type Model struct {
-	Timeframe
-	Environment
-	Context
-	PopulationCPP
-	PopulationVP
-}
-
-// PopulationCPP holds the agent population
-type PopulationCPP struct {
-	PopCPP        []ColourPolymorphicPrey
-	DefinitionCPP []string //	lists agent interfaces which define the behaviour of this type
-}
-
-// PopulationVP holds the agent population
-type PopulationVP struct {
-	PopVP        []VisualPredator
-	DefinitionVP []string //	lists agent interfaces which define the behaviour of this type
-}
-
-/*
-Timeframe holds the model's representation of the time metrics.
-Turn – The cycle length for all agents ∈ 𝐄 to perform 1 (and only 1) Action.
-Phase – Division of a Turn, between agent sets, environmental effects/factors,
-				and updates to populations and model conditions (via external).
-				One Phase is complete when all members of a set have performed an Action
-				or all requirements for the model's continuation have been fulfilled.
-Action – An individual 'step' in the model. All Actions have a cost:
-				the period (number of turns) before that specific Action can be
-				performed again. For most actions this is zero.
-				Some Actions could also *stop* any other behaviour by that agent
-				for a period.
-*/
-type Timeframe struct {
-	Turn   int
-	Phase  int
-	Action int
-}
-
-// Log prints the current state of time
-func (m *Model) Log() {
-	log.Printf("%04dT : %04dP : %04dA\n", m.Turn, m.Phase, m.Action)
-	log.Printf("cpp population size = %d\n", len(m.PopCPP))
-	log.Printf("vp population size = %d\n", len(m.PopVP))
-}
 
 /*
 Environment specifies the boundary / dimensions of the working model. They
@@ -103,19 +59,160 @@ type Context struct {
 	CppMutationFactor     float64   `json:"abm-cpp-mf"` //	mutation factor
 	RandomAges            bool      `json:"abm-random-ages"`
 	RNGRandomSeed         bool      `json:"abm-rng-random-seed"` //	flag for using server-set random seed val.
-	RNGSeedVal            int       `json:"abm-rng-seedval"`     //	RNG seed value
+	RNGSeedVal            int64     `json:"abm-rng-seedval"`     //	RNG seed value
 	Fuzzy                 float64
 }
 
-var timeMark time.Time
+// PopulationCPP holds the agent population
+type PopulationCPP struct {
+	PopCPP        []ColourPolymorphicPrey
+	DefinitionCPP []string //	lists agent interfaces which define the behaviour of this type
+}
 
-func runningModel(m Model, ar chan<- render.AgentRender, quit <-chan struct{}, turn chan<- struct{}) {
-	var am sync.Mutex
-	var cppAgentWg sync.WaitGroup
-	// var vpAgentWg sync.WaitGroup
+// PopulationVP holds the agent population
+type PopulationVP struct {
+	PopVP        []VisualPredator
+	DefinitionVP []string //	lists agent interfaces which define the behaviour of this type
+}
+
+/*
+Timeframe holds the model's representation of the time metrics.
+Turn – The cycle length for all agents ∈ 𝐄 to perform 1 (and only 1) Action.
+Phase – Division of a Turn, between agent sets, environmental effects/factors,
+				and updates to populations and model conditions (via external).
+				One Phase is complete when all members of a set have performed an Action
+				or all requirements for the model's continuation have been fulfilled.
+Action – An individual 'step' in the model. All Actions have a cost:
+				the period (number of turns) before that specific Action can be
+				performed again. For most actions this is zero.
+				Some Actions could also *stop* any other behaviour by that agent
+				for a period.
+*/
+type Timeframe struct {
+	Turn   uint64
+	Phase  uint64
+	Action uint64
+}
+
+// Model acts as the working instance of the 'game'
+type Model struct {
+	running bool
+	Timeframe
+	Environment
+	Context
+	PopulationCPP
+	PopulationVP
+	om chan goio.OutMsg
+	im chan goio.InMsg
+	e  chan error
+	q  chan struct{}
+	r  chan struct{}
+}
+
+// Init initialises the model to the 2D defaults:
+func (m *Model) Init() {
+	m.running = false
+	m.Timeframe = Timeframe{}
+	m.Environment = Environment{
+		Bounds:         []float64{1.0, 1.0},
+		Dimensionality: 2,
+		BG:             colour.RandRGB(),
+	}
+	m.Context = DemoContext
+	m.PopulationCPP = PopulationCPP{}
+	m.PopulationVP = PopulationVP{}
+	m.om = make(chan goio.OutMsg)
+	m.im = make(chan goio.InMsg)
+	m.e = make(chan error)
+	m.q = make(chan struct{})
+}
+
+// Controller processes instructions from web client
+func (m *Model) Controller() {
 	for {
 		select {
-		case <-quit:
+		case msg := <-m.im:
+			switch msg.Type {
+			case "start":
+				json.Unmarshal(msg.Data, &m.Context)
+				if m.running {
+					m.r <- struct{}{}
+					m.Reset()
+				}
+				m.Start()
+			}
+		}
+	}
+}
+
+// Reset resets all non-channel fields
+func (m *Model) Reset() {
+	m.running = false
+	m.Timeframe = Timeframe{}
+	m.Environment = Environment{
+		Bounds:         []float64{1.0, 1.0},
+		Dimensionality: 2,
+		BG:             colour.RandRGB(),
+	}
+	m.Context = DemoContext
+	m.PopulationCPP = PopulationCPP{}
+	m.PopulationVP = PopulationVP{}
+}
+
+// Log prints the current state of time
+func (m *Model) Log() {
+	log.Printf("%04dT : %04dP : %04dA\n", m.Turn, m.Phase, m.Action)
+	log.Printf("cpp population size = %d\n", len(m.PopCPP))
+	log.Printf("vp population size = %d\n", len(m.PopVP))
+}
+
+func (m *Model) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	// get an SSE connection from the HTTP request
+	conn, err := sse.Upgrade(w, r)
+	if err != nil {
+		log.Println("SSE connection upgrade failed!", err)
+		return
+	}
+
+	for {
+		select {
+		case msg := <-m.om:
+			if err := conn.WriteJson(msg); err != nil {
+				log.Println("writer: failed to WriteJSON:")
+				m.e <- err
+			}
+		case <-m.q:
+			close(m.r)
+			return
+		}
+	}
+}
+
+// Start the agent-based model
+func (m *Model) Start() {
+	m.running = true
+	ar := make(chan render.AgentRender)
+	turn := make(chan struct{})
+	if m.RNGRandomSeed {
+		rand.Seed(time.Now().UnixNano())
+	} else {
+		rand.Seed(m.RNGSeedVal)
+	}
+	m.PopCPP = GeneratePopulationCPP(m.CppPopulationStart, m.Context)
+	m.PopVP = GeneratePopulationVP(m.VpPopulationStart, m.Context)
+	go m.run(ar, turn)
+	go m.visualise(ar, turn)
+}
+
+func (m *Model) run(ar chan<- render.AgentRender, turn chan<- struct{}) {
+
+	var am sync.Mutex
+	var cppAgentWg sync.WaitGroup
+	var vpAgentWg sync.WaitGroup
+
+	for {
+		select {
+		case <-m.r:
 			// clean up, then...
 			return
 		default: //	PROCEED WITH TURN
@@ -123,7 +220,7 @@ func runningModel(m Model, ar chan<- render.AgentRender, quit <-chan struct{}, t
 			cInterval := time.Now()
 			for i := range m.PopCPP {
 				cppAgentWg.Add(1)
-				timeMark = time.Now()
+				timeMark := time.Now()
 				go func(i int) {
 					defer cppAgentWg.Done()
 					result := m.PopCPP[i].RBB(m.Context, len(m.PopCPP))
@@ -146,9 +243,9 @@ func runningModel(m Model, ar chan<- render.AgentRender, quit <-chan struct{}, t
 
 			var vpAgents []VisualPredator
 			for i := range m.PopVP {
-				// vpAgentWg.Add(1)
+				vpAgentWg.Add(1)
 				go func(i int) {
-					// defer vpAgentWg.Done()
+					defer vpAgentWg.Done()
 					result := m.PopVP[i].RBB(m.Context, m.PopCPP)
 					ar <- m.PopVP[i].GetDrawInfo()
 					am.Lock()
@@ -157,7 +254,7 @@ func runningModel(m Model, ar chan<- render.AgentRender, quit <-chan struct{}, t
 					m.Action++
 				}(i)
 			}
-			// vpAgentWg.Wait()
+			vpAgentWg.Wait()
 			m.PopVP = vpAgents //	update the population based on the results from each agent's rule-based behaviour of the turn.
 
 			m.Phase++
@@ -173,28 +270,11 @@ func runningModel(m Model, ar chan<- render.AgentRender, quit <-chan struct{}, t
 	}
 }
 
-// insufficient hack
-func InitModel(ctxt Context, e Environment, om chan goio.OutMsg, phase chan struct{}) {
-	simple := setModel(ctxt, e)
-	quit := make(chan struct{})
-	ar := make(chan render.AgentRender, 2000)
-	go runningModel(simple, ar, quit, phase)
-	go visualiseModel(ctxt, ar, om, phase)
-}
+func (m *Model) visualise(ar <-chan render.AgentRender, turn <-chan struct{}) {
 
-func setModel(ctxt Context, e Environment) (m Model) {
-	m.PopCPP = GeneratePopulationCPP(ctxt.CppPopulationStart, ctxt)
-	//m.PopVP = GeneratePopulationVP(ctxt.StartVpPopSize, ctxt)
-	m.DefinitionCPP = []string{"mover", "breeder", "mortal"}
-	m.DefinitionVP = []string{"mover", "hunter", "mortal"}
-	m.Environment = e
-	m.Context = ctxt
-	return
 }
 
 func visualiseModel(ctxt Context, ar <-chan render.AgentRender, out chan<- goio.OutMsg, turn <-chan struct{}) {
-	// v := DemoViewport
-	rand.Seed(time.Now().UnixNano())
 	bg := colour.RGB256{Red: 30, Green: 30, Blue: 30}
 	msg := goio.OutMsg{Type: "render", Data: nil}
 	dl := render.DrawList{
