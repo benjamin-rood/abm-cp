@@ -9,7 +9,7 @@ function visualisation() {
   var initDrawObj = {type: 'drawlist', data: {cpp: [], vp: [], bg: {red: 0, green: 0, blue: 0}}}
   var drawlist = new DrawList(initDrawObj)
 
-  var vizSource = new EventSource('/run')
+  var vizSource = new EventSource('/model')
   var viz = new p5(sketch, 'abm-viewport')
 
   vizSource.addEventListener('message', function(e) {

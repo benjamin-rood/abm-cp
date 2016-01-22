@@ -5,11 +5,9 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
-	"net/http"
 	"sync"
 	"time"
 
-	"github.com/JanBerktold/sse"
 	"github.com/benjamin-rood/abm-colour-polymorphism/colour"
 	"github.com/benjamin-rood/abm-colour-polymorphism/render"
 	"github.com/benjamin-rood/goio"
@@ -97,20 +95,21 @@ type Timeframe struct {
 // Model acts as the working instance of the 'game'
 type Model struct {
 	running bool
+	Dead    bool
 	Timeframe
 	Environment
 	Context
 	PopulationCPP
 	PopulationVP
-	om chan goio.OutMsg
-	im chan goio.InMsg
+	Om chan goio.OutMsg
+	Im chan goio.InMsg
 	e  chan error
-	q  chan struct{}
+	Q  chan struct{}
 	r  chan struct{}
 }
 
-// Init initialises the model to the 2D defaults:
-func (m *Model) Init() {
+// NewModel is a constructor for initialising a Model instance
+func NewModel() (m Model) {
 	m.running = false
 	m.Timeframe = Timeframe{}
 	m.Environment = Environment{
@@ -121,22 +120,24 @@ func (m *Model) Init() {
 	m.Context = DemoContext
 	m.PopulationCPP = PopulationCPP{}
 	m.PopulationVP = PopulationVP{}
-	m.om = make(chan goio.OutMsg)
-	m.im = make(chan goio.InMsg)
+	m.Om = make(chan goio.OutMsg)
+	m.Im = make(chan goio.InMsg)
 	m.e = make(chan error)
-	m.q = make(chan struct{})
+	m.Q = make(chan struct{})
+	m.r = make(chan struct{})
+	return
 }
 
 // Controller processes instructions from web client
 func (m *Model) Controller() {
 	for {
 		select {
-		case msg := <-m.im:
+		case msg := <-m.Im:
 			switch msg.Type {
 			case "start":
 				json.Unmarshal(msg.Data, &m.Context)
 				if m.running {
-					m.r <- struct{}{}
+					m.Stop()
 					m.Reset()
 				}
 				m.Start()
@@ -166,26 +167,11 @@ func (m *Model) Log() {
 	log.Printf("vp population size = %d\n", len(m.PopVP))
 }
 
-func (m *Model) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// get an SSE connection from the HTTP request
-	conn, err := sse.Upgrade(w, r)
-	if err != nil {
-		log.Println("SSE connection upgrade failed!", err)
-		return
-	}
-
-	for {
-		select {
-		case msg := <-m.om:
-			if err := conn.WriteJson(msg); err != nil {
-				log.Println("writer: failed to WriteJSON:")
-				m.e <- err
-			}
-		case <-m.q:
-			close(m.r)
-			return
-		}
-	}
+func (m *Model) Stop() {
+	close(m.r)
+	m.running = false
+	time.Sleep(1 * time.Second)
+	m.r = make(chan struct{})
 }
 
 // Start the agent-based model
@@ -201,7 +187,7 @@ func (m *Model) Start() {
 	m.PopCPP = GeneratePopulationCPP(m.CppPopulationStart, m.Context)
 	m.PopVP = GeneratePopulationVP(m.VpPopulationStart, m.Context)
 	go m.run(ar, turn)
-	go m.visualise(ar, turn)
+	go m.vis(ar, turn)
 }
 
 func (m *Model) run(ar chan<- render.AgentRender, turn chan<- struct{}) {
@@ -213,7 +199,9 @@ func (m *Model) run(ar chan<- render.AgentRender, turn chan<- struct{}) {
 	for {
 		select {
 		case <-m.r:
-			// clean up, then...
+			time.Sleep(time.Second)
+			close(ar)
+			close(turn)
 			return
 		default: //	PROCEED WITH TURN
 			var cppAgents []ColourPolymorphicPrey
@@ -270,13 +258,9 @@ func (m *Model) run(ar chan<- render.AgentRender, turn chan<- struct{}) {
 	}
 }
 
-func (m *Model) visualise(ar <-chan render.AgentRender, turn <-chan struct{}) {
-
-}
-
-func visualiseModel(ctxt Context, ar <-chan render.AgentRender, out chan<- goio.OutMsg, turn <-chan struct{}) {
-	bg := colour.RGB256{Red: 30, Green: 30, Blue: 30}
+func (m *Model) vis(ar <-chan render.AgentRender, turn <-chan struct{}) {
 	msg := goio.OutMsg{Type: "render", Data: nil}
+	bg := m.BG.To256()
 	dl := render.DrawList{
 		CPP: nil,
 		VP:  nil,
@@ -285,19 +269,15 @@ func visualiseModel(ctxt Context, ar <-chan render.AgentRender, out chan<- goio.
 	for {
 		select {
 		case job := <-ar:
-			// offload the viewport translation to client (browser) side.
-			//job.TranslateToViewport(v, ctxt.Bounds[0], ctxt.Bounds[1])
 			switch job.Type {
 			case "cpp":
 				dl.CPP = append(dl.CPP, job)
 			case "vp":
 				dl.VP = append(dl.VP, job)
-			default:
-				log.Fatalf("viz: failed to determine agent-render job type!")
 			}
 		case <-turn:
 			msg.Data = dl
-			out <- msg
+			m.Om <- msg
 			// reset msg contents
 			msg = goio.OutMsg{Type: "render", Data: nil}
 			//	reset draw instructions
@@ -306,7 +286,8 @@ func visualiseModel(ctxt Context, ar <-chan render.AgentRender, out chan<- goio.
 				VP:  nil,
 				BG:  bg,
 			}
-			// removed viewport update case – switching this responsibility completely to client side.
+		case <-m.r:
+			return
 		}
 	}
 }
