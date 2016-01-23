@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/Pallinder/go-randomdata"
-	"github.com/benjamin-rood/abm-colour-polymorphism/abm"
 	"github.com/benjamin-rood/goio"
 	"golang.org/x/net/websocket"
 )
@@ -31,65 +30,78 @@ func dataError(err error, c chan struct{}) {
 	close(c)
 }
 
-type abmHub map[string]abm.Client
+const (
+	sweepFreq   = time.Minute
+	deathPeriod = time.Hour * 24
+)
 
-var hub abmHub
+var socketUsers map[string]Client
 
-func serverSession(ws *websocket.Conn) {
-	uid := getUIDString()
-	c := abm.Client{
-		UID:    uid,
-		Model:  abm.NewModel(),
-		Active: true,
-		Stamp:  time.Now(),
-	}
-	hub[uid] = c
-	go wsReader(ws, c.Im)
-	go wsWriter(ws, c.Om)
-	watcher(&c)
-}
-
-func watcher(c *abm.Client) {
-	defer func() {
-		c.Active = false
-		c.Stamp = time.Now()
-	}()
+func sweepSocketClients() {
+	sweeper := time.NewTicker(sweepFreq)
 	select {
-	case <-c.Q:
-		// send final statistics
-		// clean up
-		return
+	case <-sweeper.C:
+		for uid, client := range socketUsers {
+			if client.Dead {
+				delete(socketUsers, uid)
+				continue
+			}
+			if time.Since(client.Stamp) >= deathPeriod {
+				delete(socketUsers, uid)
+			}
+		}
 	}
 }
 
-func wsReader(ws *websocket.Conn, in chan<- goio.InMsg) {
+func wsSession(ws *websocket.Conn) {
+	uid := getUIDString()
+	c := NewClient(ws, uid)
+	socketUsers[uid] = c
 	defer func() {
-		err := ws.Close()
+		err := c.Conn.Close()
 		if err != nil {
 			log.Fatalln(err)
 		}
+		delete(socketUsers, uid)
 	}()
+	wsCh := make(chan struct{})
+	go wsReader(ws, c.Im, wsCh)
+	go wsWriter(ws, c.Om, wsCh)
+	go c.Controller()
+	c.Start()       //	demo
+	c.Monitor(wsCh) //	keep alive
+}
 
+func wsReader(ws *websocket.Conn, in chan<- goio.InMsg, wsCh chan struct{}) {
+	defer func() {
+		//	clean up
+	}()
+	var msg goio.InMsg
 	for {
-		var msg goio.InMsg
-		err := websocket.JSON.Receive(ws, &msg)
-		if err != nil {
-			log.Println("wsReader: Can't receive!")
+		select {
+		case <-wsCh:
+			return
+		default:
+			err := websocket.JSON.Receive(ws, &msg)
+			if err != nil {
+				log.Println("Disconnected User.")
+				close(wsCh)
+				return
+			}
+			in <- msg //	gets picked up by Model controller function
 		}
-		in <- msg
 	}
 }
 
-func wsWriter(ws *websocket.Conn, out <-chan goio.OutMsg) {
+func wsWriter(ws *websocket.Conn, out <-chan goio.OutMsg, quit <-chan struct{}) {
 	defer func() {
-		err := ws.Close()
-		if err != nil {
-			log.Fatalln(err)
-		}
+		// clean up
 	}()
 
 	for {
 		select {
+		case <-quit:
+			return
 		case msg := <-out:
 			websocket.JSON.Send(ws, msg)
 		}
@@ -99,7 +111,7 @@ func wsWriter(ws *websocket.Conn, out <-chan goio.OutMsg) {
 func getUIDString() string {
 again:
 	id := randomdata.SillyName()
-	_, exists := hub[id]
+	_, exists := socketUsers[id]
 	if exists {
 		goto again
 	}
@@ -108,7 +120,8 @@ again:
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
+	go sweepSocketClients()
 	http.Handle("/", http.FileServer(http.Dir(".")))
-	http.Handle("/ws", websocket.Handler(serverSession))
+	http.Handle("/ws", websocket.Handler(wsSession))
 	http.ListenAndServe(":8080", nil)
 }

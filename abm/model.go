@@ -13,6 +13,10 @@ import (
 	"github.com/benjamin-rood/goio"
 )
 
+const (
+	pause = 1 * time.Second
+)
+
 /*
 Environment specifies the boundary / dimensions of the working model. They
 extend in both positive and negative directions, oriented at the center. Setting
@@ -101,11 +105,11 @@ type Model struct {
 	Context
 	PopulationCPP
 	PopulationVP
-	Om chan goio.OutMsg
-	Im chan goio.InMsg
-	e  chan error
-	Q  chan struct{}
-	r  chan struct{}
+	Om   chan goio.OutMsg
+	Im   chan goio.InMsg
+	e    chan error
+	Quit chan struct{}
+	r    chan struct{}
 }
 
 // NewModel is a constructor for initialising a Model instance
@@ -118,14 +122,19 @@ func NewModel() (m Model) {
 		BG:             colour.RandRGB(),
 	}
 	m.Context = DemoContext
-	m.PopulationCPP = PopulationCPP{}
-	m.PopulationVP = PopulationVP{}
 	m.Om = make(chan goio.OutMsg)
 	m.Im = make(chan goio.InMsg)
 	m.e = make(chan error)
-	m.Q = make(chan struct{})
+	m.Quit = make(chan struct{})
 	m.r = make(chan struct{})
 	return
+}
+
+// Kill off the model and any client bound to it.
+func (m *Model) Kill() {
+	m.Stop()
+	close(m.Quit)
+	m.Dead = true
 }
 
 // Controller processes instructions from web client
@@ -138,40 +147,21 @@ func (m *Model) Controller() {
 				json.Unmarshal(msg.Data, &m.Context)
 				if m.running {
 					m.Stop()
-					m.Reset()
 				}
 				m.Start()
 			}
+		case <-m.Quit:
+			return
 		}
 	}
 }
 
-// Reset resets all non-channel fields
-func (m *Model) Reset() {
-	m.running = false
-	m.Timeframe = Timeframe{}
-	m.Environment = Environment{
-		Bounds:         []float64{1.0, 1.0},
-		Dimensionality: 2,
-		BG:             colour.RandRGB(),
-	}
-	m.Context = DemoContext
-	m.PopulationCPP = PopulationCPP{}
-	m.PopulationVP = PopulationVP{}
-}
-
 // Log prints the current state of time
+// shit version
 func (m *Model) Log() {
 	log.Printf("%04dT : %04dP : %04dA\n", m.Turn, m.Phase, m.Action)
 	log.Printf("cpp population size = %d\n", len(m.PopCPP))
 	log.Printf("vp population size = %d\n", len(m.PopVP))
-}
-
-func (m *Model) Stop() {
-	close(m.r)
-	m.running = false
-	time.Sleep(1 * time.Second)
-	m.r = make(chan struct{})
 }
 
 // Start the agent-based model
@@ -190,12 +180,32 @@ func (m *Model) Start() {
 	go m.vis(ar, turn)
 }
 
+// Stop the agent-based model
+func (m *Model) Stop() {
+	close(m.r)
+	m.running = false
+	m.PopCPP = nil
+	m.PopVP = nil
+	time.Sleep(pause)
+	m.r = make(chan struct{})
+}
+
+// Suspend = pause an agent-based model to be resumed later.
+func (m *Model) Suspend() {
+	close(m.r)
+	time.Sleep(pause)
+}
+
+// Resume from a suspended agent-based model
+func (m *Model) Resume() {
+	m.r = make(chan struct{})
+	ar := make(chan render.AgentRender)
+	turn := make(chan struct{})
+	go m.run(ar, turn)
+	go m.vis(ar, turn)
+}
+
 func (m *Model) run(ar chan<- render.AgentRender, turn chan<- struct{}) {
-
-	var am sync.Mutex
-	var cppAgentWg sync.WaitGroup
-	var vpAgentWg sync.WaitGroup
-
 	for {
 		select {
 		case <-m.r:
@@ -203,59 +213,69 @@ func (m *Model) run(ar chan<- render.AgentRender, turn chan<- struct{}) {
 			close(ar)
 			close(turn)
 			return
+		case <-m.Quit:
+			// clean up?
+			return
 		default: //	PROCEED WITH TURN
-			var cppAgents []ColourPolymorphicPrey
-			cInterval := time.Now()
-			for i := range m.PopCPP {
-				cppAgentWg.Add(1)
-				timeMark := time.Now()
-				go func(i int) {
-					defer cppAgentWg.Done()
-					result := m.PopCPP[i].RBB(m.Context, len(m.PopCPP))
-					ar <- m.PopCPP[i].GetDrawInfo()
-					am.Lock()
-					cppAgents = append(cppAgents, result...)
-					am.Unlock()
-					time.Sleep(time.Millisecond * 10)
-					m.Action++
-				}(i)
-				fmt.Printf("cp-rbb: %04d elapsed: %v\n", i, time.Since(timeMark))
-			}
-			fmt.Printf("m.PopCPP: %04d total cp-rbb elapsed: %v\n", len(m.PopCPP), time.Since(cInterval))
-			cppAgentWg.Wait()
-			m.PopCPP = cppAgents //	update the population based on the results from each agent's rule-based behaviour of the turn.
-			m.Phase++
-			m.Action = 0 // reset at phase end
-			// m.Log()
-			time.Sleep(time.Millisecond * 50)
-
-			var vpAgents []VisualPredator
-			for i := range m.PopVP {
-				vpAgentWg.Add(1)
-				go func(i int) {
-					defer vpAgentWg.Done()
-					result := m.PopVP[i].RBB(m.Context, m.PopCPP)
-					ar <- m.PopVP[i].GetDrawInfo()
-					am.Lock()
-					vpAgents = append(vpAgents, result...)
-					am.Unlock()
-					m.Action++
-				}(i)
-			}
-			vpAgentWg.Wait()
-			m.PopVP = vpAgents //	update the population based on the results from each agent's rule-based behaviour of the turn.
-
-			m.Phase++
-			m.Action = 0 // reset at phase end
-			// m.Log()
-			time.Sleep(time.Millisecond * 50)
-			turn <- struct{}{}
-
-			m.Phase = 0 //	reset at Turn end
-			m.Turn++
-			// m.Log()
+			go m.turn(ar, turn)
 		}
 	}
+}
+
+func (m *Model) turn(ar chan<- render.AgentRender, turn chan<- struct{}) {
+	var am sync.Mutex
+	var cppAgentWg sync.WaitGroup
+	var vpAgentWg sync.WaitGroup
+	var cppAgents []ColourPolymorphicPrey
+	cInterval := time.Now()
+	for i := range m.PopCPP {
+		cppAgentWg.Add(1)
+		timeMark := time.Now()
+		go func(i int) {
+			defer cppAgentWg.Done()
+			result := m.PopCPP[i].RBB(m.Context, len(m.PopCPP))
+			ar <- m.PopCPP[i].GetDrawInfo()
+			am.Lock()
+			cppAgents = append(cppAgents, result...)
+			am.Unlock()
+			time.Sleep(time.Millisecond * 10)
+			m.Action++
+		}(i)
+		fmt.Printf("cp-rbb: %04d elapsed: %v\n", i, time.Since(timeMark))
+	}
+	fmt.Printf("m.PopCPP: %04d total cp-rbb elapsed: %v\n", len(m.PopCPP), time.Since(cInterval))
+	cppAgentWg.Wait()
+	m.PopCPP = cppAgents //	update the population based on the results from each agent's rule-based behaviour of the turn.
+	m.Phase++
+	m.Action = 0 // reset at phase end
+	// m.Log()
+	time.Sleep(time.Millisecond * 50)
+
+	var vpAgents []VisualPredator
+	for i := range m.PopVP {
+		vpAgentWg.Add(1)
+		go func(i int) {
+			defer vpAgentWg.Done()
+			result := m.PopVP[i].RBB(m.Context, m.PopCPP)
+			ar <- m.PopVP[i].GetDrawInfo()
+			am.Lock()
+			vpAgents = append(vpAgents, result...)
+			am.Unlock()
+			m.Action++
+		}(i)
+	}
+	vpAgentWg.Wait()
+	m.PopVP = vpAgents //	update the population based on the results from each agent's rule-based behaviour of the turn.
+
+	m.Phase++
+	m.Action = 0 // reset at phase end
+	// m.Log()
+	time.Sleep(time.Millisecond * 50)
+	turn <- struct{}{}
+
+	m.Phase = 0 //	reset at Turn end
+	m.Turn++
+	// m.Log()
 }
 
 func (m *Model) vis(ar <-chan render.AgentRender, turn <-chan struct{}) {
