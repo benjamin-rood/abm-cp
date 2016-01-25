@@ -46,7 +46,7 @@ Base requirements completed.
 	 * Mutation (colouration). :white_check_mark:
 
 * Visual Predator implementation:
-	* Rule-Based-Behaviour. :white_check_mark:
+	* Rule-Based-Behaviour. :black_check_mark:
 	* Exhaustive Prey Search (very slow). :white_check_mark:
 	* Colour Imprinting (needs tweaking, no baseline yet established). :white_check_mark:
 
@@ -55,6 +55,8 @@ Base requirements completed.
 * Unit tests for `geometry`, `calc`, `render` packages. :white_check_mark:
 
 ### 0.2.0
+
+* Client-side input validation.
 
 * Switch data serialisation to Protocol Buffers (protobuf) – marshalling drawing instructions to JSON is currently the single most expensive action!
  
