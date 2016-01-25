@@ -2,7 +2,6 @@ package abm
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"math/rand"
 	"sync"
@@ -11,6 +10,7 @@ import (
 	"github.com/benjamin-rood/abm-colour-polymorphism/colour"
 	"github.com/benjamin-rood/abm-colour-polymorphism/render"
 	"github.com/benjamin-rood/goio"
+	"github.com/davecgh/go-spew/spew"
 )
 
 const (
@@ -144,7 +144,12 @@ func (m *Model) Controller() {
 		case msg := <-m.Im:
 			switch msg.Type {
 			case "context":
-				json.Unmarshal(msg.Data, &m.Context)
+				err := json.Unmarshal(msg.Data, &m.Context)
+				if err != nil {
+					log.Println("model Controller(): error: json.Unmarshal:", err)
+					m.Kill()
+				}
+				spew.Dump(m.Context)
 				if m.running {
 					m.Stop()
 				}
@@ -209,12 +214,13 @@ func (m *Model) run(ar chan<- render.AgentRender, turn chan<- struct{}) {
 	for {
 		select {
 		case <-m.r:
-			time.Sleep(time.Second)
+			time.Sleep(time.Millisecond * 250)
 			close(ar)
 			close(turn)
 			return
 		case <-m.Quit:
 			// clean up?
+			time.Sleep(time.Millisecond * 250)
 			return
 		default: //	PROCEED WITH TURN
 			if len(m.PopCPP) == 0 {
@@ -230,10 +236,10 @@ func (m *Model) turn(ar chan<- render.AgentRender, turn chan<- struct{}) {
 	var cppAgentWg sync.WaitGroup
 	var vpAgentWg sync.WaitGroup
 	var cppAgents []ColourPolymorphicPrey
-	cInterval := time.Now()
+	// cInterval := time.Now()
 	for i := range m.PopCPP {
 		cppAgentWg.Add(1)
-		timeMark := time.Now()
+		// timeMark := time.Now()
 		go func(i int) {
 			defer cppAgentWg.Done()
 			result := m.PopCPP[i].RBB(m.Context, len(m.PopCPP))
@@ -244,14 +250,13 @@ func (m *Model) turn(ar chan<- render.AgentRender, turn chan<- struct{}) {
 			time.Sleep(time.Millisecond * 10)
 			m.Action++
 		}(i)
-		fmt.Printf("cp-rbb: %04d elapsed: %v\n", i, time.Since(timeMark))
+		// fmt.Printf("cp-rbb: %04d elapsed: %v\n", i, time.Since(timeMark))
 	}
-	fmt.Printf("m.PopCPP: %04d total cp-rbb elapsed: %v\n", len(m.PopCPP), time.Since(cInterval))
+	// fmt.Printf("m.PopCPP: %04d total cp-rbb elapsed: %v\n", len(m.PopCPP), time.Since(cInterval))
 	cppAgentWg.Wait()
 	m.PopCPP = cppAgents //	update the population based on the results from each agent's rule-based behaviour of the turn.
 	m.Phase++
 	m.Action = 0 // reset at phase end
-	// m.Log()
 	time.Sleep(time.Millisecond * 50)
 
 	var vpAgents []VisualPredator
@@ -272,13 +277,12 @@ func (m *Model) turn(ar chan<- render.AgentRender, turn chan<- struct{}) {
 
 	m.Phase++
 	m.Action = 0 // reset at phase end
-	// m.Log()
 	time.Sleep(time.Millisecond * 50)
 	turn <- struct{}{}
 
 	m.Phase = 0 //	reset at Turn end
 	m.Turn++
-	// m.Log()
+	m.Log()
 }
 
 func (m *Model) vis(ar <-chan render.AgentRender, turn <-chan struct{}) {

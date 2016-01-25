@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"math/rand"
 	"net/http"
 	"time"
 
@@ -36,6 +35,7 @@ const (
 	deathPeriod = time.Hour * 24
 )
 
+// global mutable index of current users.
 var socketUsers = make(map[string]Client)
 
 func sweepSocketClients() {
@@ -43,10 +43,10 @@ func sweepSocketClients() {
 	select {
 	case <-sweeper.C:
 		for uid, client := range socketUsers {
-			// if client.Dead {
-			// 	delete(socketUsers, uid)
-			// 	continue
-			// }
+			if client.Dead {
+				delete(socketUsers, uid)
+				continue
+			}
 			if time.Since(client.Stamp) >= deathPeriod {
 				delete(socketUsers, uid)
 			}
@@ -85,7 +85,7 @@ func wsReader(ws *websocket.Conn, in chan<- goio.InMsg, quit chan struct{}) {
 		default:
 			err := websocket.JSON.Receive(ws, &msg)
 			if err != nil {
-				fmt.Println("error: wsReader:", err)
+				log.Println("error: wsReader:", err)
 				log.Println("Disconnected User.")
 				close(quit)
 				return
@@ -122,7 +122,6 @@ again:
 }
 
 func main() {
-	rand.Seed(time.Now().UnixNano())
 	http.Handle("/", http.FileServer(http.Dir(".")))
 	http.Handle("/ws", websocket.Handler(wsSession))
 	http.ListenAndServe(":8080", nil)

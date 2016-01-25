@@ -29,6 +29,12 @@ func NewClient(ws *websocket.Conn, uid string) (c Client) {
 	return
 }
 
+// Monitor keeps the client's connection alive,
+// and responds to any internal running model signaling
+// – e.g. if there is a fault in the running abm,
+// or if the population of the CP Prey agents reaches zero,
+// then the model will invoke Kill() and Quit will close,
+// which permits us to clean up and disconnect the Client.
 func (c *Client) Monitor(ch chan struct{}) {
 	defer func() {
 		c.Active = false
