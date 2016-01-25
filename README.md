@@ -1,13 +1,13 @@
-####Software for computing a Predator-Prey Agent Based Model of prey colour polymorphism (CP) in Go. 
+Software for computing a Predator-Prey Agent Based Model of prey colour polymorphism (CP) in Go. 
 
-####Written specifically to assist the research by Dr. James Dale in evaluating hypotheses for the evolutionary maintenance of extreme colour polymorphism.
+Written specifically to assist the research by Dr. James Dale in evaluating hypotheses for the evolutionary maintenance of extreme colour polymorphism.
 
 
 ##Goal
 
-####Server-side computation, client-side GUI controls and visualisation of the running ABM in a web browser.
+Server-side computation, client-side GUI controls and visualisation of the running ABM in a web browser.
 
-####Generalise system so any `abm` package with local model context, agent design, etc can be hot-swapped in (linked via a command line flag) and run.
+Generalise system so any `abm` package with local model context, agent design, etc can be hot-swapped in (linked via a command line flag) and run.
 
 ###How to use:
 Install Go from [here](https://golang.org/dl/).
