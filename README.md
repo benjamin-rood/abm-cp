@@ -46,9 +46,9 @@ Base requirements completed.
 	 * Mutation (colouration). :white_check_mark:
 
 * Visual Predator implementation:
-	* Rule-Based-Behaviour. :black_check_mark:
-	* Exhaustive Prey Search (very slow). :white_check_mark:
-	* Colour Imprinting (needs tweaking, no baseline yet established). :white_check_mark:
+	- [ ] Rule-Based-Behaviour.
+	- [x] Exhaustive Prey Search (very slow).
+	- [x] Colour Imprinting (needs tweaking, no baseline yet established).
 
 * Simple concurrent execution of Predator/Prey RBB. :white_check_mark:
 
