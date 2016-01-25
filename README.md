@@ -15,7 +15,7 @@ Download this repository:  run `go get -u github.com/benjamin-rood/abm-colour-po
 Change current directory to `$GOPATH/src/github.com/benjamin-rood/abm-colour-polymorphism` and run `go build && ./abm-colour-polymorphism`
 Point web browser at `localhost:8080`
 
-Only tested so far on Safari (OS X) and Chrome (OS X). 
+Only tested so far on Safari (OS X) and Chrome (OS X).
 
 
 
@@ -74,7 +74,7 @@ Base requirements completed.
 
 * Unit tests for `abm` package
 
-* Simple end-to-end tests.
+* Integration, end-to-end tests?
 
 
 ### 1.0.0
@@ -87,7 +87,7 @@ Base requirements completed.
 
 * Enable use in a distributed environment.
 
-* Complete end-to-end testing suite.
+* Complete testing suite.
 
 * Allow hot-swapping of different `abm` packages.
 
