@@ -116,38 +116,41 @@ vizSocket.onerror = function(e) {
 
 $(function () {
   $('#contextParamsSend').on('click', function() {
-    var context = new Object()
-    var abmCppPopStart = document.getElementById("abm-cpp-pop-start").value
-    context['abm-cpp-pop-start'] = parseInt($('#abm-cpp-pop-start').val())
-    context['abm-cpp-pop-cap'] = parseInt($('#abm-cpp-pop-cap').val())
-    context['abm-cpp-ageing'] = parseBool($('#abm-cpp-ageing').val())
-    context['abm-cpp-lifespan'] = parseInt($('#abm-cpp-lifespan').val())
-    context['abm-cpp-speed'] = parseInt($('#abm-cpp-speed').val())
-    context['abm-cpp-turn'] = parseInt($('#abm-cpp-turn').val())
-    context['abm-cpp-sexual-cost'] = parseInt($('#abm-cpp-sexual-cost').val())
-    context['abm-cpp-reproduction-chance'] = parseFloat($('#abm-cpp-reproduction-chance').val())
-    context['abm-cpp-gestation'] = parseInt($('#abm-cpp-sexual-cost').val())
-    context['abm-cpp-spawn-size'] = parseInt($('#abm-cpp-spawn-size').val())
-    context['abm-cpp-mf'] = parseFloat($('#abm-cpp-mf').val())
-    context['abm-vp-pop-start'] = parseInt($('#abm-vp-pop-start').val())
-    context['abm-vp-pop-cap'] = parseInt($('#abm-vp-pop-cap').val())
-    context['abm-vp-ageing'] = parseBool($('#abm-vp-ageing').val())
-    context['abm-vp-lifespan'] = parseInt($('#abm-vp-lifespan').val())
-    context['abm-vp-speed'] = parseFloat($('#abm-vp-speed').val())
-    context['abm-vp-turn'] = parseFloat($('#abm-vp-turn').val())
-    context['abm-vp-vsr'] = parseFloat($('#abm-vp-vsr').val())
-    context['abm-vp-vsr-chance'] = parseFloat($('#abm-vp-vsr-chance').val())
-    context['abm-vp-attack-chance'] = parseFloat($('#abm-vp-attack-chance').val())
-    context['abm-vp-col-imprinting'] = parseFloat($('#abm-vp-col-imprinting').val())
-    context['abm-random-ages'] = parseBool($('#abm-random-ages').val())
-    context['abm-rng-random-seed'] = parseBool($('#abm-rng-random-seed').val())
-    context['abm-rng-seedval'] = parseInt($('#abm-rng-seedval').val())
-    var OutMsg = Object
-    OutMsg.type = "start"
-    OutMsg.data = context
-    console.dir(OutMsg)
-    console.dir(JSON.stringify(OutMsg))
-    vizSocket.send(JSON.stringify(OutMsg))
+    var context = {
+      ['abm-cpp-pop-start']: parseInt($('#abm-cpp-pop-start').val()),
+      ['abm-cpp-pop-cap']: parseInt($('#abm-cpp-pop-cap').val()),
+      ['abm-cpp-ageing']: parseBool($('#abm-cpp-ageing').val()),
+      ['abm-cpp-lifespan']: parseInt($('#abm-cpp-lifespan').val()),
+      ['abm-cpp-speed']: parseInt($('#abm-cpp-speed').val()),
+      ['abm-cpp-turn']: parseInt($('#abm-cpp-turn').val()),
+      ['abm-cpp-sexual-cost']: parseInt($('#abm-cpp-sexual-cost').val()),
+      ['abm-cpp-reproduction-chance']: parseFloat($('#abm-cpp-reproduction-chance').val()),
+      ['abm-cpp-gestation']: parseInt($('#abm-cpp-sexual-cost').val()),
+      ['abm-cpp-spawn-size']: parseInt($('#abm-cpp-spawn-size').val()),
+      ['abm-cpp-mf']: parseFloat($('#abm-cpp-mf').val()),
+      ['abm-vp-pop-start']: parseInt($('#abm-vp-pop-start').val()),
+      ['abm-vp-pop-cap']: parseInt($('#abm-vp-pop-cap').val()),
+      ['abm-vp-ageing']: parseBool($('#abm-vp-ageing').val()),
+      ['abm-vp-lifespan']: parseInt($('#abm-vp-lifespan').val()),
+      ['abm-vp-speed']: parseFloat($('#abm-vp-speed').val()),
+      ['abm-vp-turn']: parseFloat($('#abm-vp-turn').val()),
+      ['abm-vp-vsr']: parseFloat($('#abm-vp-vsr').val()),
+      ['abm-vp-vsr-chance']: parseFloat($('#abm-vp-vsr-chance').val()),
+      ['abm-vp-attack-chance']: parseFloat($('#abm-vp-attack-chance').val()),
+      ['abm-vp-col-imprinting']: parseFloat($('#abm-vp-col-imprinting').val()),
+      ['abm-random-ages']: parseBool($('#abm-random-ages').val()),
+      ['abm-rng-random-seed']: parseBool($('#abm-rng-random-seed').val()),
+      ['abm-rng-seedval']: parseInt($('#abm-rng-seedval').val())
+    }
+
+    var OutMsg = {
+      type: "context",
+      data: context
+    }
+
+    var json = JSON.stringify(OutMsg, null, 2)
+    console.log(json)
+    vizSocket.send(json)
   })
 })
 

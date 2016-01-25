@@ -36,7 +36,7 @@ func (c *Client) Monitor(ch chan struct{}) {
 	}()
 	for {
 		select {
-		case <-c.Quit: //	internal kill signal from client.
+		case <-c.Quit: //	internal signal from client.
 			close(ch) //	exit websocket connection.
 			// send final statistics
 			// clean up

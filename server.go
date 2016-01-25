@@ -90,8 +90,7 @@ func wsReader(ws *websocket.Conn, in chan<- goio.InMsg, quit chan struct{}) {
 				close(quit)
 				return
 			}
-			fmt.Println(msg)
-			// in <- msg //	gets picked up by Model controller function
+			in <- msg
 		}
 	}
 }

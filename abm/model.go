@@ -143,7 +143,7 @@ func (m *Model) Controller() {
 		select {
 		case msg := <-m.Im:
 			switch msg.Type {
-			case "start":
+			case "context":
 				json.Unmarshal(msg.Data, &m.Context)
 				if m.running {
 					m.Stop()
@@ -217,6 +217,9 @@ func (m *Model) run(ar chan<- render.AgentRender, turn chan<- struct{}) {
 			// clean up?
 			return
 		default: //	PROCEED WITH TURN
+			if len(m.PopCPP) == 0 {
+				m.Kill()
+			}
 			m.turn(ar, turn)
 		}
 	}
