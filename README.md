@@ -1,6 +1,6 @@
-Software for computing a Predator-Prey Agent Based Model of prey colour polymorphism (CP) in Go. 
 
-Written specifically to assist the research by Dr. James Dale in evaluating hypotheses for the evolutionary maintenance of extreme colour polymorphism.
+###Current Version: 0.1.1a
+Known Bugs: Visual Predator movement broken. Fixing now...
 
 
 ##Goal
@@ -98,3 +98,9 @@ Base requirements completed.
 * Fluid ABM timescale controls.
 
 * Optional recording of Visualisation to SVG frame sequence. 
+
+
+##Context
+Software for computing a Predator-Prey Agent Based Model of prey colour polymorphism (CP) in Go. 
+
+Written specifically to assist the research by Dr. James Dale in evaluating hypotheses for the evolutionary maintenance of extreme colour polymorphism.
