@@ -41,9 +41,7 @@ var (
 
 func networkError(err error, c chan struct{}) {
 	log.Println(err)
-	if err.Error() == "use of closed network connection" {
-		close(c)
-	}
+	close(c)
 }
 
 func modelError(err error, c chan struct{}) {
