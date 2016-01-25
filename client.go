@@ -34,16 +34,18 @@ func (c *Client) Monitor(ch chan struct{}) {
 		c.Active = false
 		c.Stamp = time.Now()
 	}()
-	select {
-	case <-c.Quit: //	internal kill signal from client.
-		close(ch) //	exit websocket connection.
-		// send final statistics
-		// clean up
-		return
-	case <-ch:
-		c.Suspend() //	websocket connection dead, suspend model operation.
-		return
-	default:
-		time.Sleep(time.Millisecond * 100)
+	for {
+		select {
+		case <-c.Quit: //	internal kill signal from client.
+			close(ch) //	exit websocket connection.
+			// send final statistics
+			// clean up
+			return
+		case <-ch:
+			c.Suspend() //	websocket connection dead, suspend model operation.
+			return
+		default:
+			time.Sleep(time.Millisecond * 100)
+		}
 	}
 }

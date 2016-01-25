@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
@@ -35,17 +36,17 @@ const (
 	deathPeriod = time.Hour * 24
 )
 
-var socketUsers map[string]Client
+var socketUsers = make(map[string]Client)
 
 func sweepSocketClients() {
 	sweeper := time.NewTicker(sweepFreq)
 	select {
 	case <-sweeper.C:
 		for uid, client := range socketUsers {
-			if client.Dead {
-				delete(socketUsers, uid)
-				continue
-			}
+			// if client.Dead {
+			// 	delete(socketUsers, uid)
+			// 	continue
+			// }
 			if time.Since(client.Stamp) >= deathPeriod {
 				delete(socketUsers, uid)
 			}
@@ -55,6 +56,7 @@ func sweepSocketClients() {
 
 func wsSession(ws *websocket.Conn) {
 	uid := getUIDString()
+	fmt.Println("wsSession uid:", uid)
 	c := NewClient(ws, uid)
 	socketUsers[uid] = c
 	defer func() {
@@ -68,27 +70,28 @@ func wsSession(ws *websocket.Conn) {
 	go wsReader(ws, c.Im, wsCh)
 	go wsWriter(ws, c.Om, wsCh)
 	go c.Controller()
-	c.Start()       //	demo
 	c.Monitor(wsCh) //	keep alive
 }
 
-func wsReader(ws *websocket.Conn, in chan<- goio.InMsg, wsCh chan struct{}) {
+func wsReader(ws *websocket.Conn, in chan<- goio.InMsg, quit chan struct{}) {
 	defer func() {
 		//	clean up
 	}()
-	var msg goio.InMsg
 	for {
+		msg := goio.InMsg{}
 		select {
-		case <-wsCh:
+		case <-quit:
 			return
 		default:
 			err := websocket.JSON.Receive(ws, &msg)
 			if err != nil {
+				fmt.Println("error: wsReader:", err)
 				log.Println("Disconnected User.")
-				close(wsCh)
+				close(quit)
 				return
 			}
-			in <- msg //	gets picked up by Model controller function
+			fmt.Println(msg)
+			// in <- msg //	gets picked up by Model controller function
 		}
 	}
 }
@@ -104,6 +107,7 @@ func wsWriter(ws *websocket.Conn, out <-chan goio.OutMsg, quit <-chan struct{}) 
 			return
 		case msg := <-out:
 			websocket.JSON.Send(ws, msg)
+			time.Sleep(time.Millisecond * 100)
 		}
 	}
 }
@@ -120,7 +124,6 @@ again:
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
-	go sweepSocketClients()
 	http.Handle("/", http.FileServer(http.Dir(".")))
 	http.Handle("/ws", websocket.Handler(wsSession))
 	http.ListenAndServe(":8080", nil)

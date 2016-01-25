@@ -217,7 +217,7 @@ func (m *Model) run(ar chan<- render.AgentRender, turn chan<- struct{}) {
 			// clean up?
 			return
 		default: //	PROCEED WITH TURN
-			go m.turn(ar, turn)
+			m.turn(ar, turn)
 		}
 	}
 }

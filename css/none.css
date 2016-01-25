@@ -1,5 +1,9 @@
 body {
-    background: #f4f3f1;
+    background: #f4f3f1
     margin: 0;
     text-align: center;
+}
+
+::invalid {
+  background-color: #ff91a4
 }

@@ -12,15 +12,14 @@ const (
 	y
 	z
 
-	demoMaxCPP = 10000
-	demoMaxVP  = 10
-
+	demoMaxCPP     = 500
+	demoMaxVP      = 10
 	quarterpi      = 0.7853981633974483096156608458198757210492923498437764
 	eigthpi        = 0.3926990816987241548078304229099378605246461749218882
 	d              = 1.0
 	dimensionality = 2
 	cppPopSize     = 3
-	vpPopSize      = 10
+	vpPopSize      = 0
 	vsr            = d / 4
 	γ              = 1.0
 	cpplife        = 50
@@ -32,10 +31,10 @@ const (
 	v𝛔             = 1.0
 	v𝛂             = 1.0
 	v𝛘             = 0.2
-	cppS           = 0.004
+	cppS           = 0.006
 	cppA           = 1.0
 	cτ             = quarterpi
-	sr             = 0.004
+	sr             = 0.006
 	randomAges     = true
 	fuzzy          = 0.3
 	mf             = 0.05
@@ -45,6 +44,7 @@ const (
 	cβ             = 5
 	vpAgeing       = false
 	cppAgeing      = true
+	rngRandomSeed  = true
 )
 
 var (
@@ -88,5 +88,6 @@ var (
 		CppSpawnSize:          cβ,
 		RandomAges:            randomAges,
 		Fuzzy:                 fuzzy,
+		RNGRandomSeed:         rngRandomSeed,
 	}
 )
