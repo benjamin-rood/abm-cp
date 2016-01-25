@@ -8,8 +8,6 @@ window.onbeforeunload = function() {
 
 websocket.onopen = function () {
   console.log('websocket connection init')
-  websocket.send('Client listening...')
-
   websocket.onlose = function (e) {
 
   }
