@@ -15,7 +15,7 @@ Server-side computation, client-side GUI controls and visualisation of the runni
 ## Roadmap
 
 ### 0.1.0
-* Base requirements completed. :white_check_mark:
+Base requirements completed.
 
 * A simple interface for the CP Prey ABM, with the visualisation on the left, with contextual parameter controls on the right. :white_check_mark:
 
