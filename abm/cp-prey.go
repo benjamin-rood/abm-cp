@@ -246,9 +246,7 @@ func (c *ColourPolymorphicPrey) Birth(ctxt Context) []ColourPolymorphicPrey {
 
 // For now, mutation only affects colouration, but could be extended to affect any other parameter.
 func (c *ColourPolymorphicPrey) mutation(Mf float64) {
-	fmt.Println("Before:", c.colouration)
 	c.colouration = colour.RandRGBClamped(c.colouration, Mf)
-	fmt.Println("After:", c.colouration)
 }
 
 // Mutation for external testing only

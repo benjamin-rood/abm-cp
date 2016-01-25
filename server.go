@@ -122,7 +122,7 @@ again:
 }
 
 func main() {
-	http.Handle("/", http.FileServer(http.Dir(".")))
+	http.Handle("/", http.FileServer(http.Dir("./public")))
 	http.Handle("/ws", websocket.Handler(wsSession))
 	http.ListenAndServe(":8080", nil)
 }
