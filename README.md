@@ -1,11 +1,21 @@
-Software for computing a Predator-Prey Agent Based Model of prey colour polymorphism (CP) in Go. 
+####Software for computing a Predator-Prey Agent Based Model of prey colour polymorphism (CP) in Go. 
 
-Written specifically to assist the research by Dr. James Dale in evaluating hypotheses for the evolutionary maintenance of extreme colour polymorphism.
+####Written specifically to assist the research by Dr. James Dale in evaluating hypotheses for the evolutionary maintenance of extreme colour polymorphism.
 
 
 ##Goal
 
-**Server-side computation, client-side GUI controls and visualisation of the running ABM in a web browser.**
+####Server-side computation, client-side GUI controls and visualisation of the running ABM in a web browser.
+
+####Generalise system so any `abm` package with local model context, agent design, etc can be hot-swapped in (linked via a command line flag) and run.
+
+###How to use:
+Install Go from [here](https://golang.org/dl/).
+Download this repository:  run `go get -u github.com/benjamin-rood/abm-colour-polymorphism`
+Change current directory to `$GOPATH/src/github.com/benjamin-rood/abm-colour-polymorphism` and run `go build && ./abm-colour-polymorphism`
+Point web browser at `localhost:8080`
+
+Only tested so far on Safari (OS X) and Chrome (OS X). 
 
 
 
@@ -42,12 +52,49 @@ Base requirements completed.
 
 * Simple concurrent execution of Predator/Prey RBB. :white_check_mark:
 
+* Unit tests for `geometry`, `calc`, `render` packages. :white_check_mark:
+
 ### 0.2.0
+
+* Switch data serialisation to Protocol Buffers (protobuf) – marshalling drawing instructions to JSON is currently the single most expensive action!
+ 
+* Visual Predator implemenation:
+	* Find baseline params for Colour Imprinting.
+	* Adaptation in response to hunger.
+	* Starvation ⟹ Death.
+	* Sexual Reproduction.
+	* Better Prey Search (using grid system).
+
+### 0.3.0
 
 * Use *k-dimensional tree* for spatial partitioning of model environment.
 
-* Increase ABM performance.  
-
 * Visual Predator implemenation:
-	* Find baseline params for Colour Imprinting
 	* Optimal Prey Search (using *k-d tree*)
+
+* Unit tests for `abm` package
+
+* Simple end-to-end tests.
+
+
+### 1.0.0
+
+* Live statistical graphing widgets
+
+* Allow end-user to switch between different browser layouts: Visualisation only, Standard, and Statistical.
+
+* Control ABM computation from command-line.
+
+* Enable use in a distributed environment.
+
+* Complete end-to-end testing suite.
+
+* Allow hot-swapping of different `abm` packages.
+
+* Store modelling sessions to server database along with statistical data for later retrieval.
+
+*  Offline ABM computation (start the model running, leave it, reconnect, see what it's up to).
+
+* Fluid ABM timescale controls.
+
+* Optional recording of Visualisation to SVG frame sequence. 
