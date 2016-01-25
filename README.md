@@ -4,8 +4,11 @@ Written specifically to assist the research by Dr. James Dale in evaluating hypo
 
 
 ##Goal
-Server-side computation, client-side GUI controls and visualisation of the running ABM in a web browser.
 
+
+----------
+
+Server-side computation, client-side GUI controls and visualisation of the running ABM in a web browser.
 
 ----------
 
