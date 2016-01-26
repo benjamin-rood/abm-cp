@@ -5,7 +5,7 @@ import (
 	"github.com/benjamin-rood/abm-colour-polymorphism/render"
 )
 
-// demo holds baseline parameters for a running model.
+// Default holds baseline parameters for a running model.
 
 const (
 	x = iota
@@ -87,11 +87,11 @@ var (
 		Dimensionality: dimensionality,
 		BG:             colour.Black,
 	}
-	// DemoViewport to be used as a baseline reference
-	DemoViewport = render.Viewport{Width: 1200, Height: 800}
+	// DefaultViewport to be used as a baseline reference
+	DefaultViewport = render.Viewport{Width: 1200, Height: 800}
 
-	// DemoContext to be used as a baseline example
-	DemoContext = Context{
+	// DefaultContext to be used as a baseline example
+	DefaultContext = Context{
 		Bounds:                DefaultEnvironment.Bounds,
 		CppPopulationStart:    dCppPopStart,
 		CppPopulationCap:      dCppPopCap,
