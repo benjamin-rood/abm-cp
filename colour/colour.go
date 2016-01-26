@@ -62,7 +62,7 @@ func RGBDistance(c1 RGB, c2 RGB) float64 {
 	red := c1.Red - c2.Red
 	green := c1.Green - c2.Green
 	blue := c1.Blue - c2.Blue
-	return calc.ToFixed(((red + blue + green) / 3.0), 3) // returns to 3 d.p. only
+	return math.Abs(calc.ToFixed(((red + blue + green) / 3.0), 3)) // returns to 3 d.p. only
 }
 
 // RandRGB will return a random valid RGB object within the complete range of all possible RGB values.

@@ -1,17 +1,19 @@
 package abm
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"log"
 	"math"
 	"math/rand"
-	"time"
+	"sort"
 
 	"github.com/benjamin-rood/abm-colour-polymorphism/calc"
 	"github.com/benjamin-rood/abm-colour-polymorphism/colour"
 	"github.com/benjamin-rood/abm-colour-polymorphism/geometry"
 	"github.com/benjamin-rood/abm-colour-polymorphism/render"
+	"github.com/davecgh/go-spew/spew"
 )
 
 // VisualPredator - Predator agent type for Predator-Prey ABM
@@ -19,7 +21,7 @@ type VisualPredator struct {
 	pos        geometry.Vector //	position in the environment
 	movS       float64         //	speed
 	movA       float64         //	acceleration
-	Rτ         float64         // turn rate / range (in radians)
+	tr         float64         // turn rate / range (in radians)
 	dir        geometry.Vector //	must be implemented as a unit vector
 	dir𝚯       float64         //	 heading angle
 	lifespan   int
@@ -29,6 +31,17 @@ type VisualPredator struct {
 	vsr        float64 //	visual search range
 	γ          float64 //	visual acuity (initially, use 1.0)
 	colImprint colour.RGB
+}
+
+func vpTesterAgent(xPos float64, yPos float64) (tester VisualPredator) {
+	tester = vpTestPop(1)[0]
+	tester.pos[x] = xPos
+	tester.pos[y] = yPos
+	return
+}
+
+func vpTestPop(size int) []VisualPredator {
+	return GeneratePopulationVP(size, TestContext)
 }
 
 // GeneratePopulationVP will create `size` number of Visual Predator agents
@@ -45,17 +58,19 @@ func GeneratePopulationVP(size int, context Context) (pop []VisualPredator) {
 		} else {
 			agent.lifespan = 99999
 		}
-		agent.movS = context.VS
-		agent.movA = context.VA
+		agent.movS = context.VpMovS
+		agent.movA = context.VpMovA
 		agent.dir𝚯 = rand.Float64() * (2 * math.Pi)
 		agent.dir = geometry.UnitVector(agent.dir𝚯)
-		agent.Rτ = context.VpTurn
+		agent.tr = context.VpTurn
 		agent.vsr = context.Vsr
 		agent.γ = context.Vγ //	visual acuity
 		agent.hunger = 0
 		agent.fertility = 1
 		agent.gravid = false
 		agent.colImprint = colour.RandRGB()
+		// spew.Dump(agent)
+		_ = "breakpoint" // godebug
 		pop = append(pop, agent)
 	}
 	return
@@ -68,6 +83,7 @@ func (vp *VisualPredator) GetDrawInfo() (ar render.AgentRender) {
 	ar.Y = vp.pos[y]
 	ar.Heading = vp.dir𝚯
 	ar.Colour = vp.colImprint.To256()
+	spew.Dump(ar)
 	return
 }
 
@@ -139,7 +155,7 @@ func (vp *VisualPredator) PreySearch(population []ColourPolymorphicPrey, searchC
 		population[i].𝛘 = colour.RGBDistance(vp.colImprint, population[i].colouration)
 	}
 
-	population = VisualSort(population)
+	sort.Sort(VisualDifference(population))
 	_ = "breakpoint" // godebug
 
 	for i := range population {
@@ -148,14 +164,9 @@ func (vp *VisualPredator) PreySearch(population []ColourPolymorphicPrey, searchC
 		if err != nil {
 			return
 		}
-		if distanceToTarget > vp.vsr {
-			return
-		}
-		fmt.Println("distanceToTarget * vp.γ * population[i].𝛘 =", (distanceToTarget * vp.γ * population[i].𝛘))
 		if (distanceToTarget * vp.γ * population[i].𝛘) > searchChance {
 			target = &population[i]
 			fmt.Println("target found =", *target)
-			time.Sleep(time.Second)
 			return
 		}
 	}
@@ -183,7 +194,6 @@ func (vp *VisualPredator) Attack(prey *ColourPolymorphicPrey, vpAttackChance flo
 		vp.colourImprinting(prey.colouration, imprintFactor)
 		vp.hunger -= 5
 		prey.lifespan = 0 //	i.e. prey agent flagged for removal at the next turn.
-		time.Sleep(1 * time.Second)
 		fmt.Println("eaten =", *prey)
 		return true
 	}
@@ -220,4 +230,22 @@ func (vp *VisualPredator) Age(ctxt Context) (jump string) {
 		jump = "PATROL"
 	}
 	return
+}
+
+// String returns a clear textual presentation the internal values of the VP agent
+func (vp *VisualPredator) String() string {
+	var buffer bytes.Buffer
+	buffer.WriteString(fmt.Sprintf("pos=(%v,%v)\n", vp.pos[x], vp.pos[y]))
+	buffer.WriteString(fmt.Sprintf("movS=%v\n", vp.movS))
+	buffer.WriteString(fmt.Sprintf("movA=%v\n", vp.movA))
+	buffer.WriteString(fmt.Sprintf("dir𝚯=%v\n", vp.dir𝚯))
+	buffer.WriteString(fmt.Sprintf("dir=(%v,%v)\n", vp.dir[x], vp.dir[y]))
+	buffer.WriteString(fmt.Sprintf("tr=%v\n", vp.tr))
+	buffer.WriteString(fmt.Sprintf("Vsr=%v\n", vp.vsr))
+	buffer.WriteString(fmt.Sprintf("lifespan=%v\n", vp.lifespan))
+	buffer.WriteString(fmt.Sprintf("hunger=%v\n", vp.hunger))
+	buffer.WriteString(fmt.Sprintf("fertility=%v\n", vp.fertility))
+	buffer.WriteString(fmt.Sprintf("gravid=%v\n", vp.gravid))
+	buffer.WriteString(fmt.Sprintf("colouration=%v\n", vp.colImprint))
+	return buffer.String()
 }

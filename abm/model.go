@@ -49,8 +49,8 @@ type Context struct {
 	VpPopulationCap       int       `json:"abm-vp-pop-cap"`
 	VpAgeing              bool      `json:"abm-vp-ageing"`
 	VpLifespan            int       `json:"abm-vp-lifespan"` //	Visual Predator lifespan
-	VS                    float64   `json:"abm-vp-speed"`    // Visual Predator speed
-	VA                    float64   // Visual Predator acceleration
+	VpMovS                float64   `json:"abm-vp-speed"`    // Visual Predator speed
+	VpMovA                float64   // Visual Predator acceleration
 	VpTurn                float64   `json:"abm-vp-turn"` //	Visual Predator turn rate / range (in radians)
 	Vsr                   float64   `json:"abm-vp-vsr"`  //	VP agent visual search range
 	Vγ                    float64   //	visual acuity in environments
@@ -150,6 +150,7 @@ func (m *Model) Controller() {
 					m.Kill()
 				}
 				spew.Dump(m.Context)
+				_ = "breakpoint" // godebug
 				if m.running {
 					m.Stop()
 				}

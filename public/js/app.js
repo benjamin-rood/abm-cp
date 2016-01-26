@@ -47,19 +47,13 @@ var sketch = function(p) {
 
     if (drawlist.vp) {
       for (var i = 0; i < drawlist.vp.length; i++) {
-        var x = drawlist.vp[i].position.x
-        var y = drawlist.vp[i].position.y
-        var angle = 0 //  because positive rotations here happen clockwise, rather than the convention of the unit circle
+        var x = absToView(drawlist.vp[i].position.x, modelDw, p.width)
+        var y = absToView(drawlist.vp[i].position.y, modelDh, p.height)
         var col = p.color(drawlist.vp[i].colour.red, drawlist.vp[i].colour.green, drawlist.vp[i].colour.blue)
-        p.push()
-        p.translate(x, y)
-        p.rotate(angle)
         p.fill(col)
         p.strokeWeight(1)
         p.stroke(255)
-        p.ellipse(0, 0, vpSize, vpSize)
-          // p.triangle(0-tSize, 0+tSize, 0, 0-(2*tSize), 0+tSize, 0+tSize)
-        p.pop()
+        p.ellipse(x, y, vpSize, vpSize)
       }
     }
   }
@@ -89,7 +83,7 @@ vizSocket.onopen = function(e) {
 
 vizSocket.onmessage = function(e) {
   var rawmsg = JSON.parse(e.data)
-    // console.log(rawmsg)
+  console.dir(rawmsg)
   switch (rawmsg.type) {
     case 'render':
       drawlist.cpp = rawmsg.data.cpp

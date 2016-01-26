@@ -20,33 +20,15 @@ type ColourPolymorphicPrey struct {
 	movA        float64         //	acceleration
 	dir𝚯        float64         //	 heading angle
 	dir         geometry.Vector //	must be implemented as a unit vector
-	Rτ          float64         // turn rate / range (in radians)
+	tr          float64         // turn rate / range (in radians)
 	sr          float64         //	search range
 	lifespan    int
 	hunger      int        //	counter for interval between needing food
 	fertility   int        //	counter for interval between birth and sex
 	gravid      bool       //	i.e. pregnant
 	colouration colour.RGB //	colour
-	𝛘           float64    //	 colour sorting value - colour distance/difference between vp.imprimt and cpp.colouration
+	𝛘           float64    //	colour sorting value - colour distance/difference between vp.imprimt and cpp.colouration
 	δ           float64    //  position sorting value - vector distance between vp.pos and cpp.pos
-}
-
-// String returns a clear textual presentation the internal values of the CPP agent
-func (c *ColourPolymorphicPrey) String() string {
-	var buffer bytes.Buffer
-	buffer.WriteString(fmt.Sprintf("pos=(%v,%v)\n", c.pos[x], c.pos[y]))
-	buffer.WriteString(fmt.Sprintf("movS=%v\n", c.movS))
-	buffer.WriteString(fmt.Sprintf("movA=%v\n", c.movA))
-	buffer.WriteString(fmt.Sprintf("dir𝚯=%v\n", c.dir𝚯))
-	buffer.WriteString(fmt.Sprintf("dir=(%v,%v)\n", c.dir[x], c.dir[y]))
-	buffer.WriteString(fmt.Sprintf("Rτ=%v\n", c.Rτ))
-	buffer.WriteString(fmt.Sprintf("sr=%v\n", c.sr))
-	buffer.WriteString(fmt.Sprintf("lifespan=%v\n", c.lifespan))
-	buffer.WriteString(fmt.Sprintf("hunger=%v\n", c.hunger))
-	buffer.WriteString(fmt.Sprintf("fertility=%v\n", c.fertility))
-	buffer.WriteString(fmt.Sprintf("gravid=%v\n", c.gravid))
-	buffer.WriteString(fmt.Sprintf("colouration=%v\n", c.colouration))
-	return buffer.String()
 }
 
 // GetDrawInfo exports the data set needed for agent visualisation.
@@ -76,7 +58,7 @@ func GeneratePopulationCPP(size int, context Context) (pop []ColourPolymorphicPr
 		agent.movA = context.CppA
 		agent.dir𝚯 = rand.Float64() * (2 * math.Pi)
 		agent.dir = geometry.UnitVector(agent.dir𝚯)
-		agent.Rτ = context.CppTurn
+		agent.tr = context.CppTurn
 		agent.sr = context.CppSr
 		agent.hunger = 0
 		agent.fertility = 1
@@ -106,7 +88,7 @@ func spawn(size int, parent ColourPolymorphicPrey, context Context) (pop []Colou
 		agent.movA = parent.movA
 		agent.dir𝚯 = rand.Float64() * (2 * math.Pi)
 		agent.dir = geometry.UnitVector(agent.dir𝚯)
-		agent.Rτ = parent.Rτ
+		agent.tr = parent.tr
 		agent.sr = parent.sr
 		agent.hunger = 0
 		agent.fertility = 1
@@ -119,21 +101,21 @@ func spawn(size int, parent ColourPolymorphicPrey, context Context) (pop []Colou
 	return
 }
 
-// ProximitySort implements sort.Interface for []ColourPolymorphicPrey
+// Proximity implements sort.Interface for []ColourPolymorphicPrey
 // based on δ field.
-type ProximitySort []ColourPolymorphicPrey
+type Proximity []ColourPolymorphicPrey
 
-func (ps ProximitySort) Len() int           { return len(ps) }
-func (ps ProximitySort) Swap(i, j int)      { ps[i], ps[j] = ps[j], ps[i] }
-func (ps ProximitySort) Less(i, j int) bool { return ps[i].δ < ps[j].δ }
+func (px Proximity) Len() int           { return len(px) }
+func (px Proximity) Swap(i, j int)      { px[i], px[j] = px[j], px[i] }
+func (px Proximity) Less(i, j int) bool { return px[i].δ < px[j].δ } // use > to ensure ordering from closest to furtherest away!
 
 // VisualSort implements sort.Interface for []ColourPolymorphicPrey
 // based on 𝛘 field – to assert visual bias of a VisualPredator based on it's colour imprinting value.
-type VisualSort []ColourPolymorphicPrey
+type VisualDifference []ColourPolymorphicPrey
 
-func (vs VisualSort) Len() int           { return len(vs) }
-func (vs VisualSort) Swap(i, j int)      { vs[i], vs[j] = vs[j], vs[i] }
-func (vs VisualSort) Less(i, j int) bool { return vs[i].𝛘 < vs[j].𝛘 }
+func (vx VisualDifference) Len() int           { return len(vx) }
+func (vx VisualDifference) Swap(i, j int)      { vx[i], vx[j] = vx[j], vx[i] }
+func (vx VisualDifference) Less(i, j int) bool { return vx[i].𝛘 < vx[j].𝛘 }
 
 /*
 The Colour Polymorphic Prey agent is currently defined by the following animalistic interfaces:
@@ -276,4 +258,33 @@ func (c *ColourPolymorphicPrey) Age(ctxt Context) (jump string) {
 		jump = "EXPLORE"
 	}
 	return
+}
+
+// String returns a clear textual presentation the internal values of the CPP agent
+func (c *ColourPolymorphicPrey) String() string {
+	var buffer bytes.Buffer
+	buffer.WriteString(fmt.Sprintf("pos=(%v,%v)\n", c.pos[x], c.pos[y]))
+	buffer.WriteString(fmt.Sprintf("movS=%v\n", c.movS))
+	buffer.WriteString(fmt.Sprintf("movA=%v\n", c.movA))
+	buffer.WriteString(fmt.Sprintf("dir𝚯=%v\n", c.dir𝚯))
+	buffer.WriteString(fmt.Sprintf("dir=(%v,%v)\n", c.dir[x], c.dir[y]))
+	buffer.WriteString(fmt.Sprintf("tr=%v\n", c.tr))
+	buffer.WriteString(fmt.Sprintf("sr=%v\n", c.sr))
+	buffer.WriteString(fmt.Sprintf("lifespan=%v\n", c.lifespan))
+	buffer.WriteString(fmt.Sprintf("hunger=%v\n", c.hunger))
+	buffer.WriteString(fmt.Sprintf("fertility=%v\n", c.fertility))
+	buffer.WriteString(fmt.Sprintf("gravid=%v\n", c.gravid))
+	buffer.WriteString(fmt.Sprintf("colouration=%v\n", c.colouration))
+	return buffer.String()
+}
+
+func cppTesterAgent(xPos float64, yPos float64) (tester ColourPolymorphicPrey) {
+	tester = cppTestPop(1)[0]
+	tester.pos[x] = xPos
+	tester.pos[y] = yPos
+	return
+}
+
+func cppTestPop(size int) []ColourPolymorphicPrey {
+	return GeneratePopulationCPP(size, TestContext)
 }
