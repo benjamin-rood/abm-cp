@@ -109,7 +109,7 @@ func (px Proximity) Len() int           { return len(px) }
 func (px Proximity) Swap(i, j int)      { px[i], px[j] = px[j], px[i] }
 func (px Proximity) Less(i, j int) bool { return px[i].δ < px[j].δ } // use > to ensure ordering from closest to furtherest away!
 
-// VisualSort implements sort.Interface for []ColourPolymorphicPrey
+// VisualDifference implements sort.Interface for []ColourPolymorphicPrey
 // based on 𝛘 field – to assert visual bias of a VisualPredator based on it's colour imprinting value.
 type VisualDifference []ColourPolymorphicPrey
 
@@ -275,6 +275,8 @@ func (c *ColourPolymorphicPrey) String() string {
 	buffer.WriteString(fmt.Sprintf("fertility=%v\n", c.fertility))
 	buffer.WriteString(fmt.Sprintf("gravid=%v\n", c.gravid))
 	buffer.WriteString(fmt.Sprintf("colouration=%v\n", c.colouration))
+	buffer.WriteString(fmt.Sprintf("δ=%v\n", c.δ))
+	buffer.WriteString(fmt.Sprintf("𝛘=%v\n", c.𝛘))
 	return buffer.String()
 }
 

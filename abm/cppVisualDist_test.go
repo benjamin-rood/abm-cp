@@ -6,7 +6,6 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/benjamin-rood/abm-colour-polymorphism/calc"
 	"github.com/benjamin-rood/abm-colour-polymorphism/colour"
 )
 
@@ -71,17 +70,7 @@ func TestVisualDistSort(t *testing.T) {
 	want = append(want, copy[8])
 	want = append(want, copy[9])
 
-	fmt.Println()
-	for i, agent := range want {
-		fmt.Printf("dist from %d: (%v, %v, %v) = %v\n", i, calc.ToFixed(agent.colouration.Red, 2), calc.ToFixed(agent.colouration.Green, 2), calc.ToFixed(agent.colouration.Blue, 2), agent.𝛘)
-	}
-
 	sort.Sort(VisualDifference(prey))
-
-	fmt.Println()
-	for i, agent := range want {
-		fmt.Println(i, agent.𝛘)
-	}
 
 	ok, err = visualDiffEquivalence(want, prey)
 	if err != nil {
