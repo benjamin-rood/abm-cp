@@ -8,7 +8,7 @@ import (
 	"github.com/benjamin-rood/abm-colour-polymorphism/colour"
 )
 
-func TestVisualDistSort(t *testing.T) {
+func TestColourDistanceSort(t *testing.T) {
 	predator := VisualPredator{}
 	predator.colImprint = colour.RGB{Red: 0.5, Green: 0.5, Blue: 0.5}
 
@@ -19,6 +19,11 @@ func TestVisualDistSort(t *testing.T) {
 		agent.𝛘 = colour.RGBDistance(agent.colouration, predator.colImprint)
 		prey = append(prey, agent)
 	}
+
+	// fmt.Println("Before sorting:")
+	// for i, p := range prey {
+	// 	fmt.Println(i, p.colouration, p.𝛘)
+	// }
 
 	want := prey
 	want[0].colouration = colour.RGB{Red: 0.4, Green: 0.4, Blue: 0.4}
@@ -33,6 +38,11 @@ func TestVisualDistSort(t *testing.T) {
 	want[4].𝛘 = colour.RGBDistance(want[4].colouration, predator.colImprint)
 
 	sort.Sort(VisualDifference(prey))
+
+	// fmt.Println("After sorting:")
+	// for i, p := range prey {
+	// 	fmt.Println(i, p.colouration, p.𝛘)
+	// }
 
 	ok, err := visualDiffEquivalence(want, prey)
 	if err != nil {
@@ -51,24 +61,34 @@ func TestVisualDistSort(t *testing.T) {
 		prey = append(prey, agent)
 	}
 
+	// fmt.Println("Before sorting:")
+	// for i, p := range prey {
+	// 	fmt.Println(i, p.colouration, p.𝛘)
+	// }
+
 	copy := []ColourPolymorphicPrey{}
 	for _, p := range prey {
 		copy = append(copy, p)
 	}
 
 	want = []ColourPolymorphicPrey{}
-	want = append(want, copy[4])
 	want = append(want, copy[3])
-	want = append(want, copy[5])
+	want = append(want, copy[4])
 	want = append(want, copy[2])
-	want = append(want, copy[6])
+	want = append(want, copy[5])
 	want = append(want, copy[1])
-	want = append(want, copy[7])
+	want = append(want, copy[6])
 	want = append(want, copy[0])
+	want = append(want, copy[7])
 	want = append(want, copy[8])
 	want = append(want, copy[9])
 
 	sort.Sort(VisualDifference(prey))
+
+	// fmt.Println("After sorting:")
+	// for i, p := range prey {
+	// 	fmt.Println(i, p.colouration, p.𝛘)
+	// }
 
 	ok, err = visualDiffEquivalence(want, prey)
 	if err != nil {

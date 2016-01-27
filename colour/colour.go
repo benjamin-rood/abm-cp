@@ -59,10 +59,10 @@ as there would be 2 other RGB for any RGB with an identical magnitude.
 e.g. [1.0 0 0] [0 1.0 0] [0 0 1.0] will all have the same magnitude, but are
 pure Red, pure Blue, pure Green respectively! */
 func RGBDistance(c1 RGB, c2 RGB) float64 {
-	red := c1.Red - c2.Red
-	green := c1.Green - c2.Green
-	blue := c1.Blue - c2.Blue
-	return math.Abs(calc.ToFixed(((red + blue + green) / 3.0), 3)) // returns to 3 d.p. only
+	red := math.Abs(c1.Red - c2.Red)
+	green := math.Abs(c1.Green - c2.Green)
+	blue := math.Abs(c1.Blue - c2.Blue)
+	return calc.ToFixed(((red + blue + green) / 3.0), 3) // returns to 3 d.p. only
 }
 
 // RandRGB will return a random valid RGB object within the complete range of all possible RGB values.
@@ -73,6 +73,7 @@ func RandRGB() RGB {
 	return RGB{red, green, blue}
 }
 
+// RandRGB256 will return a random colour value
 func RandRGB256() RGB256 {
 	red := byte(rand.Intn(256))
 	green := byte(rand.Intn(256))
