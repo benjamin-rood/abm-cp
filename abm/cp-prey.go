@@ -107,7 +107,15 @@ type Proximity []ColourPolymorphicPrey
 
 func (px Proximity) Len() int           { return len(px) }
 func (px Proximity) Swap(i, j int)      { px[i], px[j] = px[j], px[i] }
-func (px Proximity) Less(i, j int) bool { return px[i].δ < px[j].δ } // use > to ensure ordering from closest to furtherest away!
+func (px Proximity) Less(i, j int) bool { return px[i].δ < px[j].δ }
+
+// ProximityP implements sort.Interface for []*ColourPolymorphicPrey
+// based on δ field.
+type ProximityP []ColourPolymorphicPrey
+
+func (px ProximityP) Len() int           { return len(px) }
+func (px ProximityP) Swap(i, j int)      { px[i], px[j] = px[j], px[i] }
+func (px ProximityP) Less(i, j int) bool { return px[i].δ < px[j].δ }
 
 // VisualDifference implements sort.Interface for []ColourPolymorphicPrey
 // based on 𝛘 field – to assert visual bias of a VisualPredator based on it's colour imprinting value.
@@ -116,6 +124,14 @@ type VisualDifference []ColourPolymorphicPrey
 func (vx VisualDifference) Len() int           { return len(vx) }
 func (vx VisualDifference) Swap(i, j int)      { vx[i], vx[j] = vx[j], vx[i] }
 func (vx VisualDifference) Less(i, j int) bool { return vx[i].𝛘 < vx[j].𝛘 }
+
+// VisualDifferenceP implements sort.Interface for []*ColourPolymorphicPrey
+// based on 𝛘 field – to assert visual bias of a VisualPredator based on it's colour imprinting value.
+type VisualDifferenceP []*ColourPolymorphicPrey
+
+func (vx VisualDifferenceP) Len() int           { return len(vx) }
+func (vx VisualDifferenceP) Swap(i, j int)      { vx[i], vx[j] = vx[j], vx[i] }
+func (vx VisualDifferenceP) Less(i, j int) bool { return vx[i].𝛘 < vx[j].𝛘 }
 
 /*
 The Colour Polymorphic Prey agent is currently defined by the following animalistic interfaces:

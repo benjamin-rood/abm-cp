@@ -2,7 +2,6 @@ package abm
 
 import (
 	"errors"
-	"fmt"
 	"sort"
 	"testing"
 
@@ -49,7 +48,6 @@ func TestVisualDistSort(t *testing.T) {
 		agent := ColourPolymorphicPrey{}
 		agent.colouration = colour.RGB{Red: float64(i) * 0.1, Green: float64(i) * 0.1, Blue: float64(i) * 0.1}
 		agent.𝛘 = colour.RGBDistance(agent.colouration, predator.colImprint)
-		fmt.Println(i, agent.𝛘)
 		prey = append(prey, agent)
 	}
 

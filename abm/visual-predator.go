@@ -149,25 +149,39 @@ func (vp *VisualPredator) VSRSectorSamples(d float64, n int) ([4][2]int, error) 
 // PreySearch – uses Visual Search to try to 'recognise' a nearby prey agent within model Environment to attack.
 func (vp *VisualPredator) PreySearch(population []ColourPolymorphicPrey, searchChance float64) (target *ColourPolymorphicPrey, err error) {
 
-	searchChance = 1.0 - searchChance
 	_ = "breakpoint" // godebug
+
+	var searchSet []*ColourPolymorphicPrey
 	for i := range population {
-		population[i].𝛘 = colour.RGBDistance(vp.colImprint, population[i].colouration)
+		population[i].δ, err = geometry.VectorDistance(vp.pos, population[i].pos)
+		if err != nil {
+			return nil, err
+		}
+		if population[i].δ <= vp.vsr { // ∴ only include the prey agent for considertion is it is within range.
+			population[i].𝛘 = colour.RGBDistance(vp.colImprint, population[i].colouration)
+			searchSet = append(searchSet, &population[i])
+		}
 	}
 
-	sort.Sort(VisualDifference(population))
-	_ = "breakpoint" // godebug
+	// fmt.Println("searchSet before sorting:")
+	// for i := range searchSet {
+	// 	fmt.Printf("%d %v %v %v %p\n", i, searchSet[i].pos, searchSet[i].δ, searchSet[i].𝛘, searchSet[i])
+	// }
 
-	for i := range population {
-		var distanceToTarget float64
-		distanceToTarget, err = geometry.VectorDistance(vp.pos, population[i].pos)
-		if err != nil {
-			return
-		}
-		if (distanceToTarget * vp.γ * population[i].𝛘) > searchChance {
-			target = &population[i]
-			fmt.Println("target found =", *target)
-			return
+	sort.Sort(VisualDifferenceP(searchSet))
+
+	// fmt.Println("searchSet after sorting:")
+	// for i := range searchSet {
+	// 	fmt.Printf("%d %v %v %v %p\n", i, searchSet[i].pos, searchSet[i].δ, searchSet[i].𝛘, searchSet[i])
+	// }
+
+	for i, p := range searchSet {
+		// fmt.Printf("((1.0 - %v) * (1.0 - %v) * %v) > (1.0 - %v)\n", p.𝛘, p.δ, vp.γ, searchChance)
+		// fmt.Printf("%v > %v\n", ((1.0 - p.𝛘) * (1.0 - p.δ) * vp.γ), (1.0 - searchChance))
+
+		if ((1.0 - p.𝛘) * (1.0 - p.δ) * vp.γ) > (1.0 - searchChance) {
+			// fmt.Printf("%d %v %v %v %p\n", i, searchSet[i].pos, searchSet[i].δ, searchSet[i].𝛘, searchSet[i])
+			return searchSet[i], nil
 		}
 	}
 	return
@@ -194,7 +208,8 @@ func (vp *VisualPredator) Attack(prey *ColourPolymorphicPrey, vpAttackChance flo
 		vp.colourImprinting(prey.colouration, imprintFactor)
 		vp.hunger -= 5
 		prey.lifespan = 0 //	i.e. prey agent flagged for removal at the next turn.
-		fmt.Println("eaten =", *prey)
+		fmt.Println("eaten =", prey.String())
+		fmt.Println("eater =", vp.String())
 		return true
 	}
 	return false
