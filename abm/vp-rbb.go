@@ -4,7 +4,6 @@ import (
 	"log"
 
 	"github.com/benjamin-rood/abm-colour-polymorphism/calc"
-	"github.com/davecgh/go-spew/spew"
 )
 
 /* Attack(Hunted) bool
@@ -12,8 +11,6 @@ Eat(Hunted) bool */
 
 // RBB : Rule-Based-Behaviour for Visual Predator Agent
 func (vp *VisualPredator) RBB(ctxt Context, cppPop []ColourPolymorphicPrey) (returning []VisualPredator) {
-	spew.Dump(*vp)
-	_ = "breakpoint" // godebug
 	jump := ""
 	jump = vp.Age(ctxt)
 	_ = "breakpoint" // godebug

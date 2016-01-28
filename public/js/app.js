@@ -22,7 +22,7 @@ var drawlist = new DrawList(initDrawObj)
 var sketch = function(p) {
   var modelDw = 1.0
   var modelDh = 1.0
-  var vpSize = 30
+  var vpSize = 60
   p.setup = function() {
     var w = $('#abm-viewport').innerWidth()
     var h = w * 0.75
@@ -53,7 +53,7 @@ var sketch = function(p) {
         p.fill(col)
         p.strokeWeight(1)
         p.stroke(255)
-        p.ellipse(x, y, vpSize, vpSize)
+        p.rect(x, y, vpSize, vpSize)
       }
     }
   }

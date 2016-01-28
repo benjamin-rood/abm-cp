@@ -13,7 +13,6 @@ import (
 	"github.com/benjamin-rood/abm-colour-polymorphism/colour"
 	"github.com/benjamin-rood/abm-colour-polymorphism/geometry"
 	"github.com/benjamin-rood/abm-colour-polymorphism/render"
-	"github.com/davecgh/go-spew/spew"
 )
 
 // VisualPredator - Predator agent type for Predator-Prey ABM
@@ -83,7 +82,6 @@ func (vp *VisualPredator) GetDrawInfo() (ar render.AgentRender) {
 	ar.Y = vp.pos[y]
 	ar.Heading = vp.dir𝚯
 	ar.Colour = vp.colImprint.To256()
-	spew.Dump(ar)
 	return
 }
 

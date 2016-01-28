@@ -8,7 +8,6 @@ import (
 
 	"github.com/Pallinder/go-randomdata"
 	"github.com/benjamin-rood/goio"
-	"github.com/davecgh/go-spew/spew"
 	"golang.org/x/net/websocket"
 )
 
@@ -107,7 +106,7 @@ func wsWriter(ws *websocket.Conn, out <-chan goio.OutMsg, quit <-chan struct{}) 
 			return
 		case msg := <-out:
 			websocket.JSON.Send(ws, msg)
-			spew.Dump(msg)
+			//spew.Dump(msg)
 			time.Sleep(time.Millisecond * 100)
 		}
 	}
