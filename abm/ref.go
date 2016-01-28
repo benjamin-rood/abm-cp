@@ -12,6 +12,8 @@ const (
 	y
 	z
 
+	τ         = 6.2831853071795864769252867665590057683943387987502116
+	twoPi     = τ
 	quarterpi = 0.7853981633974483096156608458198757210492923498437764
 	eigthpi   = 0.3926990816987241548078304229099378605246461749218882
 
@@ -43,6 +45,7 @@ const (
 	dVpSearchChance        = 1.0
 	dVpAttackChance        = 1.0
 	dVpColImpFactor        = 0.2
+	dVpStarvation          = 50
 	dCppMf                 = 0.05
 	dRandomAges            = true
 	dRNGRandomSeed         = true
@@ -65,14 +68,15 @@ const (
 	tVpPopCap              = 5
 	tVpAgeing              = false
 	tVpLifespan            = 9999
-	tVpMovS                = 0.01
+	tVpStarvation          = 9999
+	tVpMovS                = 0.5
 	tVpMovA                = 1.0
 	tVpTurn                = eigthpi / 2
 	tVpVsr                 = tVpMovS
 	tVy                    = 1.0
 	tVpReproductiveChance  = 1.0
-	tVpSearchChance        = 0.5
-	tVpAttackChance        = 0.5
+	tVpSearchChance        = 1.0
+	tVpAttackChance        = 1.0
 	tVpColImpFactor        = 0.2
 	tCppMf                 = 0.1
 	tRandomAges            = false
@@ -109,6 +113,7 @@ var (
 		VpPopulationCap:       dVpPopCap,
 		VpAgeing:              dVpAgeing,
 		VpLifespan:            dVpLifespan,
+		VpStarvation:          dVpStarvation,
 		VpMovS:                dVpMovS,
 		VpMovA:                1.0,
 		VpTurn:                dVpTurn,
@@ -144,6 +149,7 @@ var (
 		VpPopulationCap:       tVpPopCap,
 		VpAgeing:              tVpAgeing,
 		VpLifespan:            tVpLifespan,
+		VpStarvation:          tVpStarvation,
 		VpMovS:                tVpMovS,
 		VpMovA:                1.0,
 		VpTurn:                tVpTurn,

@@ -44,7 +44,8 @@ type Context struct {
 	VpPopulationCap       int       `json:"abm-vp-pop-cap"`
 	VpAgeing              bool      `json:"abm-vp-ageing"`
 	VpLifespan            int       `json:"abm-vp-lifespan"` //	Visual Predator lifespan
-	VpMovS                float64   `json:"abm-vp-speed"`    // Visual Predator speed
+	VpStarvation          int       `json:"abm-vp-starvation"`
+	VpMovS                float64   `json:"abm-vp-speed"` // Visual Predator speed
 	VpMovA                float64   // Visual Predator acceleration
 	VpTurn                float64   `json:"abm-vp-turn"` //	Visual Predator turn rate / range (in radians)
 	Vsr                   float64   `json:"abm-vp-vsr"`  //	VP agent visual search range
@@ -89,6 +90,11 @@ type Timeframe struct {
 	Turn   uint64
 	Phase  uint64
 	Action uint64
+}
+
+// Reset 's the timeframe to 00:00:00
+func (t *Timeframe) Reset() {
+	t.Turn, t.Phase, t.Action = 0, 0, 0
 }
 
 // Model acts as the working instance of the 'game'

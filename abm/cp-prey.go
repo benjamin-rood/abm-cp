@@ -18,7 +18,7 @@ type ColourPolymorphicPrey struct {
 	pos         geometry.Vector //	position in the environment
 	movS        float64         //	speed
 	movA        float64         //	acceleration
-	dir𝚯        float64         //	 heading angle
+	𝚯           float64         //	 heading angle
 	dir         geometry.Vector //	must be implemented as a unit vector
 	tr          float64         // turn rate / range (in radians)
 	sr          float64         //	search range
@@ -56,8 +56,8 @@ func GeneratePopulationCPP(size int, context Context) (pop []ColourPolymorphicPr
 		}
 		agent.movS = context.CppS
 		agent.movA = context.CppA
-		agent.dir𝚯 = rand.Float64() * (2 * math.Pi)
-		agent.dir = geometry.UnitVector(agent.dir𝚯)
+		agent.𝚯 = rand.Float64() * (2 * math.Pi)
+		agent.dir = geometry.UnitVector(agent.𝚯)
 		agent.tr = context.CppTurn
 		agent.sr = context.CppSr
 		agent.hunger = 0
@@ -86,8 +86,8 @@ func spawn(size int, parent ColourPolymorphicPrey, context Context) (pop []Colou
 		}
 		agent.movS = parent.movS
 		agent.movA = parent.movA
-		agent.dir𝚯 = rand.Float64() * (2 * math.Pi)
-		agent.dir = geometry.UnitVector(agent.dir𝚯)
+		agent.𝚯 = rand.Float64() * (2 * math.Pi)
+		agent.dir = geometry.UnitVector(agent.𝚯)
 		agent.tr = parent.tr
 		agent.sr = parent.sr
 		agent.hunger = 0
@@ -109,7 +109,7 @@ func (px Proximity) Len() int           { return len(px) }
 func (px Proximity) Swap(i, j int)      { px[i], px[j] = px[j], px[i] }
 func (px Proximity) Less(i, j int) bool { return px[i].δ < px[j].δ }
 
-// ProximityP implements sort.Interface for []*ColourPolymorphicPrey
+// ProximityP implements sort.Sort Interface for []*ColourPolymorphicPrey
 // based on δ field.
 type ProximityP []ColourPolymorphicPrey
 
@@ -117,7 +117,7 @@ func (px ProximityP) Len() int           { return len(px) }
 func (px ProximityP) Swap(i, j int)      { px[i], px[j] = px[j], px[i] }
 func (px ProximityP) Less(i, j int) bool { return px[i].δ < px[j].δ }
 
-// VisualDifference implements sort.Interface for []ColourPolymorphicPrey
+// VisualDifference implements sort.Sort Interface for []ColourPolymorphicPrey
 // based on 𝛘 field – to assert visual bias of a VisualPredator based on it's colour imprinting value.
 type VisualDifference []ColourPolymorphicPrey
 
@@ -125,13 +125,13 @@ func (vx VisualDifference) Len() int           { return len(vx) }
 func (vx VisualDifference) Swap(i, j int)      { vx[i], vx[j] = vx[j], vx[i] }
 func (vx VisualDifference) Less(i, j int) bool { return vx[i].𝛘 < vx[j].𝛘 }
 
-// VisualDifferenceP implements sort.Interface for []*ColourPolymorphicPrey
+// VisualDifferentiation implements sort.Sort Interface for []*ColourPolymorphicPrey
 // based on 𝛘 field – to assert visual bias of a VisualPredator based on it's colour imprinting value.
-type VisualDifferenceP []*ColourPolymorphicPrey
+type VisualDifferentiation []*ColourPolymorphicPrey
 
-func (vx VisualDifferenceP) Len() int           { return len(vx) }
-func (vx VisualDifferenceP) Swap(i, j int)      { vx[i], vx[j] = vx[j], vx[i] }
-func (vx VisualDifferenceP) Less(i, j int) bool { return vx[i].𝛘 < vx[j].𝛘 }
+func (vx VisualDifferentiation) Len() int           { return len(vx) }
+func (vx VisualDifferentiation) Swap(i, j int)      { vx[i], vx[j] = vx[j], vx[i] }
+func (vx VisualDifferentiation) Less(i, j int) bool { return vx[i].𝛘 < vx[j].𝛘 }
 
 /*
 The Colour Polymorphic Prey agent is currently defined by the following animalistic interfaces:
@@ -143,11 +143,11 @@ Mortal
 // Mover interface:
 
 // Turn implements agent Mover interface method for ColourPolymorphicPrey:
-// updates dir𝚯 and dir vector to the new heading offset by 𝚯
+// updates 𝚯 and dir vector to the new heading offset by 𝚯
 func (c *ColourPolymorphicPrey) Turn(𝚯 float64) {
-	newHeading := geometry.UnitAngle(c.dir𝚯 + 𝚯)
+	newHeading := geometry.UnitAngle(c.𝚯 + 𝚯)
 	c.dir = geometry.UnitVector(newHeading)
-	c.dir𝚯 = newHeading
+	c.𝚯 = newHeading
 }
 
 // Move implements agent Mover interface method for ColourPolymorphicPrey:
@@ -282,7 +282,7 @@ func (c *ColourPolymorphicPrey) String() string {
 	buffer.WriteString(fmt.Sprintf("pos=(%v,%v)\n", c.pos[x], c.pos[y]))
 	buffer.WriteString(fmt.Sprintf("movS=%v\n", c.movS))
 	buffer.WriteString(fmt.Sprintf("movA=%v\n", c.movA))
-	buffer.WriteString(fmt.Sprintf("dir𝚯=%v\n", c.dir𝚯))
+	buffer.WriteString(fmt.Sprintf("𝚯=%v\n", c.𝚯))
 	buffer.WriteString(fmt.Sprintf("dir=(%v,%v)\n", c.dir[x], c.dir[y]))
 	buffer.WriteString(fmt.Sprintf("tr=%v\n", c.tr))
 	buffer.WriteString(fmt.Sprintf("sr=%v\n", c.sr))

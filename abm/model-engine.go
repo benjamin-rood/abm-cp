@@ -24,6 +24,7 @@ func (m *Model) Controller() {
 					log.Println("model Controller(): error: json.Unmarshal:", err)
 					m.Kill()
 				}
+				m.Timeframe.Reset()
 				spew.Dump(m.Context)
 				_ = "breakpoint" // godebug
 				if m.running {

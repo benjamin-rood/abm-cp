@@ -101,10 +101,7 @@ func AngleFromOrigin(v Vector) (float64, error) {
 }
 
 // RelativeAngle – does what it says on the box.
-// Only implemented in 2D currently, or, as a comparitive rotation
-// on the z-axis in 3D.
-// (Not restricted, however, as one could have higher dimensionalites
-// of vector and still test for relative angle, by passing a slice which indicates which axis of rotation to be performed. TO BE PROPERLY IMPLEMETED LATER!)
+// Only implemented in 2D currently, or, as a comparitive rotation between two points on a single plane.
 func RelativeAngle(v Vector, u Vector) (float64, error) {
 	if len(v) == 0 || len(u) == 0 {
 		return 0, errors.New("v or u is an empty vector")
@@ -112,13 +109,28 @@ func RelativeAngle(v Vector, u Vector) (float64, error) {
 	if len(v) != len(u) {
 		return 0, errors.New("vector dimensions do not coincide")
 	}
-	det := (v[x] * u[y]) - (v[y] * u[x])
-	dot, err := DotProduct(v, u)
+
+	dx := u[x] - v[x]
+	dy := u[y] - v[y]
+
+	Φ := math.Atan2(dy, dx)
+	return calc.ToFixed(Φ, 5), nil
+}
+
+// AngleToIntercept calculates the change in angle required from the current heading to point in direction of target.
+func AngleToIntercept(pos Vector, dir𝚹 float64, target Vector) (float64, error) {
+	// angle between pos and target:
+	Φ, err := RelativeAngle(pos, target)
 	if err != nil {
 		return 0, err
 	}
-	angle := math.Atan2(det, dot)
-	return calc.ToFixed(angle, 5), nil
+	// angle between unit vector (dir) and Φ:
+	Ψ := Φ - dir𝚹
+	if Ψ < -math.Pi {
+		Ψ += 2 * math.Pi
+	}
+	Ψ = calc.ToFixed(Ψ, 5)
+	return Ψ, nil
 }
 
 // UnitAngle will map any floating-point value to its angle on a unit circle.
