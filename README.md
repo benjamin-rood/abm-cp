@@ -1,6 +1,5 @@
 
-###Current Version: 0.1.1a
-Known Bugs: Visual Predator movement broken. Fixing now...
+###Current Version: 0.1.1
 
 
 ##Goal
@@ -46,7 +45,7 @@ Base requirements completed.
 	 * Mutation (colouration). :white_check_mark:
 
 * Visual Predator implementation:
-	* Rule-Based-Behaviour. :x:
+	* Rule-Based-Behaviour. :white_check_mark:
 	* Exhaustive Prey Search (very slow). :white_check_mark:
 	* Colour Imprinting (needs tweaking, no baseline yet established). :white_check_mark:
 
