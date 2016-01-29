@@ -113,14 +113,14 @@ func (vp *VisualPredator) Move() error {
 	return nil
 }
 
-// VSRSectorSamples checks which sectors the VP agent's
+// VSRSectorSampling checks which sectors the VP agent's
 // Visual Search Radius intersects.
 // This initial version samples from 4 points on the circumference
 // of the circle with radius vp.visRange originating at the VP agent's position
 // The four sample points on the circumference at 45°, 135°, 225°, 315°
 // or π/4, 3π/4, 5π/4, 7π/4 radians,
 // or NE, NW, SW, SE on a compass, if you want to think of it that way :-)
-func (vp *VisualPredator) VSRSectorSamples(d float64, n int) ([4][2]int, error) {
+func (vp *VisualPredator) VSRSectorSampling(d float64, n int) ([4][2]int, error) {
 	sectorSamples := [4][2]int{}
 
 	x45 := vp.pos[x] + (vp.vsr * (math.Cos(math.Pi / 4)))
@@ -151,46 +151,63 @@ func (vp *VisualPredator) PreySearch(prey []ColourPolymorphicPrey, searchChance 
 	_ = "breakpoint" // godebug
 
 	var searchSet []*ColourPolymorphicPrey
-	for i := range prey { //	exhaustive search – BAD!
+	for i := range prey { //	exhaustive search 😱
 		prey[i].δ, err = geometry.VectorDistance(vp.pos, prey[i].pos)
-		if err != nil {
-			return nil, err
-		}
-		if prey[i].δ <= vp.vsr { // ∴ only include the prey agent for considertion is it is within range
+		if prey[i].δ <= vp.vsr { // ∴ only include the prey agent for considertion if within visual range
 			prey[i].𝛘 = colour.RGBDistance(vp.colImprint, prey[i].colouration)
 			searchSet = append(searchSet, &prey[i])
 		}
 	}
 
-	fmt.Println("Before sorting")
-	for i := range prey {
-		fmt.Printf("%v %v %v %v %p\n", i, prey[i].pos, prey[i].δ, prey[i].𝛘, &prey[i])
-	}
+	// fmt.Println("Before sorting")
+	// for i := range prey {
+	// 	fmt.Printf("%v %v %v %v %v %p\n", i, prey[i].pos, prey[i].δ, prey[i].colouration, prey[i].𝛘, &prey[i])
+	// }
 
 	sort.Sort(VisualDifferentiation(searchSet))
 
-	fmt.Println("After sorting")
-	for i := range searchSet {
-		fmt.Printf("%v %v %v %v %p\n", i, searchSet[i].pos, searchSet[i].δ, searchSet[i].𝛘, searchSet[i])
-	}
+	// fmt.Println("After sorting")
+	// for i := range searchSet {
+	// 	fmt.Printf("%v %v %v %v %v %p\n", i, searchSet[i].pos, searchSet[i].δ, searchSet[i].colouration, searchSet[i].𝛘, searchSet[i])
+	// }
 
+	identified := false
+	vx := geometry.Vector{}
+	dist := 0.0
+	// search within biased and reduced set
 	for i, p := range searchSet {
-		fmt.Println(i)
 		if ((1.0 - p.𝛘) * (1.0 - p.δ) * vp.γ) > (1.0 - searchChance) {
-			Ψ, err := geometry.AngleToIntercept(vp.pos, vp.𝚯, searchSet[i].pos)
-			if err != nil {
-				return nil, err
-			}
-			vp.Turn(calc.ClampFloatIn(Ψ, -vp.tr, vp.tr)) //	in all instances
-			vp.Move()                                    //	move towards
-			// but if too far away, can't attempt to attack right now:
-			if searchSet[i].δ < vp.movS {
-				vp.pos = searchSet[i].pos
+			// if in range, return address of prey agent to pass to Attack right away:
+			if p.δ < vp.movS {
+				vp.intercept(p.pos, p.δ)
 				return searchSet[i], err
+			}
+			// otherwise vp will move towards first one it's identified:
+			if !identified {
+				identified = true
+				vx, dist = p.pos, p.δ
 			}
 		}
 	}
 
+	if identified {
+		vp.intercept(vx, dist)
+	}
+
+	return
+}
+
+// turn and move towards position (as much as vp is able):
+func (vp *VisualPredator) intercept(vx geometry.Vector, dist float64) (err error) {
+	var Ψ float64 // change in angle required to intercept
+	Ψ, err = geometry.AngleToIntercept(vp.pos, vp.𝚯, vx)
+	if dist < vp.movS {
+		vp.pos = vx
+		vp.Turn(Ψ)
+		return
+	}
+	vp.Turn(calc.ClampFloatIn(Ψ, -vp.tr, vp.tr))
+	vp.Move()
 	return
 }
 

@@ -56,7 +56,7 @@ const (
 	tCppPopCap             = 5
 	tCppAgeing             = false
 	tCppLifespan           = 1
-	tCppMovS               = 0.006
+	tCppMovS               = 0.005
 	tCppMovA               = 1.0
 	tCppTurn               = quarterpi
 	tCppSr                 = tCppMovS
@@ -69,10 +69,10 @@ const (
 	tVpAgeing              = false
 	tVpLifespan            = 9999
 	tVpStarvation          = 9999
-	tVpMovS                = 0.5
+	tVpMovS                = 0.05
 	tVpMovA                = 1.0
 	tVpTurn                = eigthpi / 2
-	tVpVsr                 = tVpMovS
+	tVpVsr                 = 0.2
 	tVy                    = 1.0
 	tVpReproductiveChance  = 1.0
 	tVpSearchChance        = 1.0
