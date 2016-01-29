@@ -146,7 +146,7 @@ func (vp *VisualPredator) VSRSectorSampling(d float64, n int) ([4][2]int, error)
 	return sectorSamples, nil
 }
 
-// PreySearch – uses Visual Search to try to 'recognise' a nearby prey agent within model Environment to attack.
+// PreySearch – uses Visual Search to try to 'recognise' a nearby prey agent within model Environment to target
 func (vp *VisualPredator) PreySearch(prey []ColourPolymorphicPrey, searchChance float64) (target *ColourPolymorphicPrey, err error) {
 	_ = "breakpoint" // godebug
 
@@ -158,50 +158,38 @@ func (vp *VisualPredator) PreySearch(prey []ColourPolymorphicPrey, searchChance 
 			searchSet = append(searchSet, &prey[i])
 		}
 	}
-
-	// fmt.Println("Before sorting")
-	// for i := range prey {
-	// 	fmt.Printf("%v %v %v %v %v %p\n", i, prey[i].pos, prey[i].δ, prey[i].colouration, prey[i].𝛘, &prey[i])
-	// }
-
+	/*
+		fmt.Println("Before sorting")
+		for i := range prey {
+			fmt.Printf("%v %v %v %v %v %p\n", i, prey[i].pos, prey[i].δ, prey[i].colouration, prey[i].𝛘, &prey[i])
+		}
+	*/
 	sort.Sort(VisualDifferentiation(searchSet))
-
-	// fmt.Println("After sorting")
-	// for i := range searchSet {
-	// 	fmt.Printf("%v %v %v %v %v %p\n", i, searchSet[i].pos, searchSet[i].δ, searchSet[i].colouration, searchSet[i].𝛘, searchSet[i])
-	// }
-
-	identified := false
-	vx := geometry.Vector{}
-	dist := 0.0
+	/*
+		// fmt.Println("After sorting")
+		// for i := range searchSet {
+		// 	fmt.Printf("%v %v %v %v %v %p\n", i, searchSet[i].pos, searchSet[i].δ, searchSet[i].colouration, searchSet[i].𝛘, searchSet[i])
+		// }
+	*/
 	// search within biased and reduced set
 	for i, p := range searchSet {
 		if ((1.0 - p.𝛘) * (1.0 - p.δ) * vp.γ) > (1.0 - searchChance) {
-			// if in range, return address of prey agent to pass to Attack right away:
-			if p.δ < vp.movS {
-				vp.intercept(p.pos, p.δ)
-				return searchSet[i], err
-			}
-			// otherwise vp will move towards first one it's identified:
-			if !identified {
-				identified = true
-				vx, dist = p.pos, p.δ
-			}
+			return searchSet[i], err
 		}
 	}
-
-	if identified {
-		vp.intercept(vx, dist)
-	}
-
 	return
 }
 
-// turn and move towards position (as much as vp is able):
-func (vp *VisualPredator) intercept(vx geometry.Vector, dist float64) (err error) {
-	var Ψ float64 // change in angle required to intercept
-	Ψ, err = geometry.AngleToIntercept(vp.pos, vp.𝚯, vx)
+// Intercept attempts to turn and move towards target position (as much as vp is able):
+func (vp *VisualPredator) Intercept(prey *ColourPolymorphicPrey) (attack bool, err error) {
+	if prey == nil {
+		return
+	}
+	vx := prey.pos
+	dist := prey.δ
+	Ψ, err := geometry.AngleToIntercept(vp.pos, vp.𝚯, vx)
 	if dist < vp.movS {
+		attack = true
 		vp.pos = vx
 		vp.Turn(Ψ)
 		return
@@ -216,11 +204,8 @@ func (vp *VisualPredator) Attack(prey *ColourPolymorphicPrey, vpAttackChance flo
 	if prey == nil {
 		return
 	}
-
 	vpAttackChance = 1 - vpAttackChance
-
 	α := rand.Float64()
-
 	if α > vpAttackChance {
 		vp.colourImprinting(prey.colouration, imprintFactor)
 		vp.hunger -= 5
@@ -247,19 +232,25 @@ func (vp *VisualPredator) colourImprinting(target colour.RGB, 𝜎 float64) erro
 // animal-agent Mortal interface methods:
 
 // Age the vp agent
-func (vp *VisualPredator) Age(ctxt Context) (jump string) {
+func (vp *VisualPredator) Age(ctxt Context) string {
 	vp.attackSuccess = false
 	vp.hunger++
 	if ctxt.VpAgeing {
 		vp.lifespan--
 	}
+	return vp.jump(ctxt)
+}
+
+func (vp *VisualPredator) jump(ctxt Context) (jump string) {
 	switch {
-	case vp.lifespan <= 0 || vp.hunger >= ctxt.VpStarvation:
+	case vp.lifespan <= 0:
 		jump = "DEATH"
-	case vp.hunger > 0:
-		jump = "PREY SEARCH"
+	case vp.hunger > ctxt.VpHungerLimit && ctxt.Starvation:
+		jump = "DEATH"
+	case vp.hunger < ctxt.VpSexualRequirement:
+		jump = "MATE SEARCH"
 	default:
-		jump = "PATROL"
+		jump = "PREY SEARCH"
 	}
 	return
 }

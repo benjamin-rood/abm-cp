@@ -45,7 +45,8 @@ const (
 	dVpSearchChance        = 1.0
 	dVpAttackChance        = 1.0
 	dVpColImpFactor        = 0.2
-	dVpStarvation          = 50
+	dVpHungerLimit         = 50
+	dVpStarvation          = false
 	dCppMf                 = 0.05
 	dRandomAges            = true
 	dRNGRandomSeed         = true
@@ -68,7 +69,8 @@ const (
 	tVpPopCap              = 5
 	tVpAgeing              = false
 	tVpLifespan            = 9999
-	tVpStarvation          = 9999
+	tVpHungerLimit         = 9999
+	tVpCanStarve           = false
 	tVpMovS                = 0.05
 	tVpMovA                = 1.0
 	tVpTurn                = eigthpi / 2
@@ -113,7 +115,7 @@ var (
 		VpPopulationCap:       dVpPopCap,
 		VpAgeing:              dVpAgeing,
 		VpLifespan:            dVpLifespan,
-		VpStarvation:          dVpStarvation,
+		VpHungerLimit:         dVpHungerLimit,
 		VpMovS:                dVpMovS,
 		VpMovA:                1.0,
 		VpTurn:                dVpTurn,
@@ -124,6 +126,7 @@ var (
 		VpAttackChance:        dVpAttackChance,
 		VpColImprintFactor:    dVpColImpFactor,
 		CppMutationFactor:     dCppMf,
+		Starvation:            dVpStarvation,
 		RandomAges:            dRandomAges,
 		RNGRandomSeed:         dRNGRandomSeed,
 		RNGSeedVal:            dRNGSeedVal,
@@ -149,7 +152,7 @@ var (
 		VpPopulationCap:       tVpPopCap,
 		VpAgeing:              tVpAgeing,
 		VpLifespan:            tVpLifespan,
-		VpStarvation:          tVpStarvation,
+		VpHungerLimit:         tVpHungerLimit,
 		VpMovS:                tVpMovS,
 		VpMovA:                1.0,
 		VpTurn:                tVpTurn,
@@ -160,6 +163,7 @@ var (
 		VpAttackChance:        tVpAttackChance,
 		VpColImprintFactor:    tVpColImpFactor,
 		CppMutationFactor:     tCppMf,
+		Starvation:            tVpCanStarve,
 		RandomAges:            dRandomAges,
 		RNGRandomSeed:         dRNGRandomSeed,
 		RNGSeedVal:            dRNGSeedVal,
