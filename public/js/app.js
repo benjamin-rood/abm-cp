@@ -25,7 +25,7 @@ var sketch = function(p) {
   var vpSize = 60
   p.setup = function() {
     var w = $('#abm-viewport').innerWidth()
-    var h = w * 0.75
+    var h = w * 0.6
     p.createCanvas(w, h)
     p.noLoop()
     p.background(0, 0, 255)
@@ -60,7 +60,7 @@ var sketch = function(p) {
 
   p.windowResized = function() {
     var w = $('#abm-viewport').innerWidth()
-    var h = w * 0.75
+    var h = w * 0.6
     p.resizeCanvas(w, h)
   }
 }
@@ -132,6 +132,7 @@ $(function () {
       ['abm-vp-vsr-chance']: parseFloat($('#abm-vp-vsr-chance').val()),
       ['abm-vp-attack-chance']: parseFloat($('#abm-vp-attack-chance').val()),
       ['abm-vp-col-imprinting']: parseFloat($('#abm-vp-col-imprinting').val()),
+      ['abm-starvation']: parseBool($('#abm-starvation').val()),
       ['abm-random-ages']: parseBool($('#abm-random-ages').val()),
       ['abm-rng-random-seed']: parseBool($('#abm-rng-random-seed').val()),
       ['abm-rng-seedval']: parseInt($('#abm-rng-seedval').val())

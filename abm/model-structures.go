@@ -122,7 +122,7 @@ func NewModel() (m Model) {
 	m.Environment = Environment{
 		Bounds:         []float64{1.0, 1.0},
 		Dimensionality: 2,
-		BG:             colour.RGB{Red: 0.1, Green: 0.1, Blue: 0.1},
+		BG:             colour.RGB{Red: 0.2, Green: 0.2, Blue: 0.25},
 	}
 	m.Context = DefaultContext
 	m.Om = make(chan goio.OutMsg)
