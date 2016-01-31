@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset=utf-8>
+  <meta name="viewport">
+  <title>abm</title>
+  <link rel="shortcut icon" href="#" />
+  <script src=https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js charset=utf-8></script>
+  <link rel=stylesheet href=https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css>
+  <link rel=stylesheet href=https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css>
+  <link rel=stylesheet href=css/abm-style.css>
+  <script src=https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.4.21/p5.min.js charset=utf-8></script>
+  <script src=https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.4.21/addons/p5.dom.min.js charset=utf-8></script>
+  <script src=js/app.js charset=utf-8></script>
+</head>
+
+<body>
+  <div class="container-fluid" id="render-area" style="margin:30px">
+    <div class="text-center">
+      <h1>Colour Polymorphism (CP) ABM</h1>
+      <p class="lead">
+        <br>
+      </p>
+    </div>
+    <div class="row" style="margin:30px">
+      <div id="abm-viewport"></div>
+    </div>
+
+  </div>
+  <!-- /.container -->
+
+  <div class="container container-parameters">
+    <h3>Context Parameters</h3>
+    <p>Define the variable ABM parameters below, then press the submit button to start.</p>
+    <br>
+    <div>
+      <button type="button" class="btn btn-primary btn-lg" id="contextParamsSend" style="margin:15px">Start ABM with these settings</button>
+    </div>
+    <hr>
+    <br>
+    <form id="context-params">
+      <h4>Colour Polymorphic Prey Settings:</h4>
+      <div class="form-group" style="margin:15px">
+        <label for="abm-cpp-pop-start">CP Prey Starting Population </label>
+        <input type="number" class="form-control" id="abm-cpp-pop-start" value="3">
+      </div>
+      <div class="form-group" style="margin:15px">
+        <label for="abm-cpp-pop-cap">CP Prey Population Cap</label>
+        <input type="number" class="form-control" id="abm-cpp-pop-cap" value="500">
+      </div>
+      <div class="form-group" style="margin:15px">
+        <label for="abm-cpp-ageing"></label>
+        <input type="checkbox" checked="checked" id="abm-cpp-ageing" style="margin-right:10px">
+        <b>CP Prey Ageing</b>
+      </div>
+      <div class="form-group" style="margin:15px">
+        <label for="abm-cpp-lifespan">CP Prey Lifespan</label>
+        <input type="number" class="form-control" id="abm-cpp-lifespan" value="100">
+      </div>
+      <div class="form-group" style="margin:15px">
+        <label for="abm-cpp-speed">CP Prey Speed</label>
+        <input type="number" class="form-control" id="abm-cpp-speed" value="0.006" min="0.0" max="1.0" step="0.001">
+      </div>
+      <div class="form-group" style="margin:15px">
+        <label for="abm-cpp-turn">CP Prey Turn Rate</label>
+        <input type="number" class="form-control" id="abm-cpp-turn" value="0.7853981633974" min="0.0" max="3.14" step="0.3">
+      </div>
+      <div class="form-group" style="margin:15px">
+        <label for="abm-cpp-sexual-cost">CP Prey Sexual Cost</label>
+        <input type="number" class="form-control" id="abm-cpp-sexual-cost" value="3" min="1">
+      </div>
+      <div class="form-group" style="margin:15px">
+        <label for="abm-cpp-reproduction-chance">CP Prey Reproduction Chance</label>
+        <input type="number" class="form-control" id="abm-cpp-reproduction-chance" value="0.1" min="0.0" max="1.0" step="0.001">
+      </div>
+      <div class="form-group" style="margin:15px">
+        <label for="abm-cpp-gestation">CP Prey Gestation Period</label>
+        <input type="number" class="form-control" id="abm-cpp-gestation" value="5" min="1">
+      </div>
+      <div class="form-group" style="margin:15px">
+        <label for="abm-cpp-spawn-size">CP Prey Spawn Size</label>
+        <input type="number" class="form-control" id="abm-cpp-spawn-size" value="10" min="1">
+      </div>
+      <div class="form-group" style="margin:15px">
+        <label for="abm-cpp-mf">CP Prey Mutation Factor</label>
+        <input type="number" class="form-control" id="abm-cpp-mf" value="0.05" min="0.0" max="1.0" step="0.001">
+      </div>
+      <br>
+      <hr>
+      <br>
+      <h4>Visual Predator Settings:</h4>
+      <div class="form-group" style="margin:15px">
+        <label for="abm-vp-pop-start">Visual Predator Starting Population</label>
+        <input type="number" class="form-control" id="abm-vp-pop-start" value="3">
+      </div>
+      <div class="form-group" style="margin:15px">
+        <label for="abm-vp-pop-cap">Visual Predator Population Cap</label>
+        <input type="number" class="form-control" id="abm-vp-pop-cap" value="10">
+      </div>
+      <div class="form-group" style="margin:15px">
+        <label for="abm-vp-ageing"></label>
+        <input type="checkbox" id="abm-vp-ageing" style="margin-right:10px">
+        <b>Visual Predator Ageing</b>
+      </div>
+      <div class="form-group" style="margin:15px">
+        <label for="abm-vp-pop-cap">Visual Predator Lifespan</label>
+        <input type="number" class="form-control" id="abm-vp-lifespan" value="250" min="1" max="1000">
+      </div>
+      <div class="form-group" style="margin:15px">
+        <label for="abm-vp-speed">Visual Predator Speed</label>
+        <input type="number" class="form-control" id="abm-vp-speed" value="0.02" min="0.0" max="1.0" step="0.001">
+      </div>
+      <div class="form-group" style="margin:15px">
+        <label for="abm-vp-turn">Visual Predator Turn Rate</label>
+        <input type="number" class="form-control" id="abm-vp-turn" value="0.392699081698724154" min="0.0" max="3.14" step="0.1">
+      </div>
+      <div class="form-group" style="margin:15px">
+        <label for="abm-vp-vsr">Visual Predator Visual Search Range</label>
+        <input type="number" class="form-control" id="abm-vp-vsr" value="0.1" min="0.0" max="1.0" step="0.001">
+      </div>
+      <div class="form-group" style="margin:15px">
+        <label for="abm-vp-vsr-chance">Visual Predator Visual Search Chance</label>
+        <input type="number" class="form-control" id="abm-vp-vsr-chance" value="1.0" min="0.0" max="1.0" step="0.001">
+      </div>
+      <div class="form-group" style="margin:15px">
+        <label for="abm-vp-vsr">Visual Predator Visual Attack Chance</label>
+        <input type="number" class="form-control" id="abm-vp-attack-chance" value="1.0" min="0.0" max="1.0" step="0.001">
+      </div>
+      <div class="form-group" style="margin:15px">
+        <label for="abm-vp-col-imprinting">Visual Predator Colour Imprinting</label>
+        <input type="number" class="form-control" id="abm-vp-col-imprinting" value="0.2" min="0.0" max="1.0" step="0.001">
+      </div>
+      <div class="form-group" style="margin:15px">
+        <label for="abm-vp-vsr">Visual Predator Reproductive Chance</label>
+        <input type="number" class="form-control" id="abm-vp-reproductive-chance" value="1.0" min="0.0" max="1.0" step="0.001">
+      </div>
+      <div class="form-group" style="margin:15px">
+        <label for="abm-starvation"></label>
+        <input type="checkbox" checked="checked" id="abm-starvation" style="margin-right:10px">
+        <b>Starvation</b>
+      </div>
+      <br>
+      <hr>
+      <br>
+      <h4>RNG Settings:</h4>
+      <div class="form-group" style="margin:15px">
+        <label for="abm-random-ages"></label>
+        <input type="checkbox" checked="checked" id="abm-random-ages" style="margin-right:10px">
+        <b>Randomise Ages</b>
+      </div>
+      <div class="form-group" style="margin:15px">
+        <label for="abm-rng-random-seed"></label>
+        <input type="checkbox" checked="checked" id="abm-rng-random-seed" style="margin-right:10px">
+        <b>RNG Random Seed</b>
+      </div>
+      <div class="form-group" style="margin:15px">
+        <label for="abm-rng-seedval">RNG Seed Value</label>
+        <input type="number" class="form-control" id="abm-rng-seedval" value="0" min="0">
+      </div>
+      <br>
+      <hr>
+    </form>
+  </div>
+</body>
+</html>

@@ -70,7 +70,7 @@ const (
 	tVpAgeing              = false
 	tVpLifespan            = 9999
 	tVpHungerLimit         = 9999
-	tVpCanStarve           = false
+	tStarvation            = false
 	tVpMovS                = 0.05
 	tVpMovA                = 1.0
 	tVpTurn                = eigthpi / 2
@@ -163,7 +163,7 @@ var (
 		VpAttackChance:        tVpAttackChance,
 		VpColImprintFactor:    tVpColImpFactor,
 		CppMutationFactor:     tCppMf,
-		Starvation:            tVpCanStarve,
+		Starvation:            tStarvation,
 		RandomAges:            dRandomAges,
 		RNGRandomSeed:         dRNGRandomSeed,
 		RNGSeedVal:            dRNGSeedVal,

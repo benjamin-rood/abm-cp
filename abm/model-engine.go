@@ -17,12 +17,13 @@ func (m *Model) Controller() {
 	for {
 		select {
 		case msg := <-m.Im:
+			_ = "breakpoint" // godebug
 			switch msg.Type {
 			case "context": //	if context params msg is recieved, (re)start
 				err := json.Unmarshal(msg.Data, &m.Context)
 				if err != nil {
 					log.Println("model Controller(): error: json.Unmarshal:", err)
-					m.Kill()
+					break
 				}
 				m.Timeframe.Reset()
 				spew.Dump(m.Context)

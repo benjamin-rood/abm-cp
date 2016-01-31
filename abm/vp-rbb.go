@@ -6,9 +6,6 @@ import (
 	"github.com/benjamin-rood/abm-colour-polymorphism/calc"
 )
 
-/* Attack(Hunted) bool
-Eat(Hunted) bool */
-
 // RBB : Rule-Based-Behaviour for Visual Predator Agent
 func (vp *VisualPredator) RBB(ctxt Context, cppPop []ColourPolymorphicPrey) (returning []VisualPredator) {
 	var Φ float64

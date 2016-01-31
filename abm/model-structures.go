@@ -46,16 +46,16 @@ type Context struct {
 	VpLifespan            int       `json:"abm-vp-lifespan"` //	Visual Predator lifespan
 	VpHungerLimit         int       `json:"abm-vp-hunger-limit"`
 	VpSexualRequirement   int       `json:"abm-vp-sex-req"`
-	VpMovS                float64   `json:"abm-vp-speed"`            // Visual Predator speed
-	VpMovA                float64   `json:"abm-vp-acceleration"`     // Visual Predator acceleration
-	VpTurn                float64   `json:"abm-vp-turn"`             //	Visual Predator turn rate / range (in radians)
-	Vsr                   float64   `json:"abm-vp-vsr"`              //	VP agent visual search range
-	Vγ                    float64   `json:"abm-visual-acuity"`       //	visual acuity in environments
-	VpReproductiveChance  float64   `json:"abm-reproductive-chance"` //	chance of VP copulation success.
+	VpMovS                float64   `json:"abm-vp-speed"`               // Visual Predator speed
+	VpMovA                float64   `json:"abm-vp-acceleration"`        // Visual Predator acceleration
+	VpTurn                float64   `json:"abm-vp-turn"`                //	Visual Predator turn rate / range (in radians)
+	CppMutationFactor     float64   `json:"abm-cpp-mf"`                 //	mutation factor
+	Vsr                   float64   `json:"abm-vp-vsr"`                 //	VP agent visual search range
+	Vγ                    float64   `json:"abm-visual-acuity"`          //	visual acuity in environments
+	VpReproductiveChance  float64   `json:"abm-vp-reproductive-chance"` //	chance of VP copulation success.
 	VpSearchChance        float64   `json:"abm-vp-vsr-chance"`
 	VpAttackChance        float64   `json:"abm-vp-attack-chance"`
 	VpColImprintFactor    float64   `json:"abm-vp-col-imprinting"`
-	CppMutationFactor     float64   `json:"abm-cpp-mf"` //	mutation factor
 	Starvation            bool      `json:"abm-starvation"`
 	RandomAges            bool      `json:"abm-random-ages"`
 	RNGRandomSeed         bool      `json:"abm-rng-random-seed"` //	flag for using server-set random seed val.
