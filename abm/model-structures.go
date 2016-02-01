@@ -2,14 +2,9 @@ package abm
 
 import (
 	"log"
-	"time"
 
 	"github.com/benjamin-rood/abm-colour-polymorphism/colour"
 	"github.com/benjamin-rood/goio"
-)
-
-const (
-	pause = 1 * time.Second
 )
 
 /*
@@ -41,18 +36,20 @@ type Context struct {
 	CppReproductionChance float64   `json:"abm-cpp-reproduction-chance"` //	chance of CPP copulation success.
 	CppSpawnSize          int       `json:"abm-cpp-spawn-size"`          // possible number of progeny = [1, max]
 	VpPopulationStart     int       `json:"abm-vp-pop-start"`            //	starting VP agent population size
-	VpPopulationCap       int       `json:"abm-vp-pop-cap"`
-	VpAgeing              bool      `json:"abm-vp-ageing"`
-	VpLifespan            int       `json:"abm-vp-lifespan"` //	Visual Predator lifespan
-	VpHungerLimit         int       `json:"abm-vp-hunger-limit"`
-	VpSexualRequirement   int       `json:"abm-vp-sex-req"`
-	VpMovS                float64   `json:"abm-vp-speed"`               // Visual Predator speed
-	VpMovA                float64   `json:"abm-vp-acceleration"`        // Visual Predator acceleration
-	VpTurn                float64   `json:"abm-vp-turn"`                //	Visual Predator turn rate / range (in radians)
-	CppMutationFactor     float64   `json:"abm-cpp-mf"`                 //	mutation factor
-	Vsr                   float64   `json:"abm-vp-vsr"`                 //	VP agent visual search range
-	Vγ                    float64   `json:"abm-visual-acuity"`          //	visual acuity in environments
-	VpReproductiveChance  float64   `json:"abm-vp-reproductive-chance"` //	chance of VP copulation success.
+	VpPopulationCap       int       `json:"abm-vp-pop-cap"`              //
+	VpAgeing              bool      `json:"abm-vp-ageing"`               //
+	VpLifespan            int       `json:"abm-vp-lifespan"`             //	Visual Predator lifespan
+	VpHungerLimit         int       `json:"abm-vp-hunger-limit"`         //
+	VpGestation           int       `json:"abm-vp-gestation"`            //	Visual Predator gestation period
+	VpSexualRequirement   int       `json:"abm-vp-sex-req"`              //
+	VpMovS                float64   `json:"abm-vp-speed"`                // Visual Predator speed
+	VpMovA                float64   `json:"abm-vp-acceleration"`         // Visual Predator acceleration
+	VpTurn                float64   `json:"abm-vp-turn"`                 //	Visual Predator turn rate / range (in radians)
+	CppMutationFactor     float64   `json:"abm-cpp-mf"`                  //	mutation factor
+	Vsr                   float64   `json:"abm-vp-vsr"`                  //	VP agent visual search range
+	Vγ                    float64   `json:"abm-visual-acuity"`           //	visual acuity in environments
+	VpReproductionChance  float64   `json:"abm-vp-reproduction-chance"`  //	chance of VP copulation success.
+	VpSpawnSize           int       `json:"abm-vp-spawn-size"`
 	VpSearchChance        float64   `json:"abm-vp-vsr-chance"`
 	VpAttackChance        float64   `json:"abm-vp-attack-chance"`
 	VpColImprintFactor    float64   `json:"abm-vp-col-imprinting"`
@@ -111,8 +108,8 @@ type Model struct {
 	Om   chan goio.OutMsg
 	Im   chan goio.InMsg
 	e    chan error
-	Quit chan struct{}
-	r    chan struct{}
+	Quit chan struct{} //	instance signaling
+	r    chan struct{} //	run signalling
 }
 
 // NewModel is a constructor for initialising a Model instance

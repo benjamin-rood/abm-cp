@@ -71,7 +71,7 @@ func GeneratePopulationCPP(size int, context Context) (pop []ColourPolymorphicPr
 	return
 }
 
-func spawn(size int, parent ColourPolymorphicPrey, context Context) (pop []ColourPolymorphicPrey) {
+func cppSpawn(size int, parent ColourPolymorphicPrey, context Context) (pop []ColourPolymorphicPrey) {
 	for i := 0; i < size; i++ {
 		agent := parent
 		agent.pos = parent.pos
@@ -232,7 +232,7 @@ func (c *ColourPolymorphicPrey) Birth(ctxt Context) []ColourPolymorphicPrey {
 	if ctxt.CppSpawnSize > 1 {
 		n = rand.Intn(ctxt.CppSpawnSize) + 1 //	i.e. range [1, b]
 	}
-	progeny := spawn(n, *c, ctxt)
+	progeny := cppSpawn(n, *c, ctxt)
 	for i := 0; i < len(progeny); i++ {
 		progeny[i].mutation(ctxt.CppMutationFactor)
 		progeny[i].pos, _ = geometry.FuzzifyVector(c.pos, c.movS)

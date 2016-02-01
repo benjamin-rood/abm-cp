@@ -22,7 +22,8 @@ var drawlist = new DrawList(initDrawObj)
 var sketch = function(p) {
   var modelDw = 1.0
   var modelDh = 1.0
-  var vpSize = 60
+  var vpSize = 10
+  var cpSize = 4
   p.setup = function() {
     var w = $('#abm-viewport').innerWidth()
     var h = w * 0.6
@@ -39,7 +40,7 @@ var sketch = function(p) {
         var x = absToView(drawlist.cpp[i].position.x, modelDw, p.width)
         var y = absToView(drawlist.cpp[i].position.y, modelDh, p.height)
         var col = p.color(drawlist.cpp[i].colour.red, drawlist.cpp[i].colour.green, drawlist.cpp[i].colour.blue)
-        p.strokeWeight(8)
+        p.strokeWeight(cpSize)
         p.stroke(col)
         p.point(x, y)
       }
@@ -49,11 +50,20 @@ var sketch = function(p) {
       for (var i = 0; i < drawlist.vp.length; i++) {
         var x = absToView(drawlist.vp[i].position.x, modelDw, p.width)
         var y = absToView(drawlist.vp[i].position.y, modelDh, p.height)
+        var angle = drawlist.vp[i].heading
         var col = p.color(drawlist.vp[i].colour.red, drawlist.vp[i].colour.green, drawlist.vp[i].colour.blue)
         p.fill(col)
-        p.strokeWeight(1)
-        p.stroke(255)
-        p.rect(x, y, vpSize, vpSize)
+        p.noStroke()
+        p.push()
+          p.translate(x, y)
+          p.push()
+            p.rotate(p.atan2(1, 0))
+            p.rotate(angle)
+            p.triangle(-vpSize, vpSize, 0, -vpSize, vpSize, vpSize)
+          p.pop()
+          p.fill(0)
+          p.ellipse(0,0, vpSize-3,vpSize-3)
+        p.pop()
       }
     }
   }
@@ -126,14 +136,16 @@ $(function () {
       ['abm-vp-pop-cap']: parseInt($('#abm-vp-pop-cap').val()),
       ['abm-vp-ageing']: parseBool($('#abm-vp-ageing').is(':checked')),
       ['abm-vp-lifespan']: parseInt($('#abm-vp-lifespan').val()),
+      ['abm-starvation']: parseBool($('#abm-starvation').is(':checked')),
+      ['abm-vp-hunger-limit']: parseInt($('#abm-vp-hunger-limit').val()),
       ['abm-vp-speed']: parseFloat($('#abm-vp-speed').val()),
       ['abm-vp-turn']: parseFloat($('#abm-vp-turn').val()),
       ['abm-vp-vsr']: parseFloat($('#abm-vp-vsr').val()),
       ['abm-vp-vsr-chance']: parseFloat($('#abm-vp-vsr-chance').val()),
       ['abm-vp-attack-chance']: parseFloat($('#abm-vp-attack-chance').val()),
       ['abm-vp-col-imprinting']: parseFloat($('#abm-vp-col-imprinting').val()),
-      ['abm-vp-reproductive-chance']: parseFloat($('#abm-vp-reproductive-chance').val()),
-      ['abm-starvation']: parseBool($('#abm-starvation').is(':checked')),
+      ['abm-vp-reproduction-chance']: parseFloat($('#abm-vp-reproduction-chance').val()),
+      ['abm-vp-spawn-size']: parseInt($('#abm-vp-spawn-size').val()),
       ['abm-random-ages']: parseBool($('#abm-random-ages').is(':checked')),
       ['abm-rng-random-seed']: parseBool($('#abm-rng-random-seed').is(':checked')),
       ['abm-rng-seedval']: parseInt($('#abm-rng-seedval').val())

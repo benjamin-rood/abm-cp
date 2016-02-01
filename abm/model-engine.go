@@ -12,6 +12,10 @@ import (
 	"github.com/davecgh/go-spew/spew"
 )
 
+const (
+	pause = 1 * time.Second
+)
+
 // Controller processes instructions from web client
 func (m *Model) Controller() {
 	for {
@@ -84,9 +88,9 @@ func (m *Model) run(ar chan<- render.AgentRender, turn chan<- struct{}) {
 	for {
 		select {
 		case <-m.r:
-			time.Sleep(time.Millisecond * 250)
 			close(ar)
 			close(turn)
+			time.Sleep(pause)
 			return
 		case <-m.Quit:
 			// clean up?
@@ -117,7 +121,6 @@ func (m *Model) turn(ar chan<- render.AgentRender, turn chan<- struct{}) {
 			am.Lock()
 			cppAgents = append(cppAgents, result...)
 			am.Unlock()
-			time.Sleep(time.Millisecond * 10)
 			m.Action++
 		}(i)
 		// fmt.Printf("cp-rbb: %04d elapsed: %v\n", i, time.Since(timeMark))
@@ -134,7 +137,7 @@ func (m *Model) turn(ar chan<- render.AgentRender, turn chan<- struct{}) {
 		vpAgentWg.Add(1)
 		go func(i int) {
 			defer vpAgentWg.Done()
-			result := m.PopVP[i].RBB(m.Context, m.PopCPP)
+			result := m.PopVP[i].RBB(m.Context, len(m.PopVP), m.PopCPP, m.PopVP)
 			ar <- m.PopVP[i].GetDrawInfo()
 			am.Lock()
 			vpAgents = append(vpAgents, result...)
@@ -147,7 +150,6 @@ func (m *Model) turn(ar chan<- render.AgentRender, turn chan<- struct{}) {
 
 	m.Phase++
 	m.Action = 0 // reset at phase end
-	time.Sleep(time.Millisecond * 50)
 	turn <- struct{}{}
 
 	m.Phase = 0 //	reset at Turn end
@@ -184,6 +186,7 @@ func (m *Model) vis(ar <-chan render.AgentRender, turn <-chan struct{}) {
 				BG:  bg,
 			}
 		case <-m.r:
+			time.Sleep(pause)
 			return
 		}
 	}

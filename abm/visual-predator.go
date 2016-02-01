@@ -29,6 +29,7 @@ type VisualPredator struct {
 	gravid        bool    //	i.e. pregnant
 	vsr           float64 //	visual search range
 	γ             float64 //	visual acuity (as a standard, use 1.0) - this should be defined at the Environmental level?
+	colouration   colour.RGB
 	colImprint    colour.RGB
 }
 
@@ -64,13 +65,43 @@ func GeneratePopulationVP(size int, context Context) (pop []VisualPredator) {
 		agent.tr = context.VpTurn
 		agent.vsr = context.Vsr
 		agent.γ = context.Vγ //	visual acuity
-		agent.hunger = 0
+		agent.hunger = context.VpSexualRequirement + 1
 		agent.fertility = 1
 		agent.gravid = false
 		agent.colImprint = colour.RandRGB()
 		pop = append(pop, agent)
 	}
 	return
+}
+
+func vpSpawn(size int, parent VisualPredator, context Context) []VisualPredator {
+	pop := []VisualPredator{}
+	for i := 0; i < size; i++ {
+		agent := parent
+		agent.pos = parent.pos
+		if context.VpAgeing {
+			if context.RandomAges {
+				agent.lifespan = calc.RandIntIn(int(float64(context.VpLifespan)*0.7), int(float64(context.VpLifespan)*1.3))
+			} else {
+				agent.lifespan = context.VpLifespan
+			}
+		} else {
+			agent.lifespan = 99999
+		}
+		agent.movS = parent.movS
+		agent.movA = parent.movA
+		agent.𝚯 = parent.𝚯
+		agent.dir = parent.dir
+		agent.tr = parent.tr
+		agent.vsr = parent.vsr
+		agent.hunger = context.VpSexualRequirement + 1
+		agent.fertility = 1
+		agent.gravid = false
+		agent.colouration = parent.colouration
+		agent.colImprint = parent.colImprint
+		pop = append(pop, agent)
+	}
+	return pop
 }
 
 // GetDrawInfo exports the data set needed for agent visualisation.
@@ -147,9 +178,9 @@ func (vp *VisualPredator) VSRSectorSampling(d float64, n int) ([4][2]int, error)
 }
 
 // PreySearch – uses Visual Search to try to 'recognise' a nearby prey agent within model Environment to target
-func (vp *VisualPredator) PreySearch(prey []ColourPolymorphicPrey, searchChance float64) (target *ColourPolymorphicPrey, err error) {
+func (vp *VisualPredator) PreySearch(prey []ColourPolymorphicPrey, searchChance float64) (*ColourPolymorphicPrey, error) {
 	_ = "breakpoint" // godebug
-
+	var err error
 	var searchSet []*ColourPolymorphicPrey
 	for i := range prey { //	exhaustive search 😱
 		prey[i].δ, err = geometry.VectorDistance(vp.pos, prey[i].pos)
@@ -177,26 +208,39 @@ func (vp *VisualPredator) PreySearch(prey []ColourPolymorphicPrey, searchChance 
 			return searchSet[i], err
 		}
 	}
-	return
+	return nil, err
 }
 
-// Intercept attempts to turn and move towards target position (as much as vp is able):
-func (vp *VisualPredator) Intercept(prey *ColourPolymorphicPrey) (attack bool, err error) {
-	if prey == nil {
-		return
-	}
-	vx := prey.pos
-	dist := prey.δ
+// Intercept attempts to turn and move towards target position (as much as vp is able)
+// note: generalised to a position vector and distance measurement so that Intercept can be used for any type of targeting.
+func (vp *VisualPredator) Intercept(vx geometry.Vector, dist float64) (bool, error) {
+	var attack bool
 	Ψ, err := geometry.AngleToIntercept(vp.pos, vp.𝚯, vx)
 	if dist < vp.movS {
 		attack = true
 		vp.pos = vx
 		vp.Turn(Ψ)
-		return
+		return attack, err
 	}
 	vp.Turn(calc.ClampFloatIn(Ψ, -vp.tr, vp.tr))
 	vp.Move()
-	return
+	return attack, err
+}
+
+// MateSearch searches species population for sexual coupling
+func (vp *VisualPredator) MateSearch(predators []VisualPredator) (*VisualPredator, error) {
+	min := math.MaxFloat64
+	var closest *VisualPredator
+	var err error
+	var dist float64
+	for i := range predators {
+		dist, err = geometry.VectorDistance(vp.pos, predators[i].pos)
+		if dist < min {
+			min = dist
+			closest = &predators[i]
+		}
+	}
+	return closest, err
 }
 
 // Attack VP agent attempts to attack CP prey agent
@@ -208,7 +252,7 @@ func (vp *VisualPredator) Attack(prey *ColourPolymorphicPrey, vpAttackChance flo
 	α := rand.Float64()
 	if α > vpAttackChance {
 		vp.colourImprinting(prey.colouration, imprintFactor)
-		vp.hunger -= 5
+		vp.hunger -= 100
 		prey.lifespan = 0 //	i.e. prey agent flagged for removal at the beginning of next turn and will not be drawn again.
 		vp.attackSuccess = true
 		fmt.Println("eaten =", prey.String())
@@ -235,6 +279,7 @@ func (vp *VisualPredator) colourImprinting(target colour.RGB, 𝜎 float64) erro
 func (vp *VisualPredator) Age(ctxt Context) string {
 	vp.attackSuccess = false
 	vp.hunger++
+	vp.fertility++
 	if ctxt.VpAgeing {
 		vp.lifespan--
 	}
@@ -245,14 +290,48 @@ func (vp *VisualPredator) jump(ctxt Context) (jump string) {
 	switch {
 	case vp.lifespan <= 0:
 		jump = "DEATH"
-	case vp.hunger > ctxt.VpHungerLimit && ctxt.Starvation:
+	case vp.fertility == 0:
+		vp.gravid = false
+		jump = "SPAWN"
+	case ctxt.Starvation && (vp.hunger > ctxt.VpHungerLimit):
 		jump = "DEATH"
-	case vp.hunger < ctxt.VpSexualRequirement:
-		jump = "MATE SEARCH"
+	case (vp.fertility > 0) && (vp.hunger < ctxt.VpSexualRequirement):
+		jump = "FERTILE"
 	default:
 		jump = "PREY SEARCH"
 	}
 	return
+}
+
+// Copulation for sexual reproduction between Visual Predator agents
+func (vp *VisualPredator) Copulation(mate *VisualPredator, chance float64, gestation int, sexualCost int) bool {
+	if mate == nil {
+		return false
+	}
+	if mate.fertility < sexualCost {
+		return false
+	}
+	ω := rand.Float64()
+	mate.fertility = -sexualCost // it takes two to tango, buddy!
+	if ω <= chance {
+		vp.gravid = true
+		vp.fertility = -gestation
+		return true
+	}
+	vp.fertility = 1
+	return false
+}
+
+// Birth spawns Visual Predator children
+func (vp *VisualPredator) Birth(ctxt Context) []VisualPredator {
+	n := 1
+	if ctxt.VpSpawnSize > 1 {
+		n = rand.Intn(ctxt.VpSpawnSize) + 1
+	}
+	progeny := vpSpawn(n, *vp, ctxt)
+	vp.hunger++
+	vp.gravid = false
+	return progeny
 }
 
 // String returns a clear textual presentation the internal values of the VP agent

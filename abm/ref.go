@@ -1,9 +1,6 @@
 package abm
 
-import (
-	"github.com/benjamin-rood/abm-colour-polymorphism/colour"
-	"github.com/benjamin-rood/abm-colour-polymorphism/render"
-)
+import "github.com/benjamin-rood/abm-colour-polymorphism/colour"
 
 // Default holds baseline parameters for a running model.
 
@@ -38,10 +35,12 @@ const (
 	dVpLifespan            = 250
 	dVpMovS                = 0.01
 	dVpMovA                = 1.0
-	dVpTurn                = eigthpi / 2
+	dVpTurn                = eigthpi
 	dVsr                   = dVpMovS
 	dVγ                    = 1.0
 	dVpReproductiveChance  = 1.0
+	dVpSexualRequirement   = 50
+	dVpGestation           = 5
 	dVpSearchChance        = 1.0
 	dVpAttackChance        = 1.0
 	dVpColImpFactor        = 0.2
@@ -93,8 +92,6 @@ var (
 		Dimensionality: dimensionality,
 		BG:             colour.Black,
 	}
-	// DefaultViewport to be used as a baseline reference
-	DefaultViewport = render.Viewport{Width: 1200, Height: 800}
 
 	// DefaultContext to be used as a baseline example
 	DefaultContext = Context{
@@ -121,7 +118,9 @@ var (
 		VpTurn:                dVpTurn,
 		Vsr:                   dVsr,
 		Vγ:                    1.0,
-		VpReproductiveChance:  dVpReproductiveChance,
+		VpReproductionChance:  dVpReproductiveChance,
+		VpSexualRequirement:   dVpSexualRequirement,
+		VpGestation:           dVpGestation,
 		VpSearchChance:        dVpSearchChance,
 		VpAttackChance:        dVpAttackChance,
 		VpColImprintFactor:    dVpColImpFactor,
@@ -158,7 +157,7 @@ var (
 		VpTurn:                tVpTurn,
 		Vsr:                   tVpVsr,
 		Vγ:                    1.0,
-		VpReproductiveChance:  tVpReproductiveChance,
+		VpReproductionChance:  tVpReproductiveChance,
 		VpSearchChance:        tVpSearchChance,
 		VpAttackChance:        tVpAttackChance,
 		VpColImprintFactor:    tVpColImpFactor,

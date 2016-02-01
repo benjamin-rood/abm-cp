@@ -7,7 +7,7 @@ import (
 )
 
 // RBB : Rule-Based-Behaviour for Visual Predator Agent
-func (vp *VisualPredator) RBB(ctxt Context, cppPop []ColourPolymorphicPrey) (returning []VisualPredator) {
+func (vp *VisualPredator) RBB(ctxt Context, popSize int, cppPop []ColourPolymorphicPrey, vpPop []VisualPredator) (returning []VisualPredator) {
 	var Φ float64
 	var jump string
 	jump = vp.Age(ctxt)
@@ -16,18 +16,32 @@ func (vp *VisualPredator) RBB(ctxt Context, cppPop []ColourPolymorphicPrey) (ret
 	case "DEATH":
 		goto End
 	case "PREY SEARCH":
+		var attack bool
+		var err error
 		target, err := vp.PreySearch(cppPop, ctxt.VpSearchChance) //	will move towards any viable prey it can see.
-		attack, err := vp.Intercept(target)
+		if target != nil {
+			attack, err = vp.Intercept(target.pos, target.δ)
+		}
 		if err != nil {
-			log.Println("vp.RBB:", err)
+			log.Println("vp.RBB:", err) // ARGH
 		}
 		if attack {
 			vp.Attack(target, ctxt.VpAttackChance, ctxt.VpColImprintFactor)
 			goto Add
 		}
 		goto Patrol
-	case "MATE SEARCH":
-		goto Patrol //	i.e. not implemented yet.
+	case "FERTILE":
+		if popSize >= ctxt.VpPopulationCap {
+			goto Patrol
+		}
+		mate, err := vp.MateSearch(vpPop)
+		if err != nil {
+			log.Println("vp.RBB:", err) // ARGH
+		}
+		vp.Copulation(mate, ctxt.VpReproductionChance, ctxt.VpGestation, ctxt.VpSexualRequirement)
+	case "SPAWN":
+		children := vp.Birth(ctxt)
+		returning = append(returning, children...)
 	default:
 		log.Println("vp.RBB Switch: FAIL: jump =", jump)
 	}
