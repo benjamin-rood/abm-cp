@@ -1,6 +1,7 @@
 
-###Current Version: 0.1.1
+###Current Version: 0.1.3
 
+![enter image description here](https://giant.gfycat.com/ThinWelloffAfricanrockpython.gif)
 
 ##Goal
 
@@ -55,15 +56,17 @@ Base requirements completed.
 
 ### 0.2.0
 
+* Essential unit tests for `abm` package :white_check_mark:
+
 * Client-side input validation.
 
 * Switch data serialisation to Protocol Buffers (protobuf) – marshalling drawing instructions to JSON is currently the single most expensive action!
  
 * Visual Predator implemenation:
-	* Find baseline params for Colour Imprinting.
+	* Find baseline params for Colour Imprinting. :white_check_mark:
 	* Adaptation in response to hunger.
-	* Starvation ⟹ Death.
-	* Sexual Reproduction.
+	* Starvation ⟹ Death. :white_check_mark:
+	* Sexual Reproduction. :white_check_mark:
 	* Better Prey Search (using grid system).
 
 ### 0.3.0
@@ -73,7 +76,7 @@ Base requirements completed.
 * Visual Predator implemenation:
 	* Optimal Prey Search (using *k-d tree*)
 
-* Unit tests for `abm` package
+* Complete tests for `abm` package
 
 * Integration, end-to-end tests?
 
