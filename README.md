@@ -15,7 +15,7 @@ Download this repository:  run `go get -u github.com/benjamin-rood/abm-colour-po
 Change current directory to `$GOPATH/src/github.com/benjamin-rood/abm-colour-polymorphism` and run `cd net && go build && ./net`
 Point web browser at `localhost:8080`
 
-Only tested so far on Safari (OS X) and Chrome (OS X).
+Only tested so far on Safari (OS X) and Chrome (OS X, Windows 8.1).
 
 
 
