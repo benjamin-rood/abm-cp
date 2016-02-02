@@ -35,6 +35,7 @@ type Context struct {
 	CppSexualCost         int       `json:"abm-cpp-sexual-cost"`         //	CPP sexual rest cost
 	CppReproductionChance float64   `json:"abm-cpp-reproduction-chance"` //	chance of CPP copulation success.
 	CppSpawnSize          int       `json:"abm-cpp-spawn-size"`          // possible number of progeny = [1, max]
+	CppMutationFactor     float64   `json:"abm-cpp-mf"`                  //	mutation factor
 	VpPopulationStart     int       `json:"abm-vp-pop-start"`            //	starting VP agent population size
 	VpPopulationCap       int       `json:"abm-vp-pop-cap"`              //
 	VpAgeing              bool      `json:"abm-vp-ageing"`               //
@@ -45,7 +46,6 @@ type Context struct {
 	VpMovS                float64   `json:"abm-vp-speed"`                // Visual Predator speed
 	VpMovA                float64   `json:"abm-vp-acceleration"`         // Visual Predator acceleration
 	VpTurn                float64   `json:"abm-vp-turn"`                 //	Visual Predator turn rate / range (in radians)
-	CppMutationFactor     float64   `json:"abm-cpp-mf"`                  //	mutation factor
 	Vsr                   float64   `json:"abm-vp-vsr"`                  //	VP agent visual search range
 	Vγ                    float64   `json:"abm-visual-acuity"`           //	visual acuity in environments
 	VpReproductionChance  float64   `json:"abm-vp-reproduction-chance"`  //	chance of VP copulation success.

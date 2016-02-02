@@ -244,12 +244,12 @@ func (c *ColourPolymorphicPrey) Birth(ctxt Context) []ColourPolymorphicPrey {
 
 // For now, mutation only affects colouration, but could be extended to affect any other parameter.
 func (c *ColourPolymorphicPrey) mutation(Mf float64) {
-	c.colouration = colour.RandRGBClamped(c.colouration, Mf)
+	c.colouration = colour.RandRGBGaussianMutation(c.colouration, 0, Mf)
 }
 
 // Mutation for external testing only
 func Mutation(c *ColourPolymorphicPrey, Mf float64) {
-	c.colouration = colour.RandRGBClamped(c.colouration, Mf)
+	c.colouration = colour.RandRGBGaussianMutation(c.colouration, 0, Mf)
 }
 
 // set of methods implementing Mortal interface
