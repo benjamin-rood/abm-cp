@@ -12,7 +12,7 @@ Generalise system so any `abm` package with local model context, agent design, e
 ###How to use:
 Install Go from [here](https://golang.org/dl/).
 Download this repository:  run `go get -u github.com/benjamin-rood/abm-colour-polymorphism`
-Change current directory to `$GOPATH/src/github.com/benjamin-rood/abm-colour-polymorphism` and run `go build && ./abm-colour-polymorphism`
+Change current directory to `$GOPATH/src/github.com/benjamin-rood/abm-colour-polymorphism` and run `cd net && go build && ./net`
 Point web browser at `localhost:8080`
 
 Only tested so far on Safari (OS X) and Chrome (OS X).
