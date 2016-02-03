@@ -1,7 +1,7 @@
 
 ###Current Version: 0.1.5
 
-![enter image description here](https://giant.gfycat.com/ThinWelloffAfricanrockpython.gif)
+![abm preview](https://giant.gfycat.com/AggressiveGregariousAidi.gif)
 
 ##Goal
 
@@ -58,6 +58,8 @@ Base requirements completed.
 
 * Essential unit tests for `abm` package :white_check_mark:
 
+* Show live population (and timeline) statistics inside P5js viewport.
+
 * Client-side input validation.
 
 * Switch data serialisation to Protocol Buffers (protobuf) – marshalling drawing instructions to JSON is currently the single most expensive action!
@@ -67,21 +69,21 @@ Base requirements completed.
 	* Adaptation in response to hunger. :white_check_mark:
 	* Starvation ⟹ Death. :white_check_mark:
 	* Sexual Reproduction. :white_check_mark:
-	* Better Prey Search (using grid system).
+
+* Expected modelling entirely in place, with all baseline parameters in place. :white_check_mark:
 
 ### 0.3.0
 
-* Use *k-dimensional tree* for spatial partitioning of model environment.
+* Statistical logging to file using IOWriter.
 
-* Visual Predator implemenation:
-	* Optimal Prey Search (using *k-d tree*)
+* Better Prey Search (using grid system).
 
 * Complete tests for `abm` package
 
-* Integration, end-to-end tests?
-
 
 ### 1.0.0
+
+* Use *k-dimensional tree* for spatial partitioning of model environment.
 
 * Live statistical graphing widgets
 
