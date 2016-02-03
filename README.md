@@ -1,6 +1,10 @@
 
 ###Current Version: 0.1.5
 
+Known problem: Sometimes when restarting a running model the app will crash from `panic: runtime error: index out of range` 
+
+Investigating. I think I know why, but without inserting a whole bunch of slice length tests (ugly, inelegant, ham-fisted), I am not sure of the way to solve it.
+
 ![abm preview](https://giant.gfycat.com/AggressiveGregariousAidi.gif)
 
 ##Context
@@ -61,11 +65,11 @@ Base requirements completed.
 
 ### 0.2.0
 
+* Proper (idiomatically Go) error utilisation and handling of *errors as values.*
+
 * Essential unit tests for `abm` package :white_check_mark:
 
-* Show live population (and timeline) statistics inside P5js viewport.
-
-* Client-side input validation.
+* Show live population and timeline statistics inside P5js viewport.
 
 * Switch data serialisation to Protocol Buffers (protobuf) – marshalling drawing instructions to JSON is currently the single most expensive action!
  
@@ -78,6 +82,8 @@ Base requirements completed.
 * Expected modelling entirely in place, with all baseline parameters in place. :white_check_mark:
 
 ### 0.3.0
+
+* Client-side input validation.
 
 * Statistical logging to file using IOWriter.
 
