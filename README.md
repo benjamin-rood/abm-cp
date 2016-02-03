@@ -3,6 +3,11 @@
 
 ![abm preview](https://giant.gfycat.com/AggressiveGregariousAidi.gif)
 
+##Context
+Software for computing a Predator-Prey Agent Based Model of prey colour polymorphism (CP) in Go. 
+
+Written specifically to assist the research by Dr. James Dale in evaluating hypotheses for the evolutionary maintenance of extreme colour polymorphism.
+
 ##Goal
 
 Server-side computation, client-side GUI controls and visualisation of the running ABM in a web browser.
@@ -104,9 +109,3 @@ Base requirements completed.
 * Fluid ABM timescale controls.
 
 * Optional recording of Visualisation to SVG frame sequence. 
-
-
-##Context
-Software for computing a Predator-Prey Agent Based Model of prey colour polymorphism (CP) in Go. 
-
-Written specifically to assist the research by Dr. James Dale in evaluating hypotheses for the evolutionary maintenance of extreme colour polymorphism.
