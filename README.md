@@ -1,5 +1,7 @@
 
-###Current Version: 0.1.3
+###Current Version: 0.1.5
+
+Known Problem: `panic: runtime error: index out of range` during operation.
 
 ![enter image description here](https://giant.gfycat.com/ThinWelloffAfricanrockpython.gif)
 
@@ -12,10 +14,10 @@ Generalise system so any `abm` package with local model context, agent design, e
 ###How to use:
 Install Go from [here](https://golang.org/dl/).
 Download this repository:  run `go get -u github.com/benjamin-rood/abm-colour-polymorphism`
-Change current directory to `$GOPATH/src/github.com/benjamin-rood/abm-colour-polymorphism` and run `go build && ./abm-colour-polymorphism`
+Change current directory to `$GOPATH/src/github.com/benjamin-rood/abm-colour-polymorphism` and run `cd net && go build && ./net`
 Point web browser at `localhost:8080`
 
-Only tested so far on Safari (OS X) and Chrome (OS X).
+Only tested so far on Safari (OS X) and Chrome (OS X, Windows 8.1).
 
 
 
@@ -64,7 +66,7 @@ Base requirements completed.
  
 * Visual Predator implemenation:
 	* Find baseline params for Colour Imprinting. :white_check_mark:
-	* Adaptation in response to hunger.
+	* Adaptation in response to hunger. :white_check_mark:
 	* Starvation ⟹ Death. :white_check_mark:
 	* Sexual Reproduction. :white_check_mark:
 	* Better Prey Search (using grid system).
