@@ -1,8 +1,6 @@
 
 ###Current Version: 0.1.5
 
-Broken: `panic: runtime error: index out of range` during operation.
-
 ![enter image description here](https://giant.gfycat.com/ThinWelloffAfricanrockpython.gif)
 
 ##Goal
