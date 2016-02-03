@@ -23,12 +23,12 @@ func (vp *VisualPredator) RBB(ctxt Context, popSize int, cppPop []ColourPolymorp
 		}
 		if err != nil {
 			log.Println("vp.RBB:", err) // ARGH
-			goto Patrol
 		}
 		if attack {
 			vp.Attack(target, ctxt.VpAttackChance, ctxt.VpColImprintFactor, ctxt.Vγ)
 			goto Add
 		}
+		goto Patrol
 	case "FERTILE":
 		if popSize >= ctxt.VpPopulationCap {
 			goto Patrol

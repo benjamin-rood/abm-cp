@@ -1,15 +1,77 @@
 package main
 
 import (
+	"crypto/rand"
 	"fmt"
 	"log"
 	"net/http"
 	"time"
 
-	"github.com/Pallinder/go-randomdata"
+	"github.com/benjamin-rood/abm-colour-polymorphism/abm"
 	"github.com/benjamin-rood/goio"
 	"golang.org/x/net/websocket"
 )
+
+// Client defines the owner of the Model.
+type Client struct {
+	*websocket.Conn
+	UUID string
+	Name string
+	abm.Model
+	Active bool
+	Stamp  time.Time
+	Quit   chan struct{}
+}
+
+// NewClient constructs an initialised Client session.
+func NewClient(ws *websocket.Conn, uuid string) (c Client) {
+	c.Conn = ws
+	c.UUID = uuid
+	c.Name = name()
+	c.Model = abm.NewModel()
+	c.Active = true
+	c.Stamp = time.Now()
+	c.Quit = make(chan struct{})
+	return
+}
+
+// Monitor keeps the client's connection alive,
+// and responds to any internal running model signaling
+// – e.g. if there is a fault in the running abm,
+// or if the population of the CP Prey agents reaches zero,
+// then the model will invoke Kill() and Quit will close,
+// which permits us to clean up and disconnect the Client.
+func (c *Client) Monitor(ch chan struct{}) {
+	defer func() {
+		c.Active = false
+		c.Stamp = time.Now()
+	}()
+	for {
+		select {
+		case <-c.Quit: //	internal signal from client.
+			close(ch) //	exit websocket connection.
+			// send final statistics
+			// clean up
+			return
+		case <-ch:
+			c.Suspend() //	websocket connection dead, suspend model operation.
+			return
+		default:
+			time.Sleep(time.Millisecond * 100)
+		}
+	}
+}
+
+func name() string {
+	return "01b"
+}
+
+func uuid() string {
+	b := make([]byte, 16)
+	rand.Read(b)
+	uuid := fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:])
+	return uuid
+}
 
 func networkError(err error, c chan struct{}) {
 	log.Println(err)
@@ -54,17 +116,16 @@ func sweepSocketClients() {
 
 // TODO: too hackneyed?
 func wsSession(ws *websocket.Conn) {
-	uid := getUIDString()
-	fmt.Println("wsSession uid:", uid)
-	c := NewClient(ws, uid)
-	socketUsers[uid] = c
+	uuid := uuid()
+	log.Println("wsSession uuid:", uuid)
+	c := NewClient(ws, uuid)
+	socketUsers[uuid] = c
 	defer func() {
-		time.Sleep(time.Second)
 		err := c.Conn.Close()
 		if err != nil {
 			log.Println("wsSession exit failed to close Conn!", err)
 		}
-		delete(socketUsers, uid)
+		delete(socketUsers, uuid)
 	}()
 	wsCh := make(chan struct{})
 	go wsReader(ws, c.Im, wsCh)
@@ -111,16 +172,6 @@ func wsWriter(ws *websocket.Conn, out <-chan goio.OutMsg, quit <-chan struct{}) 
 			time.Sleep(time.Millisecond * 100)
 		}
 	}
-}
-
-func getUIDString() string {
-again:
-	id := randomdata.SillyName()
-	_, exists := socketUsers[id]
-	if exists {
-		goto again
-	}
-	return id
 }
 
 func main() {

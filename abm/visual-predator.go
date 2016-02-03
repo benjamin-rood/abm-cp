@@ -238,7 +238,7 @@ func (vp *VisualPredator) MateSearch(predators []VisualPredator, me int) (*Visua
 	var dist float64
 	for i := range predators {
 		if i == me {
-			i++
+			continue
 		}
 		dist, err = geometry.VectorDistance(vp.pos, predators[i].pos)
 		if dist < min {
