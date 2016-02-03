@@ -112,8 +112,8 @@
         <b>Starvation</b>
       </div>
       <div class="form-group" style="margin:15px">
-        <label for="abm-vp-hunger-limit">Visual Predator Hunger Limit</label>
-        <input type="number" class="form-control" id="abm-vp-hunger-limit" value="250" min="1" max="1000">
+        <label for="abm-vp-starvation-point">Visual Predator Hunger Limit</label>
+        <input type="number" class="form-control" id="abm-vp-starvation-point" value="250" min="1" max="1000">
       </div>
       <div class="form-group" style="margin:15px">
         <label for="abm-vp-speed">Visual Predator Speed</label>
@@ -128,8 +128,16 @@
         <input type="number" class="form-control" id="abm-vp-vsr" value="0.5" min="0.0" max="1.0" step="0.001">
       </div>
       <div class="form-group" style="margin:15px">
+        <label for="abm-vp-visual-acuity">Visual Predator Visual Search Acuity</label>
+        <input type="number" class="form-control" id="abm-vp-visual-acuity" value="0.6" min="0.0" max="1.0" step="0.1">
+      </div>
+      <div class="form-group" style="margin:15px">
+        <label for="abm-vp-visual-acuity-bump">Visual Predator Visual Search Acuity Bump (when hungry)</label>
+        <input type="number" class="form-control" id="abm-vp-visual-acuity-bump" value="1.05" min="0.0" step="0.05">
+      </div>
+      <div class="form-group" style="margin:15px">
         <label for="abm-vp-vsr-chance">Visual Predator Visual Search Chance</label>
-        <input type="number" class="form-control" id="abm-vp-vsr-chance" value="0.3" min="0.0" max="1.0" step="0.001">
+        <input type="number" class="form-control" id="abm-vp-vsr-chance" value="0.5" min="0.0" max="1.0" step="0.001">
       </div>
       <div class="form-group" style="margin:15px">
         <label for="abm-vp-attack-chance">Visual Predator Visual Attack Chance</label>
@@ -137,11 +145,11 @@
       </div>
       <div class="form-group" style="margin:15px">
         <label for="abm-vp-col-imprinting">Visual Predator Colour Imprinting</label>
-        <input type="number" class="form-control" id="abm-vp-col-imprinting" value="0.1" min="0.0" max="1.0" step="0.001">
+        <input type="number" class="form-control" id="abm-vp-col-imprinting" value="0.5" min="0.0" max="1.0" step="0.001">
       </div>
       <div class="form-group" style="margin:15px">
         <label for="abm-vp-reproduction-chance">Visual Predator Reproduction Chance</label>
-        <input type="number" class="form-control" id="abm-vp-reproduction-chance" value="0.1" min="0.0" max="1.0" step="0.001">
+        <input type="number" class="form-control" id="abm-vp-reproduction-chance" value="0.3" min="0.0" max="1.0" step="0.001">
       </div>
       <div class="form-group" style="margin:15px">
         <label for="abm-vp-spawn-size">Visual Predator Spawn Size</label>

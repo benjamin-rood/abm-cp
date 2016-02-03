@@ -244,7 +244,7 @@ func (c *ColourPolymorphicPrey) Birth(ctxt Context) []ColourPolymorphicPrey {
 
 // For now, mutation only affects colouration, but could be extended to affect any other parameter.
 func (c *ColourPolymorphicPrey) mutation(Mf float64) {
-	c.colouration = colour.RandRGBGaussianMutation(c.colouration, 0, Mf)
+	c.colouration = colour.RandRGBClamped(c.colouration, Mf)
 }
 
 // Mutation for external testing only

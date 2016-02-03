@@ -1,6 +1,6 @@
 body {
   padding: 50px;
-  background-color: rgb(25,25,25);
+  background-color: #1e1e1e;
   ::invalid {
     background-color: #ff91a4
   }

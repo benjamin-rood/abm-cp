@@ -37,14 +37,15 @@ const (
 	dVpMovA                = 1.0
 	dVpTurn                = eigthpi
 	dVsr                   = dVpMovS
-	dVγ                    = 1.0
+	dVγ                    = 0.3
+	dVγBump                = 1.2
 	dVpReproductiveChance  = 1.0
 	dVpSexualRequirement   = 50
 	dVpGestation           = 5
 	dVpSearchChance        = 1.0
 	dVpAttackChance        = 1.0
 	dVpColImpFactor        = 0.2
-	dVpHungerLimit         = 50
+	dVpStarvationPoint     = 250
 	dVpStarvation          = false
 	dCppMf                 = 0.05
 	dRandomAges            = true
@@ -68,13 +69,14 @@ const (
 	tVpPopCap              = 5
 	tVpAgeing              = false
 	tVpLifespan            = 9999
-	tVpHungerLimit         = 9999
+	tVpStarvationPoint     = 9999
 	tStarvation            = false
 	tVpMovS                = 0.05
 	tVpMovA                = 1.0
 	tVpTurn                = eigthpi / 2
 	tVpVsr                 = 0.2
-	tVy                    = 1.0
+	tVγ                    = 1.0
+	tVγBump                = 1.2
 	tVpReproductiveChance  = 1.0
 	tVpSearchChance        = 1.0
 	tVpAttackChance        = 1.0
@@ -86,11 +88,14 @@ const (
 )
 
 var (
+	// DefaultBG background for visualisation
+	DefaultBG = colour.RGB{Red: 0.1, Green: 0.1, Blue: 0.1}
+
 	// DefaultEnvironment to be used as a baseline example
 	DefaultEnvironment = Environment{
 		Bounds:         []float64{d, d},
 		Dimensionality: dimensionality,
-		BG:             colour.Black,
+		BG:             DefaultBG,
 	}
 
 	// DefaultContext to be used as a baseline example
@@ -112,12 +117,13 @@ var (
 		VpPopulationCap:       dVpPopCap,
 		VpAgeing:              dVpAgeing,
 		VpLifespan:            dVpLifespan,
-		VpHungerLimit:         dVpHungerLimit,
+		VpStarvationPoint:     dVpStarvationPoint,
 		VpMovS:                dVpMovS,
 		VpMovA:                1.0,
 		VpTurn:                dVpTurn,
 		Vsr:                   dVsr,
-		Vγ:                    1.0,
+		Vγ:                    dVγ,
+		VγBump:                dVγBump,
 		VpReproductionChance:  dVpReproductiveChance,
 		VpSexualRequirement:   dVpSexualRequirement,
 		VpGestation:           dVpGestation,
@@ -151,12 +157,13 @@ var (
 		VpPopulationCap:       tVpPopCap,
 		VpAgeing:              tVpAgeing,
 		VpLifespan:            tVpLifespan,
-		VpHungerLimit:         tVpHungerLimit,
+		VpStarvationPoint:     tVpStarvationPoint,
 		VpMovS:                tVpMovS,
 		VpMovA:                1.0,
 		VpTurn:                tVpTurn,
 		Vsr:                   tVpVsr,
-		Vγ:                    1.0,
+		Vγ:                    tVγ,
+		VγBump:                tVγBump,
 		VpReproductionChance:  tVpReproductiveChance,
 		VpSearchChance:        tVpSearchChance,
 		VpAttackChance:        tVpAttackChance,

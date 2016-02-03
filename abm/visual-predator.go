@@ -28,7 +28,7 @@ type VisualPredator struct {
 	fertility     int     //	counter for interval between birth and sex
 	gravid        bool    //	i.e. pregnant
 	vsr           float64 //	visual search range
-	γ             float64 //	visual acuity (as a standard, use 1.0) - this should be defined at the Environmental level?
+	γ             float64 //	visual seach (colour) bias
 	colouration   colour.RGB
 	colImprint    colour.RGB
 }
@@ -186,6 +186,9 @@ func (vp *VisualPredator) PreySearch(prey []ColourPolymorphicPrey, searchChance 
 		prey[i].δ, err = geometry.VectorDistance(vp.pos, prey[i].pos)
 		if prey[i].δ <= vp.vsr { // ∴ only include the prey agent for considertion if within visual range
 			prey[i].𝛘 = colour.RGBDistance(vp.colImprint, prey[i].colouration)
+			// if prey[i].𝛘 < vp.γ { // iff colour distance between expectation and actual is < predator's visual search bias
+			// 	searchSet = append(searchSet, &prey[i])
+			// }
 			searchSet = append(searchSet, &prey[i])
 		}
 	}
@@ -228,12 +231,15 @@ func (vp *VisualPredator) Intercept(vx geometry.Vector, dist float64) (bool, err
 }
 
 // MateSearch searches species population for sexual coupling
-func (vp *VisualPredator) MateSearch(predators []VisualPredator) (*VisualPredator, error) {
+func (vp *VisualPredator) MateSearch(predators []VisualPredator, me int) (*VisualPredator, error) {
 	min := math.MaxFloat64
 	var closest *VisualPredator
 	var err error
 	var dist float64
 	for i := range predators {
+		if i == me {
+			i++
+		}
 		dist, err = geometry.VectorDistance(vp.pos, predators[i].pos)
 		if dist < min {
 			min = dist
@@ -244,7 +250,7 @@ func (vp *VisualPredator) MateSearch(predators []VisualPredator) (*VisualPredato
 }
 
 // Attack VP agent attempts to attack CP prey agent
-func (vp *VisualPredator) Attack(prey *ColourPolymorphicPrey, vpAttackChance float64, imprintFactor float64) {
+func (vp *VisualPredator) Attack(prey *ColourPolymorphicPrey, vpAttackChance float64, imprintFactor float64, ctxtγ float64) {
 	if prey == nil {
 		return
 	}
@@ -255,6 +261,7 @@ func (vp *VisualPredator) Attack(prey *ColourPolymorphicPrey, vpAttackChance flo
 		vp.hunger -= 100
 		prey.lifespan = 0 //	i.e. prey agent flagged for removal at the beginning of next turn and will not be drawn again.
 		vp.attackSuccess = true
+		vp.γ = ctxtγ //	resetting to context-defined value
 		fmt.Println("eaten =", prey.String())
 		fmt.Println("eater =", vp.String())
 	}
@@ -277,23 +284,35 @@ func (vp *VisualPredator) colourImprinting(target colour.RGB, 𝜎 float64) erro
 
 // Age the vp agent
 func (vp *VisualPredator) Age(ctxt Context) string {
+	_ = "breakpoint" // godebug
 	vp.attackSuccess = false
-	vp.hunger++
 	vp.fertility++
+	vp.hunger++
+
+	if ctxt.Starvation {
+		t := ctxt.VpStarvationPoint - vp.hunger
+		r := int(ctxt.VpStarvationPoint / 5)
+		if t < r { //	if the agent is getting hungry, it starts looking harder.
+			vp.γ *= ctxt.VγBump // (default is 1.2 == a 20% bump)
+		}
+	}
+
 	if ctxt.VpAgeing {
 		vp.lifespan--
 	}
+
 	return vp.jump(ctxt)
 }
 
 func (vp *VisualPredator) jump(ctxt Context) (jump string) {
+	_ = "breakpoint" // godebug
 	switch {
 	case vp.lifespan <= 0:
 		jump = "DEATH"
 	case vp.fertility == 0:
 		vp.gravid = false
 		jump = "SPAWN"
-	case ctxt.Starvation && (vp.hunger > ctxt.VpHungerLimit):
+	case ctxt.Starvation && (vp.hunger > ctxt.VpStarvationPoint):
 		jump = "DEATH"
 	case (vp.fertility > 0) && (vp.hunger < ctxt.VpSexualRequirement):
 		jump = "FERTILE"
