@@ -21,7 +21,6 @@ func (m *Model) Controller() {
 	for {
 		select {
 		case msg := <-m.Im:
-			_ = "breakpoint" // godebug
 			switch msg.Type {
 			case "context": //	if context params msg is recieved, (re)start
 				err := json.Unmarshal(msg.Data, &m.Context)
@@ -31,7 +30,6 @@ func (m *Model) Controller() {
 				}
 				m.Timeframe.Reset()
 				spew.Dump(m.Context)
-				_ = "breakpoint" // godebug
 				if m.running {
 					m.Stop()
 				}
@@ -85,6 +83,8 @@ func (m *Model) Resume() {
 }
 
 func (m *Model) run(ar chan<- render.AgentRender, turn chan<- struct{}) {
+	m.Log() //	initial population stats
+	time.Sleep(time.Second)
 	for {
 		select {
 		case <-m.r:
@@ -123,9 +123,8 @@ func (m *Model) turn(ar chan<- render.AgentRender, turn chan<- struct{}) {
 			am.Unlock()
 			m.Action++
 		}(i)
-		// fmt.Printf("cp-rbb: %04d elapsed: %v\n", i, time.Since(timeMark))
 	}
-	// fmt.Printf("m.PopCPP: %04d total cp-rbb elapsed: %v\n", len(m.PopCPP), time.Since(cInterval))
+
 	cppAgentWg.Wait()
 	m.PopCPP = cppAgents //	update the population based on the results from each agent's rule-based behaviour of the turn.
 	m.Phase++
@@ -137,7 +136,7 @@ func (m *Model) turn(ar chan<- render.AgentRender, turn chan<- struct{}) {
 		vpAgentWg.Add(1)
 		go func(i int) {
 			defer vpAgentWg.Done()
-			result := m.PopVP[i].RBB(m.Context, len(m.PopVP), m.PopCPP, m.PopVP)
+			result := m.PopVP[i].RBB(m.Context, len(m.PopVP), m.PopCPP, m.PopVP, i)
 			ar <- m.PopVP[i].GetDrawInfo()
 			am.Lock()
 			vpAgents = append(vpAgents, result...)

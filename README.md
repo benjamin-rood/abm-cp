@@ -1,7 +1,16 @@
 
-###Current Version: 0.1.3
+###Current Version: 0.1.5
 
-![enter image description here](https://giant.gfycat.com/ThinWelloffAfricanrockpython.gif)
+Known problem: Sometimes when restarting a running model the app will crash from `panic: runtime error: index out of range` 
+
+Investigating. I think I know why, but without inserting a whole bunch of slice length tests (ugly, inelegant, ham-fisted), I am not sure of the way to solve it.
+
+![abm preview](https://giant.gfycat.com/AggressiveGregariousAidi.gif)
+
+##Context
+Software for computing a Predator-Prey Agent Based Model of prey colour polymorphism (CP) in Go. 
+
+Written specifically to assist the research by Dr. James Dale in evaluating hypotheses for the evolutionary maintenance of extreme colour polymorphism.
 
 ##Goal
 
@@ -56,32 +65,36 @@ Base requirements completed.
 
 ### 0.2.0
 
+* Proper (idiomatically Go) error utilisation and handling of *errors as values.*
+
 * Essential unit tests for `abm` package :white_check_mark:
 
-* Client-side input validation.
+* Show live population and timeline statistics inside P5js viewport.
 
 * Switch data serialisation to Protocol Buffers (protobuf) – marshalling drawing instructions to JSON is currently the single most expensive action!
  
 * Visual Predator implemenation:
 	* Find baseline params for Colour Imprinting. :white_check_mark:
-	* Adaptation in response to hunger.
+	* Adaptation in response to hunger. :white_check_mark:
 	* Starvation ⟹ Death. :white_check_mark:
 	* Sexual Reproduction. :white_check_mark:
-	* Better Prey Search (using grid system).
+
+* Expected modelling entirely in place, with all baseline parameters in place. :white_check_mark:
 
 ### 0.3.0
 
-* Use *k-dimensional tree* for spatial partitioning of model environment.
+* Client-side input validation.
 
-* Visual Predator implemenation:
-	* Optimal Prey Search (using *k-d tree*)
+* Statistical logging to file using IOWriter.
+
+* Better Prey Search (using grid system).
 
 * Complete tests for `abm` package
 
-* Integration, end-to-end tests?
-
 
 ### 1.0.0
+
+* Use *k-dimensional tree* for spatial partitioning of model environment.
 
 * Live statistical graphing widgets
 
@@ -102,9 +115,3 @@ Base requirements completed.
 * Fluid ABM timescale controls.
 
 * Optional recording of Visualisation to SVG frame sequence. 
-
-
-##Context
-Software for computing a Predator-Prey Agent Based Model of prey colour polymorphism (CP) in Go. 
-
-Written specifically to assist the research by Dr. James Dale in evaluating hypotheses for the evolutionary maintenance of extreme colour polymorphism.

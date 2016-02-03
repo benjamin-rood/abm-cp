@@ -35,20 +35,21 @@ type Context struct {
 	CppSexualCost         int       `json:"abm-cpp-sexual-cost"`         //	CPP sexual rest cost
 	CppReproductionChance float64   `json:"abm-cpp-reproduction-chance"` //	chance of CPP copulation success.
 	CppSpawnSize          int       `json:"abm-cpp-spawn-size"`          // possible number of progeny = [1, max]
+	CppMutationFactor     float64   `json:"abm-cpp-mf"`                  //	mutation factor
 	VpPopulationStart     int       `json:"abm-vp-pop-start"`            //	starting VP agent population size
 	VpPopulationCap       int       `json:"abm-vp-pop-cap"`              //
 	VpAgeing              bool      `json:"abm-vp-ageing"`               //
 	VpLifespan            int       `json:"abm-vp-lifespan"`             //	Visual Predator lifespan
-	VpHungerLimit         int       `json:"abm-vp-hunger-limit"`         //
+	VpStarvationPoint     int       `json:"abm-vp-starvation-point"`     //
 	VpGestation           int       `json:"abm-vp-gestation"`            //	Visual Predator gestation period
 	VpSexualRequirement   int       `json:"abm-vp-sex-req"`              //
 	VpMovS                float64   `json:"abm-vp-speed"`                // Visual Predator speed
 	VpMovA                float64   `json:"abm-vp-acceleration"`         // Visual Predator acceleration
 	VpTurn                float64   `json:"abm-vp-turn"`                 //	Visual Predator turn rate / range (in radians)
-	CppMutationFactor     float64   `json:"abm-cpp-mf"`                  //	mutation factor
 	Vsr                   float64   `json:"abm-vp-vsr"`                  //	VP agent visual search range
-	Vγ                    float64   `json:"abm-visual-acuity"`           //	visual acuity in environments
-	VpReproductionChance  float64   `json:"abm-vp-reproduction-chance"`  //	chance of VP copulation success.
+	Vγ                    float64   `json:"abm-vp-visual-acuity"`
+	VγBump                float64   `json:"abm-vp-visual-acuity-bump"`
+	VpReproductionChance  float64   `json:"abm-vp-reproduction-chance"` //	chance of VP copulation success.
 	VpSpawnSize           int       `json:"abm-vp-spawn-size"`
 	VpSearchChance        float64   `json:"abm-vp-vsr-chance"`
 	VpAttackChance        float64   `json:"abm-vp-attack-chance"`
@@ -116,11 +117,7 @@ type Model struct {
 func NewModel() (m Model) {
 	m.running = false
 	m.Timeframe = Timeframe{}
-	m.Environment = Environment{
-		Bounds:         []float64{1.0, 1.0},
-		Dimensionality: 2,
-		BG:             colour.RGB{Red: 0.2, Green: 0.2, Blue: 0.25},
-	}
+	m.Environment = DefaultEnvironment
 	m.Context = DefaultContext
 	m.Om = make(chan goio.OutMsg)
 	m.Im = make(chan goio.InMsg)

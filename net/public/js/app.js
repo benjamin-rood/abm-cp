@@ -26,7 +26,7 @@ var sketch = function(p) {
   var cpSize = 4
   p.setup = function() {
     var w = $('#abm-viewport').innerWidth()
-    var h = w * 0.6
+    var h = w * 0.65
     p.createCanvas(w, h)
     p.noLoop()
     p.background(0, 0, 255)
@@ -56,13 +56,11 @@ var sketch = function(p) {
         p.noStroke()
         p.push()
           p.translate(x, y)
-          p.push()
-            p.rotate(p.atan2(1, 0))
-            p.rotate(angle)
-            p.triangle(-vpSize, vpSize, 0, -vpSize, vpSize, vpSize)
-          p.pop()
-          p.fill(0)
-          p.ellipse(0,0, vpSize-3,vpSize-3)
+          p.rotate(p.atan2(1, 0))
+          p.rotate(angle)
+          p.triangle(-vpSize, vpSize, 0, -vpSize, vpSize, vpSize)
+          p.fill(255)
+          p.triangle(-vpSize/2, 0, 0, -vpSize, vpSize/2, 0)
         p.pop()
       }
     }
@@ -70,7 +68,7 @@ var sketch = function(p) {
 
   p.windowResized = function() {
     var w = $('#abm-viewport').innerWidth()
-    var h = w * 0.6
+    var h = w * 0.65
     p.resizeCanvas(w, h)
   }
 }
@@ -137,10 +135,12 @@ $(function () {
       ['abm-vp-ageing']: parseBool($('#abm-vp-ageing').is(':checked')),
       ['abm-vp-lifespan']: parseInt($('#abm-vp-lifespan').val()),
       ['abm-starvation']: parseBool($('#abm-starvation').is(':checked')),
-      ['abm-vp-hunger-limit']: parseInt($('#abm-vp-hunger-limit').val()),
+      ['abm-vp-starvation-point']: parseInt($('#abm-vp-starvation-point').val()),
       ['abm-vp-speed']: parseFloat($('#abm-vp-speed').val()),
       ['abm-vp-turn']: parseFloat($('#abm-vp-turn').val()),
       ['abm-vp-vsr']: parseFloat($('#abm-vp-vsr').val()),
+      ['abm-vp-visual-acuity']: parseFloat($('#abm-vp-visual-acuity').val()),
+      ['abm-vp-visual-acuity-bump']: parseFloat($('#abm-vp-visual-acuity-bump').val()),
       ['abm-vp-vsr-chance']: parseFloat($('#abm-vp-vsr-chance').val()),
       ['abm-vp-attack-chance']: parseFloat($('#abm-vp-attack-chance').val()),
       ['abm-vp-col-imprinting']: parseFloat($('#abm-vp-col-imprinting').val()),
