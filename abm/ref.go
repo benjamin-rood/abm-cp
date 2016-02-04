@@ -89,7 +89,7 @@ const (
 
 var (
 	// DefaultBG background for visualisation
-	DefaultBG = colour.RGB{Red: 0.1, Green: 0.1, Blue: 0.1}
+	DefaultBG = colour.RGB{Red: 0.423529411765, Green: 0.376470588235, Blue: 0.376470588235}
 
 	// DefaultEnvironment to be used as a baseline example
 	DefaultEnvironment = Environment{

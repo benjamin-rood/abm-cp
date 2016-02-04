@@ -3,10 +3,8 @@ package colour
 import (
 	"math"
 	"math/rand"
-	"time"
 
 	"github.com/benjamin-rood/abm-colour-polymorphism/calc"
-	"github.com/leesper/go_rng"
 )
 
 /*
@@ -95,12 +93,10 @@ func RandRGBClamped(col RGB, diff float64) RGB {
 	return RGB{red, green, blue}
 }
 
-// RandRGBGaussianMutation uses a Gaussian distributed value to calculate the mutation shift of a prey agent colouration at birth.
-func RandRGBGaussianMutation(src RGB, mean float64, stddev float64) RGB {
-	crng := rng.NewGaussianGenerator(time.Now().UnixNano())
-	diff := crng.Gaussian(mean, stddev)
-	red := calc.ClampFloatIn(src.Red+diff, 0.0, 1.0)
-	green := calc.ClampFloatIn(src.Green+diff, 0.0, 1.0)
-	blue := calc.ClampFloatIn(src.Blue+diff, 0.0, 1.0)
-	return RGB{red, green, blue}
+// Invert the value for each channel
+func (rgb RGB) Invert() (inv RGB) {
+	inv.Red = 1.0 - rgb.Red
+	inv.Green = 1.0 - rgb.Green
+	inv.Blue = 1.0 - rgb.Blue
+	return
 }

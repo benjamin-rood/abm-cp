@@ -2,6 +2,9 @@ function DrawList(obj) {
   this.cpp = obj.data.cpp
   this.vp = obj.data.vp
   this.bg = obj.data.bg
+  this['cpp-pop-string'] = obj.data['cpp-pop-string']
+  this['vp-pop-string'] = obj.data['vp-pop-string']
+  this['turncount-string'] = obj.data['turncount-string']
 }
 
 var initDrawObj = {
@@ -13,11 +16,16 @@ var initDrawObj = {
       red: 0,
       green: 0,
       blue: 0
-    }
+    },
+    'cpp-pop-string': "",
+    'vp-pop-string': "",
+    'turncount-string': "",
   }
 }
 
 var drawlist = new DrawList(initDrawObj)
+
+console.log(drawlist)
 
 var sketch = function(p) {
   var modelDw = 1.0
@@ -26,15 +34,15 @@ var sketch = function(p) {
   var cpSize = 4
   p.setup = function() {
     var w = $('#abm-viewport').innerWidth()
-    var h = w * 0.65
+    var h = w * 0.625
     p.createCanvas(w, h)
     p.noLoop()
     p.background(0, 0, 255)
   }
 
   p.draw = function() {
-    p.background(drawlist.bg.red, drawlist.bg.green, drawlist.bg.blue)
-
+    p.background(25,18,18)
+    //  draw colour polymorphic prey agents
     if (drawlist.cpp) {
       for (var i = 0; i < drawlist.cpp.length; i++) {
         var x = absToView(drawlist.cpp[i].position.x, modelDw, p.width)
@@ -45,7 +53,7 @@ var sketch = function(p) {
         p.point(x, y)
       }
     }
-
+    //  draw visual predator agents
     if (drawlist.vp) {
       for (var i = 0; i < drawlist.vp.length; i++) {
         var x = absToView(drawlist.vp[i].position.x, modelDw, p.width)
@@ -64,11 +72,29 @@ var sketch = function(p) {
         p.pop()
       }
     }
+    //  write population and turn stats in viewport.
+    var txsize = p.height/40
+    p.textSize(txsize)
+    var vpPopString =  drawlist['cpp-pop-string']
+    var cppPopString = drawlist['vp-pop-string']
+    var turnString =   drawlist['turncount-string']
+    var bw = ((p.textWidth(vpPopString) + p.textWidth(cppPopString) + p.textWidth(turnString)) * 2.3 ) / 3
+    var bh = txsize * 6
+    var bx = p.width*0.02
+    var by = p.height - (p.height * 0.2)
+    var br = by * 0.015
+    p.push()
+      p.translate(bx, by)
+      p.fill(0,0,0,100)
+      p.rect(0, 0, bw, bh, br)
+      p.fill(255)
+      p.text(vpPopString + "\n" + cppPopString + "\n" + turnString, txsize*2, txsize*2)
+    p.pop()
   }
 
   p.windowResized = function() {
     var w = $('#abm-viewport').innerWidth()
-    var h = w * 0.65
+    var h = w * 0.625
     p.resizeCanvas(w, h)
   }
 }
@@ -97,6 +123,9 @@ vizSocket.onmessage = function(e) {
       drawlist.cpp = rawmsg.data.cpp
       drawlist.vp = rawmsg.data.vp
       drawlist.bg = rawmsg.data.bg
+      drawlist['cpp-pop-string'] = rawmsg.data['cpp-pop-string']
+      drawlist['vp-pop-string'] = rawmsg.data['vp-pop-string']
+      drawlist['turncount-string'] = rawmsg.data['turncount-string']
       viz.redraw()
       break
     case 'statistics':
