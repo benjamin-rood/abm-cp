@@ -111,6 +111,8 @@ func (vp *VisualPredator) GetDrawInfo() (ar render.AgentRender) {
 	ar.Y = vp.pos[y]
 	ar.Heading = vp.𝚯
 	if vp.attackSuccess {
+		// inv := vp.colImprint.Invert()
+		// ar.Colour = inv.To256()
 		ar.Colour = colour.RGB256{Red: 0, Green: 0, Blue: 0} // blink black on successful attack!
 	} else {
 		ar.Colour = vp.colImprint.To256()
@@ -186,28 +188,18 @@ func (vp *VisualPredator) PreySearch(prey []ColourPolymorphicPrey, searchChance 
 		prey[i].δ, err = geometry.VectorDistance(vp.pos, prey[i].pos)
 		if prey[i].δ <= vp.vsr { // ∴ only include the prey agent for considertion if within visual range
 			prey[i].𝛘 = colour.RGBDistance(vp.colImprint, prey[i].colouration)
-			// if prey[i].𝛘 < vp.γ { // iff colour distance between expectation and actual is < predator's visual search bias
-			// 	searchSet = append(searchSet, &prey[i])
-			// }
-			searchSet = append(searchSet, &prey[i])
+			if prey[i].𝛘 < vp.γ { // iff colour distance between expectation and actual is < predator's visual search bias
+				searchSet = append(searchSet, &prey[i])
+			}
+			// searchSet = append(searchSet, &prey[i])
 		}
 	}
-	/*
-		fmt.Println("Before sorting")
-		for i := range prey {
-			fmt.Printf("%v %v %v %v %v %p\n", i, prey[i].pos, prey[i].δ, prey[i].colouration, prey[i].𝛘, &prey[i])
-		}
-	*/
-	sort.Sort(VisualDifferentiation(searchSet))
-	/*
-		// fmt.Println("After sorting")
-		// for i := range searchSet {
-		// 	fmt.Printf("%v %v %v %v %v %p\n", i, searchSet[i].pos, searchSet[i].δ, searchSet[i].colouration, searchSet[i].𝛘, searchSet[i])
-		// }
-	*/
+
+	sort.Sort(VisualDifferentiation(searchSet)) //	sort by distance
+
 	// search within biased and reduced set
 	for i, p := range searchSet {
-		if ((1.0 - p.𝛘) * (1.0 - p.δ) * vp.γ) > (1.0 - searchChance) {
+		if ((1.0 - p.𝛘) * (1.0 - p.δ)) > (1.0 - searchChance) {
 			return searchSet[i], err
 		}
 	}
@@ -222,7 +214,8 @@ func (vp *VisualPredator) Intercept(vx geometry.Vector, dist float64) (bool, err
 	if dist < vp.movS {
 		attack = true
 		vp.pos = vx
-		vp.Turn(Ψ)
+		// vp.Turn(Ψ)
+		vp.Turn(calc.ClampFloatIn(Ψ, -vp.tr, vp.tr))
 		return attack, err
 	}
 	vp.Turn(calc.ClampFloatIn(Ψ, -vp.tr, vp.tr))
@@ -258,12 +251,10 @@ func (vp *VisualPredator) Attack(prey *ColourPolymorphicPrey, vpAttackChance flo
 	α := rand.Float64()
 	if α > vpAttackChance {
 		vp.colourImprinting(prey.colouration, imprintFactor)
-		vp.hunger -= 100
+		vp.hunger -= 25
 		prey.lifespan = 0 //	i.e. prey agent flagged for removal at the beginning of next turn and will not be drawn again.
 		vp.attackSuccess = true
 		vp.γ = ctxtγ //	resetting to context-defined value
-		fmt.Println("eaten =", prey.String())
-		fmt.Println("eater =", vp.String())
 	}
 }
 
@@ -283,7 +274,7 @@ func (vp *VisualPredator) colourImprinting(target colour.RGB, 𝜎 float64) erro
 // animal-agent Mortal interface methods:
 
 // Age the vp agent
-func (vp *VisualPredator) Age(ctxt Context) string {
+func (vp *VisualPredator) Age(ctxt Context, popSize int) string {
 	_ = "breakpoint" // godebug
 	vp.attackSuccess = false
 	vp.fertility++
@@ -301,10 +292,10 @@ func (vp *VisualPredator) Age(ctxt Context) string {
 		vp.lifespan--
 	}
 
-	return vp.jump(ctxt)
+	return vp.jump(ctxt, popSize)
 }
 
-func (vp *VisualPredator) jump(ctxt Context) (jump string) {
+func (vp *VisualPredator) jump(ctxt Context, popSize int) (jump string) {
 	_ = "breakpoint" // godebug
 	switch {
 	case vp.lifespan <= 0:
@@ -314,7 +305,7 @@ func (vp *VisualPredator) jump(ctxt Context) (jump string) {
 		jump = "SPAWN"
 	case ctxt.Starvation && (vp.hunger > ctxt.VpStarvationPoint):
 		jump = "DEATH"
-	case (vp.fertility > 0) && (vp.hunger < ctxt.VpSexualRequirement):
+	case (popSize < ctxt.VpPopulationCap) && (vp.fertility > 0) && (vp.hunger < ctxt.VpSexualRequirement):
 		jump = "FERTILE"
 	default:
 		jump = "PREY SEARCH"

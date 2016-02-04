@@ -21,9 +21,12 @@ type AgentRender struct {
 
 // DrawList contains the draw instructions for front-end JS gfx API
 type DrawList struct {
-	CPP []AgentRender `json:"cpp"`
-	VP  []AgentRender `json:"vp"`
-	BG  colour.RGB256 `json:"bg"`
+	CPP       []AgentRender `json:"cpp"`
+	VP        []AgentRender `json:"vp"`
+	BG        colour.RGB256 `json:"bg"`
+	CppPop    string        `json:"cpp-pop-string"` // this and the next three entries to be displayed in a little box
+	VpPop     string        `json:"vp-pop-string"`
+	TurnCount string        `json:"turncount-string"`
 }
 
 // Viewport holds the resolution / scale of the front-end JS gfx

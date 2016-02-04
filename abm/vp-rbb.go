@@ -9,7 +9,7 @@ import (
 // RBB : Rule-Based-Behaviour for Visual Predator Agent
 func (vp *VisualPredator) RBB(ctxt Context, popSize int, cppPop []ColourPolymorphicPrey, vpPop []VisualPredator, me int) (returning []VisualPredator) {
 	var Φ float64
-	jump := vp.Age(ctxt)
+	jump := vp.Age(ctxt, popSize)
 	_ = "breakpoint" // godebug
 	switch jump {
 	case "DEATH":
@@ -30,9 +30,6 @@ func (vp *VisualPredator) RBB(ctxt Context, popSize int, cppPop []ColourPolymorp
 		}
 		goto Patrol
 	case "FERTILE":
-		if popSize >= ctxt.VpPopulationCap {
-			goto Patrol
-		}
 		mate, err := vp.MateSearch(vpPop, me)
 		if err != nil {
 			log.Println("vp.RBB:", err) // ARGH

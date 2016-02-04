@@ -2,6 +2,7 @@ package abm
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"math/rand"
 	"sync"
@@ -83,7 +84,6 @@ func (m *Model) Resume() {
 }
 
 func (m *Model) run(ar chan<- render.AgentRender, turn chan<- struct{}) {
-	m.Log() //	initial population stats
 	time.Sleep(time.Second)
 	for {
 		select {
@@ -97,8 +97,8 @@ func (m *Model) run(ar chan<- render.AgentRender, turn chan<- struct{}) {
 			time.Sleep(time.Millisecond * 250)
 			return
 		default: //	PROCEED WITH TURN
-			if len(m.PopCPP) == 0 {
-				m.Kill()
+			if (len(m.PopCPP) == 0) || (len(m.PopVP) == 0) {
+				m.Stop()
 			}
 			m.turn(ar, turn)
 		}
@@ -129,7 +129,7 @@ func (m *Model) turn(ar chan<- render.AgentRender, turn chan<- struct{}) {
 	m.PopCPP = cppAgents //	update the population based on the results from each agent's rule-based behaviour of the turn.
 	m.Phase++
 	m.Action = 0 // reset at phase end
-	time.Sleep(time.Millisecond * 50)
+	time.Sleep(time.Millisecond * 20)
 
 	var vpAgents []VisualPredator
 	for i := range m.PopVP {
@@ -149,20 +149,23 @@ func (m *Model) turn(ar chan<- render.AgentRender, turn chan<- struct{}) {
 
 	m.Phase++
 	m.Action = 0 // reset at phase end
+	time.Sleep(time.Millisecond * 20)
 	turn <- struct{}{}
 
 	m.Phase = 0 //	reset at Turn end
 	m.Turn++
-	m.Log()
 }
 
 func (m *Model) vis(ar <-chan render.AgentRender, turn <-chan struct{}) {
 	msg := goio.OutMsg{Type: "render", Data: nil}
 	bg := m.BG.To256()
 	dl := render.DrawList{
-		CPP: nil,
-		VP:  nil,
-		BG:  bg,
+		CPP:       nil,
+		VP:        nil,
+		BG:        bg,
+		CppPop:    "0",
+		VpPop:     "0",
+		TurnCount: "0",
 	}
 	for {
 		select {
@@ -174,18 +177,23 @@ func (m *Model) vis(ar <-chan render.AgentRender, turn <-chan struct{}) {
 				dl.VP = append(dl.VP, job)
 			}
 		case <-turn:
+			dl.CppPop = fmt.Sprintf("cpp %d", len(m.PopCPP))
+			dl.VpPop = fmt.Sprintf("vp  %d", len(m.PopVP))
+			dl.TurnCount = fmt.Sprintf("%08d", m.Turn)
 			msg.Data = dl
 			m.Om <- msg
 			// reset msg contents
 			msg = goio.OutMsg{Type: "render", Data: nil}
 			//	reset draw instructions
 			dl = render.DrawList{
-				CPP: nil,
-				VP:  nil,
-				BG:  bg,
+				CPP:       nil,
+				VP:        nil,
+				BG:        bg,
+				CppPop:    "0",
+				VpPop:     "0",
+				TurnCount: "0",
 			}
 		case <-m.r:
-			time.Sleep(pause)
 			return
 		}
 	}
