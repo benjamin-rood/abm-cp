@@ -1,6 +1,6 @@
 package abm
 
-import "github.com/benjamin-rood/abm-colour-polymorphism/colour"
+import "github.com/benjamin-rood/abm-cp/colour"
 
 // Default holds baseline parameters for a running model.
 

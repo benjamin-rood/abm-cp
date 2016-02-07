@@ -3,12 +3,13 @@ package abm
 import (
 	"log"
 
-	"github.com/benjamin-rood/abm-colour-polymorphism/calc"
+	"github.com/benjamin-rood/abm-cp/calc"
 )
 
 // RBB : Rule-Based-Behaviour for Visual Predator Agent
-func (vp *VisualPredator) RBB(ctxt Context, popSize int, cppPop []ColourPolymorphicPrey, vpPop []VisualPredator, me int) (returning []VisualPredator) {
+func (vp *VisualPredator) RBB(ctxt Context, start int, turn int, cppPop []ColourPolymorphicPrey, vpPop []VisualPredator, me int) (returning []VisualPredator) {
 	var Φ float64
+	popSize := len(vpPop)
 	jump := vp.Age(ctxt, popSize)
 	_ = "breakpoint" // godebug
 	switch jump {
@@ -36,7 +37,8 @@ func (vp *VisualPredator) RBB(ctxt Context, popSize int, cppPop []ColourPolymorp
 		}
 		vp.Copulation(mate, ctxt.VpReproductionChance, ctxt.VpGestation, ctxt.VpSexualRequirement)
 	case "SPAWN":
-		children := vp.Birth(ctxt)
+		// func (vp *VisualPredator) Birth(ctxt Context, start int, mt int)
+		children := vp.Birth(ctxt, start, turn)
 		returning = append(returning, children...)
 	default:
 		log.Println("vp.RBB Switch: FAIL: jump =", jump)

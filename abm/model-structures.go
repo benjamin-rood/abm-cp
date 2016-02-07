@@ -1,9 +1,13 @@
 package abm
 
 import (
+	"crypto/rand"
+	"fmt"
 	"log"
+	"sync"
+	"time"
 
-	"github.com/benjamin-rood/abm-colour-polymorphism/colour"
+	"github.com/benjamin-rood/abm-cp/colour"
 	"github.com/benjamin-rood/goio"
 )
 
@@ -59,6 +63,13 @@ type Context struct {
 	RNGRandomSeed         bool      `json:"abm-rng-random-seed"` //	flag for using server-set random seed val.
 	RNGSeedVal            int64     `json:"abm-rng-seedval"`     //	RNG seed value
 	Fuzzy                 float64   `json:"abm-fuzziness"`
+	Logging               bool      `json:"abm-logging-flag"`  //	log abm on/off
+	LogFreq               int       `json:"abm-log-frequency"` // how many turns between writing log files.
+	CustomLogPath         bool      `json:"abm-custom-log-filepath"`
+	LogPath               string    `json:"abm-log-filepath"`
+	Visualise             bool      `json:"abm-visualise-flag"`     //	Visualise on/off
+	Duration              int       `json:"abm-duration"`           // fixed abm running length.
+	SessionIdentifier     string    `json:"abm-session-identifier"` //	user-friendly string (from client) to identify session
 }
 
 // PopulationCPP holds the agent population
@@ -87,9 +98,9 @@ Action – An individual 'step' in the model. All Actions have a cost:
 				for a period.
 */
 type Timeframe struct {
-	Turn   uint64
-	Phase  uint64
-	Action uint64
+	Turn   int
+	Phase  int
+	Action int
 }
 
 // Reset 's the timeframe to 00:00:00
@@ -99,26 +110,47 @@ func (t *Timeframe) Reset() {
 
 // Model acts as the working instance of the 'game'
 type Model struct {
-	running bool
-	Dead    bool
+	sessionName string
+	timestamp   string
+	running     bool
+	Dead        bool
 	Timeframe
 	Environment
 	Context
 	PopulationCPP
 	PopulationVP
-	Om   chan goio.OutMsg
-	Im   chan goio.InMsg
-	e    chan error
-	Quit chan struct{} //	instance signaling
-	r    chan struct{} //	run signalling
+	numCppCreated int
+	numVpCreated  int
+	recordCPP     map[string]ColourPolymorphicPrey
+	rcm           sync.RWMutex
+	recordVP      map[string]VisualPredator
+	rvm           sync.RWMutex
+	Om            chan goio.OutMsg
+	Im            chan goio.InMsg
+	e             chan error
+	Quit          chan struct{} //	instance signaling
+	r             chan struct{} //	run signalling
+}
+
+// AgentDescription used to aid for logging / debugging
+type AgentDescription struct {
+	AgentType  string `json:"agent-type"`
+	AgentNum   int    `json:"agent-num"`
+	ParentUUID string `json:"parent"`
+	CreatedMT  int    `json:"creation-turn"`
+	CreatedAT  string `json:"creation-date"`
 }
 
 // NewModel is a constructor for initialising a Model instance
-func NewModel() (m Model) {
+func NewModel() (m *Model) {
+	m.sessionName = m.SessionIdentifier
+	m.timestamp = fmt.Sprintf("%s", time.Now())
 	m.running = false
 	m.Timeframe = Timeframe{}
 	m.Environment = DefaultEnvironment
 	m.Context = DefaultContext
+	m.recordCPP = make(map[string]ColourPolymorphicPrey)
+	m.recordVP = make(map[string]VisualPredator)
 	m.Om = make(chan goio.OutMsg)
 	m.Im = make(chan goio.InMsg)
 	m.e = make(chan error)
@@ -133,4 +165,30 @@ func (m *Model) Log() {
 	log.Printf("%04dT : %04dP : %04dA\n", m.Turn, m.Phase, m.Action)
 	log.Printf("cpp population size = %d\n", len(m.PopCPP))
 	log.Printf("vp population size = %d\n", len(m.PopVP))
+}
+
+func uuid() string {
+	b := make([]byte, 16)
+	rand.Read(b)
+	return fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:])
+}
+
+func (m *Model) copyCppRecord() map[string]ColourPolymorphicPrey {
+	var record = make(map[string]ColourPolymorphicPrey)
+	m.rcm.RLock()
+	for k, v := range m.recordCPP {
+		record[k] = v
+	}
+	m.rcm.RUnlock()
+	return record
+}
+
+func (m *Model) copyVpRecord() map[string]VisualPredator {
+	var record = make(map[string]VisualPredator)
+	m.rvm.RLock()
+	for k, v := range m.recordVP {
+		record[k] = v
+	}
+	m.rvm.RUnlock()
+	return record
 }

@@ -5,7 +5,7 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/benjamin-rood/abm-colour-polymorphism/geometry"
+	"github.com/benjamin-rood/abm-cp/geometry"
 )
 
 func TestProximitySort(t *testing.T) {

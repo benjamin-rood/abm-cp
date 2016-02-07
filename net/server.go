@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/benjamin-rood/abm-colour-polymorphism/abm"
+	"github.com/benjamin-rood/abm-cp/abm"
 	"github.com/benjamin-rood/goio"
 	"golang.org/x/net/websocket"
 )
@@ -17,7 +17,7 @@ type Client struct {
 	*websocket.Conn
 	UUID string
 	Name string
-	abm.Model
+	*abm.Model
 	Active bool
 	Stamp  time.Time
 	Quit   chan struct{}

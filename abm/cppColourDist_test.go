@@ -5,7 +5,7 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/benjamin-rood/abm-colour-polymorphism/colour"
+	"github.com/benjamin-rood/abm-cp/colour"
 )
 
 func TestColourDistanceSort(t *testing.T) {

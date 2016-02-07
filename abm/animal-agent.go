@@ -1,6 +1,6 @@
 package abm
 
-import "github.com/benjamin-rood/abm-colour-polymorphism/geometry"
+import "github.com/benjamin-rood/abm-cp/geometry"
 
 // Interfaces which define an animal type agent.
 

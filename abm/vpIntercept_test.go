@@ -3,7 +3,7 @@ package abm
 import (
 	"testing"
 
-	"github.com/benjamin-rood/abm-colour-polymorphism/colour"
+	"github.com/benjamin-rood/abm-cp/colour"
 )
 
 func TestVPIntercept(t *testing.T) {

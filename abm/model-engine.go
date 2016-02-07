@@ -1,14 +1,16 @@
 package abm
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"math/rand"
 	"sync"
 	"time"
 
-	"github.com/benjamin-rood/abm-colour-polymorphism/render"
+	"github.com/benjamin-rood/abm-cp/render"
 	"github.com/benjamin-rood/goio"
 	"github.com/davecgh/go-spew/spew"
 )
@@ -47,15 +49,58 @@ func (m *Model) Start() {
 	m.running = true
 	ar := make(chan render.AgentRender)
 	turn := make(chan struct{})
+	ls := make(chan struct{}) // log signalling
 	if m.RNGRandomSeed {
 		rand.Seed(time.Now().UnixNano())
 	} else {
 		rand.Seed(m.RNGSeedVal)
 	}
-	m.PopCPP = GeneratePopulationCPP(m.CppPopulationStart, m.Context)
-	m.PopVP = GeneratePopulationVP(m.VpPopulationStart, m.Context)
-	go m.run(ar, turn)
-	go m.vis(ar, turn)
+	m.PopCPP = GeneratePopulationCPP(m.CppPopulationStart, m.numCppCreated, m.Turn, m.Context)
+	m.numCppCreated += m.CppPopulationStart
+	m.PopVP = GeneratePopulationVP(m.VpPopulationStart, m.numVpCreated, m.Turn, m.Context)
+	m.numVpCreated += m.VpPopulationStart
+	go m.run(ar, turn, ls) // sync
+	go m.vis(ar, turn)     //	sync
+	go m.logging(ls)       //	async
+}
+
+func (m *Model) logging(ls <-chan struct{}) {
+	defer func() {
+		// do the final write to file? - no, already handled by spitting the write of as a goroutine'd function literal.
+		// wipe the agent records? -yes, probably.
+	}()
+	for {
+		select {
+		case <-m.r:
+			// wait, clean up
+			return
+		case <-ls:
+			func() {
+				reccpp := m.copyCppRecord()
+				recvp := m.copyVpRecord()
+				go func(rc map[string]ColourPolymorphicPrey) {
+					path := "/tmp/abmlog/" + m.sessionName + "/" + m.timestamp + "/" + string(m.Turn) + ".dat"
+
+					msg, err := json.MarshalIndent(rc, "", "  ")
+					if err != nil {
+						log.Fatalf("model: logging: json.Marshal failed, error: %v\n source: %s : %s : %v\n", err, m.sessionName, m.timestamp, m.Turn)
+					}
+					var buff []byte
+					out := bytes.NewBuffer(buff)
+					out.Write(msg)
+					output := make([]byte, 1024*10)
+					n, rerr := out.Read(output)
+					if n == 0 || rerr != nil {
+						fmt.Println("n:", n, "rerr:", rerr.Error())
+					}
+					ioutil.WriteFile(path, output, 0644)
+				}(reccpp)
+				go func(rv map[string]VisualPredator) {
+					// write map as json to file.
+				}(recvp)
+			}()
+		}
+	}
 }
 
 // Stop the agent-based model
@@ -79,11 +124,13 @@ func (m *Model) Resume() {
 	m.r = make(chan struct{})
 	ar := make(chan render.AgentRender)
 	turn := make(chan struct{})
-	go m.run(ar, turn)
+	ls := make(chan struct{}) // log signalling
+	go m.run(ar, turn, ls)
 	go m.vis(ar, turn)
+	go m.logging(ls)
 }
 
-func (m *Model) run(ar chan<- render.AgentRender, turn chan<- struct{}) {
+func (m *Model) run(ar chan<- render.AgentRender, turn chan<- struct{}, log chan<- struct{}) {
 	time.Sleep(time.Second)
 	for {
 		select {
@@ -93,14 +140,17 @@ func (m *Model) run(ar chan<- render.AgentRender, turn chan<- struct{}) {
 			time.Sleep(pause)
 			return
 		case <-m.Quit:
-			// clean up?
-			time.Sleep(time.Millisecond * 250)
+			m.Stop()
+			time.Sleep(pause)
 			return
-		default: //	PROCEED WITH TURN
+		default:
 			if (len(m.PopCPP) == 0) || (len(m.PopVP) == 0) {
 				m.Stop()
 			}
-			m.turn(ar, turn)
+			if m.Turn%m.LogFreq == 0 {
+				log <- struct{}{}
+			}
+			m.turn(ar, turn) //	PROCEED WITH TURN
 		}
 	}
 }
@@ -108,21 +158,26 @@ func (m *Model) run(ar chan<- render.AgentRender, turn chan<- struct{}) {
 func (m *Model) turn(ar chan<- render.AgentRender, turn chan<- struct{}) {
 	var am sync.Mutex
 	var cppAgentWg sync.WaitGroup
-	var vpAgentWg sync.WaitGroup
+	// var vpAgentWg sync.WaitGroup
 	var cppAgents []ColourPolymorphicPrey
 	// cInterval := time.Now()
 	for i := range m.PopCPP {
 		cppAgentWg.Add(1)
 		// timeMark := time.Now()
-		go func(i int) {
-			defer cppAgentWg.Done()
-			result := m.PopCPP[i].RBB(m.Context, len(m.PopCPP))
-			ar <- m.PopCPP[i].GetDrawInfo()
+		go func(agent ColourPolymorphicPrey) {
+			defer func() {
+				cppAgentWg.Done()
+				go func() {
+					m.recordCPP[agent.uuid] = agent
+				}()
+			}()
+			result := agent.RBB(m.Context, len(m.PopCPP))
+			ar <- agent.GetDrawInfo()
 			am.Lock()
 			cppAgents = append(cppAgents, result...)
 			am.Unlock()
 			m.Action++
-		}(i)
+		}(m.PopCPP[i])
 	}
 
 	cppAgentWg.Wait()
@@ -133,18 +188,19 @@ func (m *Model) turn(ar chan<- render.AgentRender, turn chan<- struct{}) {
 
 	var vpAgents []VisualPredator
 	for i := range m.PopVP {
-		vpAgentWg.Add(1)
-		go func(i int) {
-			defer vpAgentWg.Done()
-			result := m.PopVP[i].RBB(m.Context, len(m.PopVP), m.PopCPP, m.PopVP, i)
+		// vpAgentWg.Add(1)
+		func(i int) {
+			// 	defer vpAgentWg.Done()
+			result := m.PopVP[i].RBB(m.Context, m.numVpCreated, m.Turn, m.PopCPP, m.PopVP, i)
 			ar <- m.PopVP[i].GetDrawInfo()
 			am.Lock()
+			m.numVpCreated += len(result) - 1
 			vpAgents = append(vpAgents, result...)
 			am.Unlock()
 			m.Action++
 		}(i)
 	}
-	vpAgentWg.Wait()
+	// vpAgentWg.Wait()
 	m.PopVP = vpAgents //	update the population based on the results from each agent's rule-based behaviour of the turn.
 
 	m.Phase++
@@ -199,8 +255,8 @@ func (m *Model) vis(ar <-chan render.AgentRender, turn <-chan struct{}) {
 	}
 }
 
-// Kill off the model and any client bound to it.
-func (m *Model) Kill() {
+// kill off the model and any client bound to it - internal killoff
+func (m *Model) kill() {
 	m.Stop()
 	close(m.Quit)
 	m.Dead = true

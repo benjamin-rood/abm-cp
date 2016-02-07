@@ -6,15 +6,18 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"time"
 
-	"github.com/benjamin-rood/abm-colour-polymorphism/calc"
-	"github.com/benjamin-rood/abm-colour-polymorphism/colour"
-	"github.com/benjamin-rood/abm-colour-polymorphism/geometry"
-	"github.com/benjamin-rood/abm-colour-polymorphism/render"
+	"github.com/benjamin-rood/abm-cp/calc"
+	"github.com/benjamin-rood/abm-cp/colour"
+	"github.com/benjamin-rood/abm-cp/geometry"
+	"github.com/benjamin-rood/abm-cp/render"
 )
 
 // ColourPolymorphicPrey – Prey agent type for Predator-Prey ABM
 type ColourPolymorphicPrey struct {
+	uuid        string
+	description AgentDescription
 	pos         geometry.Vector //	position in the environment
 	movS        float64         //	speed
 	movA        float64         //	acceleration
@@ -41,9 +44,12 @@ func (c *ColourPolymorphicPrey) GetDrawInfo() (ar render.AgentRender) {
 }
 
 // GeneratePopulationCPP will create `size` number of Colour Polymorphic Prey agents
-func GeneratePopulationCPP(size int, context Context) (pop []ColourPolymorphicPrey) {
+func GeneratePopulationCPP(size int, start int, mt int, context Context) []ColourPolymorphicPrey {
+	pop := []ColourPolymorphicPrey{}
 	for i := 0; i < size; i++ {
 		agent := ColourPolymorphicPrey{}
+		agent.uuid = uuid()
+		agent.description = AgentDescription{AgentType: "cpp", AgentNum: start + i, ParentUUID: "", CreatedMT: mt, CreatedAT: fmt.Sprintf("%s", time.Now())}
 		agent.pos = geometry.RandVector(context.Bounds)
 		if context.CppAgeing {
 			if context.RandomAges {
@@ -68,12 +74,14 @@ func GeneratePopulationCPP(size int, context Context) (pop []ColourPolymorphicPr
 		agent.δ = 0.0
 		pop = append(pop, agent)
 	}
-	return
+	return pop
 }
 
-func cppSpawn(size int, parent ColourPolymorphicPrey, context Context) (pop []ColourPolymorphicPrey) {
+func cppSpawn(size int, parent ColourPolymorphicPrey, context Context) []ColourPolymorphicPrey {
+	pop := []ColourPolymorphicPrey{}
 	for i := 0; i < size; i++ {
 		agent := parent
+		agent.uuid = uuid()
 		agent.pos = parent.pos
 		if context.CppAgeing {
 			if context.RandomAges {
@@ -98,7 +106,7 @@ func cppSpawn(size int, parent ColourPolymorphicPrey, context Context) (pop []Co
 		agent.δ = 0.0
 		pop = append(pop, agent)
 	}
-	return
+	return pop
 }
 
 // Proximity implements sort.Interface for []ColourPolymorphicPrey
@@ -309,5 +317,5 @@ func cppTesterAgent(xPos float64, yPos float64) (tester ColourPolymorphicPrey) {
 }
 
 func cppTestPop(size int) []ColourPolymorphicPrey {
-	return GeneratePopulationCPP(size, TestContext)
+	return GeneratePopulationCPP(size, 0, 0, TestContext)
 }

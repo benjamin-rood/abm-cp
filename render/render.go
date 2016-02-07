@@ -1,8 +1,8 @@
 package render
 
 import (
-	"github.com/benjamin-rood/abm-colour-polymorphism/calc"
-	"github.com/benjamin-rood/abm-colour-polymorphism/colour"
+	"github.com/benjamin-rood/abm-cp/calc"
+	"github.com/benjamin-rood/abm-cp/colour"
 )
 
 // Pos2D is the pixel 2D projection from vector position.
