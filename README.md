@@ -70,8 +70,6 @@ Base requirements completed.
 * Essential unit tests for `abm` package :white_check_mark:
 
 * Show live population and timeline statistics inside P5js viewport. :white_check_mark:
-
-* Switch data serialisation to Protocol Buffers (protobuf) – marshalling drawing instructions to JSON is currently the single most expensive action!
  
 * Visual Predator implemenation:
 	* Find baseline params for Colour Imprinting. :white_check_mark:
@@ -83,6 +81,8 @@ Base requirements completed.
 
 ### 0.3.0
 
+* Switch data serialisation to Protocol Buffers (protobuf) – marshalling drawing instructions to JSON is currently the single most expensive action!
+
 * Client-side input validation.
 
 * Statistical logging to file using IOWriter.
@@ -93,6 +93,8 @@ Base requirements completed.
 
 
 ### 1.0.0
+
+* Switch all public html file to templated/generated ones based on context parameters etc.
 
 * Use *k-dimensional tree* for spatial partitioning of model environment.
 
