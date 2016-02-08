@@ -52,6 +52,10 @@ const (
 	dRNGRandomSeed         = true
 	dRNGSeedVal            = 0
 	dFuzzy                 = 0.1
+	dLogging               = false
+	dVisualise             = true
+	dLimitDuration         = false
+	dSessionIdentifier     = "DefaultContextSession"
 
 	tCppPopStart           = 5
 	tCppPopCap             = 5
@@ -82,9 +86,16 @@ const (
 	tVpAttackChance        = 1.0
 	tVpColImpFactor        = 0.2
 	tCppMf                 = 0.1
+	tRNGRandomSeed         = false
 	tRandomAges            = false
 	tRNGSeedVal            = 0
 	tFuzzy                 = 0.1
+	tLogging               = true
+	tLogFreq               = 0 // write every turn
+	tCustomLogPath         = false
+	tLimitDuration         = true
+	tFixedDuration         = 2 // two turns only
+	tSessionIdentifier     = "TestContextSession"
 )
 
 var (
@@ -170,9 +181,15 @@ var (
 		VpColImprintFactor:    tVpColImpFactor,
 		CppMutationFactor:     tCppMf,
 		Starvation:            tStarvation,
-		RandomAges:            dRandomAges,
-		RNGRandomSeed:         dRNGRandomSeed,
-		RNGSeedVal:            dRNGSeedVal,
-		Fuzzy:                 dFuzzy,
+		RandomAges:            tRandomAges,
+		RNGRandomSeed:         tRNGRandomSeed,
+		RNGSeedVal:            tRNGSeedVal,
+		Fuzzy:                 tFuzzy,
+		Logging:               tLogging,
+		LogFreq:               tLogFreq,
+		CustomLogPath:         tCustomLogPath,
+		LimitDuration:         tLimitDuration,
+		FixedDuration:         tFixedDuration,
+		SessionIdentifier:     tSessionIdentifier,
 	}
 )

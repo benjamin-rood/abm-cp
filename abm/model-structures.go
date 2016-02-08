@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/benjamin-rood/abm-cp/colour"
-	"github.com/benjamin-rood/goio"
+	"github.com/benjamin-rood/gobr"
 )
 
 /*
@@ -67,8 +67,9 @@ type Context struct {
 	LogFreq               int       `json:"abm-log-frequency"` // how many turns between writing log files.
 	CustomLogPath         bool      `json:"abm-custom-log-filepath"`
 	LogPath               string    `json:"abm-log-filepath"`
-	Visualise             bool      `json:"abm-visualise-flag"`     //	Visualise on/off
-	Duration              int       `json:"abm-duration"`           // fixed abm running length.
+	Visualise             bool      `json:"abm-visualise-flag"` //	Visualise on/off
+	LimitDuration         bool      `json:"abm-limit-duration"`
+	FixedDuration         int       `json:"abm-fixed-duration"`     // fixed abm running length.
 	SessionIdentifier     string    `json:"abm-session-identifier"` //	user-friendly string (from client) to identify session
 }
 
@@ -110,10 +111,9 @@ func (t *Timeframe) Reset() {
 
 // Model acts as the working instance of the 'game'
 type Model struct {
-	sessionName string
-	timestamp   string
-	running     bool
-	Dead        bool
+	timestamp string
+	running   bool
+	Dead      bool
 	Timeframe
 	Environment
 	Context
@@ -122,17 +122,18 @@ type Model struct {
 	numCppCreated int
 	numVpCreated  int
 	recordCPP     map[string]ColourPolymorphicPrey
-	rcm           sync.RWMutex
+	rcRW          sync.RWMutex
 	recordVP      map[string]VisualPredator
-	rvm           sync.RWMutex
-	Om            chan goio.OutMsg
-	Im            chan goio.InMsg
+	rvRW          sync.RWMutex
+	Om            chan gobr.OutMsg
+	Im            chan gobr.InMsg
 	e             chan error
-	Quit          chan struct{} //	instance signaling
-	r             chan struct{} //	run signalling
+	Quit          chan struct{}   //	instance signaling
+	r             chan struct{}   //	run signalling
+	turnSignal    *gobr.SignalHub //	turn signalling and broadcasting
 }
 
-// AgentDescription used to aid for logging / debugging
+// AgentDescription used to aid for logging / debugging - used at time of agent creation
 type AgentDescription struct {
 	AgentType  string `json:"agent-type"`
 	AgentNum   int    `json:"agent-num"`
@@ -143,19 +144,19 @@ type AgentDescription struct {
 
 // NewModel is a constructor for initialising a Model instance
 func NewModel() (m *Model) {
-	m.sessionName = m.SessionIdentifier
-	m.timestamp = fmt.Sprintf("%s", time.Now())
 	m.running = false
 	m.Timeframe = Timeframe{}
 	m.Environment = DefaultEnvironment
 	m.Context = DefaultContext
+	m.timestamp = fmt.Sprintf("%s", time.Now())
 	m.recordCPP = make(map[string]ColourPolymorphicPrey)
 	m.recordVP = make(map[string]VisualPredator)
-	m.Om = make(chan goio.OutMsg)
-	m.Im = make(chan goio.InMsg)
+	m.Om = make(chan gobr.OutMsg)
+	m.Im = make(chan gobr.InMsg)
 	m.e = make(chan error)
 	m.Quit = make(chan struct{})
 	m.r = make(chan struct{})
+	m.turnSignal = gobr.NewSignalHub()
 	return
 }
 
@@ -175,20 +176,20 @@ func uuid() string {
 
 func (m *Model) copyCppRecord() map[string]ColourPolymorphicPrey {
 	var record = make(map[string]ColourPolymorphicPrey)
-	m.rcm.RLock()
+	m.rcRW.RLock()
 	for k, v := range m.recordCPP {
 		record[k] = v
 	}
-	m.rcm.RUnlock()
+	m.rcRW.RUnlock()
 	return record
 }
 
 func (m *Model) copyVpRecord() map[string]VisualPredator {
 	var record = make(map[string]VisualPredator)
-	m.rvm.RLock()
+	m.rvRW.RLock()
 	for k, v := range m.recordVP {
 		record[k] = v
 	}
-	m.rvm.RUnlock()
+	m.rvRW.RUnlock()
 	return record
 }

@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/benjamin-rood/abm-cp/abm"
-	"github.com/benjamin-rood/goio"
+	"github.com/benjamin-rood/gobr"
 	"golang.org/x/net/websocket"
 )
 
@@ -135,12 +135,12 @@ func wsSession(ws *websocket.Conn) {
 }
 
 // TODO: don't pass the raw CONN! Instead, pass the *client*
-func wsReader(ws *websocket.Conn, in chan<- goio.InMsg, quit chan struct{}) {
+func wsReader(ws *websocket.Conn, in chan<- gobr.InMsg, quit chan struct{}) {
 	defer func() {
 		//	clean up
 	}()
 	for {
-		msg := goio.InMsg{}
+		msg := gobr.InMsg{}
 		select {
 		case <-quit:
 			return
@@ -157,7 +157,7 @@ func wsReader(ws *websocket.Conn, in chan<- goio.InMsg, quit chan struct{}) {
 	}
 }
 
-func wsWriter(ws *websocket.Conn, out <-chan goio.OutMsg, quit <-chan struct{}) {
+func wsWriter(ws *websocket.Conn, out <-chan gobr.OutMsg, quit <-chan struct{}) {
 	defer func() {
 		// clean up
 	}()

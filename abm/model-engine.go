@@ -7,11 +7,13 @@ import (
 	"io/ioutil"
 	"log"
 	"math/rand"
+	"os"
+	"path/filepath"
 	"sync"
 	"time"
 
 	"github.com/benjamin-rood/abm-cp/render"
-	"github.com/benjamin-rood/goio"
+	"github.com/benjamin-rood/gobr"
 	"github.com/davecgh/go-spew/spew"
 )
 
@@ -79,11 +81,13 @@ func (m *Model) logging(ls <-chan struct{}) {
 				reccpp := m.copyCppRecord()
 				recvp := m.copyVpRecord()
 				go func(rc map[string]ColourPolymorphicPrey) {
-					path := "/tmp/abmlog/" + m.sessionName + "/" + m.timestamp + "/" + string(m.Turn) + ".dat"
+					dir := "m.LogPath" + string(filepath.Separator) + "abmlog" + string(filepath.Separator) + m.SessionIdentifier + string(filepath.Separator) + m.timestamp
+					path := dir + string(filepath.Separator) + "0" + "_vp_pop_record.dat"
 
 					msg, err := json.MarshalIndent(rc, "", "  ")
 					if err != nil {
-						log.Fatalf("model: logging: json.Marshal failed, error: %v\n source: %s : %s : %v\n", err, m.sessionName, m.timestamp, m.Turn)
+						log.Printf("model: logging: json.Marshal failed, error: %v\n source: %s : %s : %v\n", err, m.SessionIdentifier, m.timestamp, m.Turn)
+						return
 					}
 					var buff []byte
 					out := bytes.NewBuffer(buff)
@@ -92,8 +96,18 @@ func (m *Model) logging(ls <-chan struct{}) {
 					n, rerr := out.Read(output)
 					if n == 0 || rerr != nil {
 						fmt.Println("n:", n, "rerr:", rerr.Error())
+						return
 					}
-					ioutil.WriteFile(path, output, 0644)
+					err = os.MkdirAll(dir, 0777)
+					if err != nil {
+						log.Println(err)
+						return
+					}
+					err = ioutil.WriteFile(path, output, 0777)
+					if err != nil {
+						fmt.Println(err)
+						return
+					}
 				}(reccpp)
 				go func(rv map[string]VisualPredator) {
 					// write map as json to file.
@@ -213,7 +227,7 @@ func (m *Model) turn(ar chan<- render.AgentRender, turn chan<- struct{}) {
 }
 
 func (m *Model) vis(ar <-chan render.AgentRender, turn <-chan struct{}) {
-	msg := goio.OutMsg{Type: "render", Data: nil}
+	msg := gobr.OutMsg{Type: "render", Data: nil}
 	bg := m.BG.To256()
 	dl := render.DrawList{
 		CPP:       nil,
@@ -239,7 +253,7 @@ func (m *Model) vis(ar <-chan render.AgentRender, turn <-chan struct{}) {
 			msg.Data = dl
 			m.Om <- msg
 			// reset msg contents
-			msg = goio.OutMsg{Type: "render", Data: nil}
+			msg = gobr.OutMsg{Type: "render", Data: nil}
 			//	reset draw instructions
 			dl = render.DrawList{
 				CPP:       nil,

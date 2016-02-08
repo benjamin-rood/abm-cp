@@ -2,6 +2,7 @@ package abm
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"math"
@@ -34,8 +35,24 @@ type ColourPolymorphicPrey struct {
 	δ           float64    //  position sorting value - vector distance between vp.pos and cpp.pos
 }
 
+// MarshalJSON implements json.Marshaler interface on a CPP object
+func (c ColourPolymorphicPrey) MarshalJSON() ([]byte, error) {
+	return json.Marshal(map[string]interface{}{
+		"description":  c.description,
+		"pos":          c.pos,
+		"speed":        c.movS,
+		"heading":      c.𝚯,
+		"turn-rate":    c.tr,
+		"search-range": c.sr,
+		"lifespan":     c.lifespan,
+		"hunger":       c.hunger,
+		"fertility":    c.fertility,
+		"colouration":  c.colouration,
+	})
+}
+
 // GetDrawInfo exports the data set needed for agent visualisation.
-func (c *ColourPolymorphicPrey) GetDrawInfo() (ar render.AgentRender) {
+func (c ColourPolymorphicPrey) GetDrawInfo() (ar render.AgentRender) {
 	ar.Type = "cpp"
 	ar.X = c.pos[x]
 	ar.Y = c.pos[y]
