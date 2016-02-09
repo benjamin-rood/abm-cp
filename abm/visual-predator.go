@@ -18,7 +18,7 @@ import (
 
 // VisualPredator - Predator agent type for Predator-Prey ABM
 type VisualPredator struct {
-	UUID               string //	do not export this field!
+	uuid               string //	do not export this field!
 	description        AgentDescription
 	pos                geometry.Vector //	position in the environment
 	movS               float64         //	speed	/ movement range per turn
@@ -35,6 +35,11 @@ type VisualPredator struct {
 	γ                  float64 //	visual seach (colour) bias
 	colImprint         colour.RGB
 	colImprintStrength float64
+}
+
+// UUID is just a getter method for the unexported uuid field, which absolutely must not change after agent creation.
+func (vp *VisualPredator) UUID() string {
+	return vp.uuid
 }
 
 // MarshalJSON implements json.Marshaler interface for VisualPredator object
@@ -73,7 +78,7 @@ func GeneratePopulationVP(size int, start int, mt int, context Context) []Visual
 	pop := []VisualPredator{}
 	for i := 0; i < size; i++ {
 		agent := VisualPredator{}
-		agent.UUID = uuid()
+		agent.uuid = uuid()
 		agent.description = AgentDescription{AgentType: "vp", AgentNum: start + i, ParentUUID: "", CreatedMT: mt, CreatedAT: fmt.Sprintf("%s", time.Now())}
 		agent.pos = geometry.RandVector(context.Bounds)
 		if context.VpAgeing {
@@ -106,8 +111,8 @@ func vpSpawn(size int, start int, mt int, parent VisualPredator, context Context
 	pop := []VisualPredator{}
 	for i := 0; i < size; i++ {
 		agent := parent
-		agent.UUID = uuid()
-		agent.description = AgentDescription{AgentType: "vp", AgentNum: start + i, ParentUUID: parent.UUID, CreatedMT: mt, CreatedAT: fmt.Sprintf("%s", time.Now())}
+		agent.uuid = uuid()
+		agent.description = AgentDescription{AgentType: "vp", AgentNum: start + i, ParentUUID: parent.uuid, CreatedMT: mt, CreatedAT: fmt.Sprintf("%s", time.Now())}
 		agent.pos = parent.pos
 		if context.VpAgeing {
 			if context.RandomAges {

@@ -17,7 +17,7 @@ import (
 
 // ColourPolymorphicPrey – Prey agent type for Predator-Prey ABM
 type ColourPolymorphicPrey struct {
-	uuid        string
+	uuid        string //	do not export this field
 	description AgentDescription
 	pos         geometry.Vector //	position in the environment
 	movS        float64         //	speed
@@ -33,6 +33,11 @@ type ColourPolymorphicPrey struct {
 	colouration colour.RGB //	colour
 	𝛘           float64    //	colour sorting value - colour distance/difference between vp.imprimt and cpp.colouration
 	δ           float64    //  position sorting value - vector distance between vp.pos and cpp.pos
+}
+
+// UUID is just a getter method for the unexported uuid field, which absolutely must not change after agent creation.
+func (c *ColourPolymorphicPrey) UUID() string {
+	return c.uuid
 }
 
 // MarshalJSON implements json.Marshaler interface on a CPP object

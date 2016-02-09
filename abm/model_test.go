@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/benjamin-rood/abm-cp/render"
 	"github.com/benjamin-rood/gobr"
 )
 
@@ -20,7 +21,8 @@ func newTestModel() (m *Model) {
 	m.Im = make(chan gobr.InMsg)
 	m.e = make(chan error)
 	m.Quit = make(chan struct{})
-	m.r = make(chan struct{})
+	m.rc = make(chan struct{})
+	m.render = make(chan render.AgentRender)
 	return
 }
 

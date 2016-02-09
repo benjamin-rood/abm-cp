@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/benjamin-rood/abm-cp/colour"
+	"github.com/benjamin-rood/abm-cp/render"
 	"github.com/benjamin-rood/gobr"
 )
 
@@ -127,10 +128,11 @@ type Model struct {
 	rvRW          sync.RWMutex
 	Om            chan gobr.OutMsg
 	Im            chan gobr.InMsg
-	e             chan error
-	Quit          chan struct{}   //	instance signaling
-	r             chan struct{}   //	run signalling
-	turnSignal    *gobr.SignalHub //	turn signalling and broadcasting
+	e             chan error              //	error message channel (general)
+	Quit          chan struct{}           //	instance signaling
+	rc            chan struct{}           //	run signalling
+	render        chan render.AgentRender //	visualisation message channel
+	turnSignal    *gobr.SignalHub         //	turn signalling and broadcasting
 }
 
 // AgentDescription used to aid for logging / debugging - used at time of agent creation
@@ -144,18 +146,19 @@ type AgentDescription struct {
 
 // NewModel is a constructor for initialising a Model instance
 func NewModel() (m *Model) {
+	m.timestamp = fmt.Sprintf("%s", time.Now())
 	m.running = false
 	m.Timeframe = Timeframe{}
 	m.Environment = DefaultEnvironment
 	m.Context = DefaultContext
-	m.timestamp = fmt.Sprintf("%s", time.Now())
 	m.recordCPP = make(map[string]ColourPolymorphicPrey)
 	m.recordVP = make(map[string]VisualPredator)
 	m.Om = make(chan gobr.OutMsg)
 	m.Im = make(chan gobr.InMsg)
 	m.e = make(chan error)
 	m.Quit = make(chan struct{})
-	m.r = make(chan struct{})
+	m.rc = make(chan struct{})
+	m.render = make(chan render.AgentRender)
 	m.turnSignal = gobr.NewSignalHub()
 	return
 }
