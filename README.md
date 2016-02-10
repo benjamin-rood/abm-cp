@@ -1,9 +1,9 @@
 
-###Current Version: 0.1.5
+###Current Version: 0.3.6b
 
-Known problem: Sometimes when restarting a running model the app will crash from `panic: runtime error: index out of range` 
+<s>Known problem: Sometimes when restarting a running model the app will crash from `panic: runtime error: index out of range`. Investigating. I think I know why, but without inserting a whole bunch of slice length tests (ugly, inelegant, ham-fisted), I am not sure of the way to solve it.</s>  
 
-Investigating. I think I know why, but without inserting a whole bunch of slice length tests (ugly, inelegant, ham-fisted), I am not sure of the way to solve it.
+(I *think* I have fixed this now.)
 
 ![abm preview](https://giant.gfycat.com/AggressiveGregariousAidi.gif)
 
@@ -24,7 +24,7 @@ Download this repository:  run `go get -u github.com/benjamin-rood/abm-colour-po
 Change current directory to `$GOPATH/src/github.com/benjamin-rood/abm-colour-polymorphism` and run `cd net && go build && ./net`
 Point web browser at `localhost:8080`
 
-Only tested so far on Safari (OS X) and Chrome (OS X, Windows 8.1).
+Current version only tested a bit on Safari on OS X. Will test more asap.
 
 
 
@@ -65,7 +65,7 @@ Base requirements completed.
 
 ### 0.2.0
 
-* Proper (idiomatically Go) error utilisation and handling of *errors as values.*
+* Dispatch errors along channels, use external handlers who receive the errors and process/print them. :white_check_mark:
 
 * Essential unit tests for `abm` package :white_check_mark:
 
@@ -77,32 +77,49 @@ Base requirements completed.
 	* Starvation ⟹ Death. :white_check_mark:
 	* Sexual Reproduction. :white_check_mark:
 
-* Expected modelling entirely in place, with all baseline parameters in place. :white_check_mark:
+* General modelling and interactions between agent types in place, with all baseline parameters set for end-use. :white_check_mark:
 
 ### 0.3.0
 
-* Switch data serialisation to Protocol Buffers (protobuf) – marshalling drawing instructions to JSON is currently the single most expensive action!
+* Toggle Visualisation on/off :white_check_mark:
+
+* Record data of a running model to log files as JSON for statistical analysis as a concurrent process, independent of Visualisation or model computation. Toggleable. 
+**(99% there, just need to resolve why the closing `}` at the end of each file is being truncated.)**
+
+* User determined frequency of statistical logging on client side. :white_check_mark:
+
+* Better model for Predator specialisation through colour-imprinting which directly gives search/attack advantage, rather than being decided randomly. **(Implement today.)**
 
 * Client-side input validation.
 
-* Statistical logging to file using IOWriter.
+### 0.4.0
 
-* Better Prey Search (using grid system).
+* Switch data serialisation to Protocol Buffers (protobuf) ~10X speedup. Marshalling drawing instructions to JSON is currently the single most expensive action!
+
+* Better Prey Search (using grid system). Will be at least a 2X speedup.
 
 * Complete tests for `abm` package
+
+### 0.5.0
+
+* Have complete control over ABM computation, logging, visualisation from command-line, rather than just starting up a web server and controlling through the (limited) in-browser Visualisation GUI.
+
+* Import JSON-formatted text files as pre-defined modelling Context.
 
 
 ### 1.0.0
 
-* Switch all public html file to templated/generated ones based on context parameters etc.
+* Switch all public html file to templated/generated ones based on context parameters etc. Send JSON to client, let Javascript API process that into the formatted HTML?
 
 * Use *k-dimensional tree* for spatial partitioning of model environment.
 
-* Live statistical graphing widgets
+* <s>Live statistical graphing widgets</s>  (No longer a requirement.)
 
-* Allow end-user to switch between different browser layouts: Visualisation only, Standard, and Statistical.
+* Allow end-user to switch between different browser layouts: Visualisation only, Standard <s> and Statistical.</s>
 
-* Control ABM computation from command-line.
+*  Offline ABM computation (start the model running, leave it, reconnect, see what it's up to).
+
+* Batch processing.
 
 * Enable use in a distributed environment.
 
@@ -111,8 +128,6 @@ Base requirements completed.
 * Allow hot-swapping of different `abm` packages.
 
 * Store modelling sessions to server database along with statistical data for later retrieval.
-
-*  Offline ABM computation (start the model running, leave it, reconnect, see what it's up to).
 
 * Fluid ABM timescale controls.
 
