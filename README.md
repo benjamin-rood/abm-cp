@@ -86,7 +86,7 @@ Base requirements completed.
 * Record data of a running model to log files as JSON for statistical analysis as a concurrent process, independent of Visualisation or model computation. Toggleable. 
 **(99% there, just need to resolve why the closing `}` at the end of each file is being truncated.)**
 
-* User determined frequency of statistical logging on client side. :white_check_mark:
+* User determined frequency of data logging on client side. :white_check_mark:
 
 * Better model for Predator specialisation through colour-imprinting which directly gives search/attack advantage, rather than being decided randomly. **(Implement today.)**
 
