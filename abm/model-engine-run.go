@@ -51,7 +51,7 @@ func (m *Model) turn(errCh chan<- error) {
 				cppAgentWg.Done()
 				if m.Logging {
 					// do this copying to the record in a goroutine once proven stable and safe!
-					m.recordCPP[agent.UUID()] = agent
+					errCh <- m.cppRecordAssignValue(agent.UUID(), agent)
 				}
 			}()
 			result := agent.RBB(m.Context, len(m.PopCPP))
@@ -79,7 +79,7 @@ func (m *Model) turn(errCh chan<- error) {
 				vpAgentWg.Done()
 				if m.Logging {
 					// do this copying to the record in a goroutine once proven stable and safe!
-					m.recordVP[agent.UUID()] = agent
+					errCh <- m.vpRecordAssignValue(agent.UUID(), agent)
 				}
 			}()
 			result := agent.RBB(m.Context, m.numVpCreated, m.Turn, m.PopCPP, m.PopVP, selfIndex)

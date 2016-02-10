@@ -16,7 +16,6 @@ func TestLogMarshalling(t *testing.T) {
 	// write marshalled JSON records to log files
 	// read from log files, compare with expected values
 	tm := newTestModel()
-	go tm.Controller()
 	go tm.ErrPrinter()
 	tm.Start()
 	select {

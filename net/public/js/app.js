@@ -179,14 +179,14 @@ $(function () {
       ['abm-rng-random-seed']: parseBool($('#abm-rng-random-seed').is(':checked')),
       ['abm-rng-seedval']: parseInt($('#abm-rng-seedval').val()),
       ['abm-rng-fuzziness']: 0.1,
-      ['abm-logging-flag']: false,
+      ['abm-visualise-flag']: true,
+      ['abm-logging-flag']: true,
       ['abm-log-frequency']: 0, // log every turn!
       ['abm-use-custom-log-filepath']: false,
       ['abm-custom-log-filepath']: "",
       ['abm-log-filepath']: "",
-      ['abm-visualise-flag']: true,
       ['abm-limit-duration']: false,
-      ['abm-fixed-duration']: 9999999999,
+      ['abm-fixed-duration']: 100,
       ['abm-session-identifier']: "DebugSession"
     }
 

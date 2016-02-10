@@ -34,6 +34,8 @@ func (m *Model) log(ec chan<- error) {
 
 	if m.UseCustomLogPath {
 		m.LogPath = path.Join(os.Getenv("HOME")+os.Getenv("HOMEPATH"), m.CustomLogPath, abmlogPath, m.SessionIdentifier, m.timestamp)
+	} else {
+		m.LogPath = path.Join(os.Getenv("HOME")+os.Getenv("HOMEPATH"), abmlogPath, m.SessionIdentifier, m.timestamp)
 	}
 
 	for {
@@ -44,12 +46,13 @@ func (m *Model) log(ec chan<- error) {
 			return
 		case <-turn:
 			func() {
-				reccpp := m.copyCppRecord()
-				recvp := m.copyVpRecord()
+				reccpp := m.cppRecordCopy()
+				recvp := m.vpRecordCopy()
 				go func(rc map[string]ColourPolymorphicPrey, errCh chan<- error) {
 					// write map as json to file.
+					tc := fmt.Sprintf("%08v", m.Turn)
 					dir := m.LogPath
-					path := dir + string(filepath.Separator) + "0" + "_cpp_pop_record.dat"
+					path := dir + string(filepath.Separator) + tc + "_cpp_pop_record.dat"
 
 					msg, err := json.MarshalIndent(rc, "", "  ")
 					if err != nil {
@@ -71,13 +74,11 @@ func (m *Model) log(ec chan<- error) {
 
 					err = os.MkdirAll(dir, 0777)
 					if err != nil {
-						log.Println(err)
 						errCh <- err
 						return
 					}
 					err = ioutil.WriteFile(path, output, 0777)
 					if err != nil {
-						// fmt.Println(err)
 						errCh <- err
 						return
 					}

@@ -24,7 +24,10 @@ func (m *Model) Controller() {
 		case msg := <-m.Im:
 			switch msg.Type {
 			case "context": //	if context params msg is recieved, (re)start
-				time.Sleep(pause)
+				if m.running {
+					gobr.WaitForSignalOnce(signature, m.turnSignal) //	will block until receiving turn broadcast once.
+					m.e <- m.Stop()
+				}
 				err := json.Unmarshal(msg.Data, &m.Context)
 				if err != nil {
 					errString := fmt.Sprintf("model Controller(): error: json.Unmarshal: %s", err)
@@ -33,9 +36,6 @@ func (m *Model) Controller() {
 				}
 				m.Timeframe.Reset()
 				spew.Dump(m.Context)
-				if m.running {
-					m.e <- m.Stop()
-				}
 				m.e <- m.Start()
 			case "pause":
 				m.e <- m.Suspend()
@@ -64,13 +64,14 @@ func (m *Model) Start() error {
 	m.numCppCreated += m.CppPopulationStart
 	m.PopVP = GeneratePopulationVP(m.VpPopulationStart, m.numVpCreated, m.Turn, m.Context, timestamp)
 	m.numVpCreated += m.VpPopulationStart
-	go m.run(m.e)
-	if m.Visualise {
-		go m.vis(m.e)
-	}
 	if m.Logging {
 		go m.log(m.e)
 	}
+	if m.Visualise {
+		go m.vis(m.e)
+	}
+	time.Sleep(pause)
+	go m.run(m.e)
 	return nil
 }
 

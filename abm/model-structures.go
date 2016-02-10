@@ -184,22 +184,36 @@ func uuid() string {
 	return fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:])
 }
 
-func (m *Model) copyCppRecord() map[string]ColourPolymorphicPrey {
-	var record = make(map[string]ColourPolymorphicPrey)
+func (m *Model) cppRecordCopy() map[string]ColourPolymorphicPrey {
+	defer m.rcRW.RUnlock()
 	m.rcRW.RLock()
+	var record = make(map[string]ColourPolymorphicPrey)
 	for k, v := range m.recordCPP {
 		record[k] = v
 	}
-	m.rcRW.RUnlock()
 	return record
 }
 
-func (m *Model) copyVpRecord() map[string]VisualPredator {
-	var record = make(map[string]VisualPredator)
+func (m *Model) cppRecordAssignValue(key string, value ColourPolymorphicPrey) error {
+	defer m.rcRW.Unlock()
+	m.rcRW.Lock()
+	m.recordCPP[key] = value
+	return nil
+}
+
+func (m *Model) vpRecordCopy() map[string]VisualPredator {
+	defer m.rvRW.RUnlock()
 	m.rvRW.RLock()
+	var record = make(map[string]VisualPredator)
 	for k, v := range m.recordVP {
 		record[k] = v
 	}
-	m.rvRW.RUnlock()
 	return record
+}
+
+func (m *Model) vpRecordAssignValue(key string, value VisualPredator) error {
+	defer m.rcRW.Unlock()
+	m.rcRW.Lock()
+	m.recordVP[key] = value
+	return nil
 }
