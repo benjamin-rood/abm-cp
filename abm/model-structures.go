@@ -4,6 +4,8 @@ import (
 	"crypto/rand"
 	"fmt"
 	"log"
+	"os"
+	"path"
 	"sync"
 	"time"
 
@@ -66,7 +68,8 @@ type Context struct {
 	Fuzzy                 float64   `json:"abm-fuzziness"`
 	Logging               bool      `json:"abm-logging-flag"`  //	log abm on/off
 	LogFreq               int       `json:"abm-log-frequency"` // how many turns between writing log files.
-	CustomLogPath         bool      `json:"abm-custom-log-filepath"`
+	UseCustomLogPath      bool      `json:"abm-use-custom-log-filepath"`
+	CustomLogPath         string    `json:"abm-custom-log-filepath"`
 	LogPath               string    `json:"abm-log-filepath"`
 	Visualise             bool      `json:"abm-visualise-flag"` //	Visualise on/off
 	LimitDuration         bool      `json:"abm-limit-duration"`
@@ -151,6 +154,7 @@ func NewModel() (m *Model) {
 	m.Timeframe = Timeframe{}
 	m.Environment = DefaultEnvironment
 	m.Context = DefaultContext
+	m.LogPath = path.Join(os.Getenv("HOME")+os.Getenv("HOMEPATH"), abmlogPath, m.SessionIdentifier, m.timestamp)
 	m.recordCPP = make(map[string]ColourPolymorphicPrey)
 	m.recordVP = make(map[string]VisualPredator)
 	m.Om = make(chan gobr.OutMsg)

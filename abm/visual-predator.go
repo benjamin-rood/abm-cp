@@ -70,16 +70,17 @@ func vpTesterAgent(xPos float64, yPos float64) (tester VisualPredator) {
 }
 
 func vpTestPop(size int) []VisualPredator {
-	return GeneratePopulationVP(size, 0, 0, TestContext)
+	timestamp := fmt.Sprintf("%s", time.Now())
+	return GeneratePopulationVP(size, 0, 0, TestContext, timestamp)
 }
 
 // GeneratePopulationVP will create `size` number of Visual Predator agents
-func GeneratePopulationVP(size int, start int, mt int, context Context) []VisualPredator {
+func GeneratePopulationVP(size int, start int, mt int, context Context, timestamp string) []VisualPredator {
 	pop := []VisualPredator{}
 	for i := 0; i < size; i++ {
 		agent := VisualPredator{}
 		agent.uuid = uuid()
-		agent.description = AgentDescription{AgentType: "vp", AgentNum: start + i, ParentUUID: "", CreatedMT: mt, CreatedAT: fmt.Sprintf("%s", time.Now())}
+		agent.description = AgentDescription{AgentType: "vp", AgentNum: start + i, ParentUUID: "", CreatedMT: mt, CreatedAT: timestamp}
 		agent.pos = geometry.RandVector(context.Bounds)
 		if context.VpAgeing {
 			if context.RandomAges {
@@ -107,12 +108,12 @@ func GeneratePopulationVP(size int, start int, mt int, context Context) []Visual
 	return pop
 }
 
-func vpSpawn(size int, start int, mt int, parent VisualPredator, context Context) []VisualPredator {
+func vpSpawn(size int, start int, mt int, parent VisualPredator, context Context, timestamp string) []VisualPredator {
 	pop := []VisualPredator{}
 	for i := 0; i < size; i++ {
 		agent := parent
 		agent.uuid = uuid()
-		agent.description = AgentDescription{AgentType: "vp", AgentNum: start + i, ParentUUID: parent.uuid, CreatedMT: mt, CreatedAT: fmt.Sprintf("%s", time.Now())}
+		agent.description = AgentDescription{AgentType: "vp", AgentNum: start + i, ParentUUID: parent.uuid, CreatedMT: mt, CreatedAT: timestamp}
 		agent.pos = parent.pos
 		if context.VpAgeing {
 			if context.RandomAges {
@@ -374,7 +375,8 @@ func (vp *VisualPredator) Birth(ctxt Context, start int, mt int) []VisualPredato
 		n = rand.Intn(ctxt.VpSpawnSize) + 1
 	}
 	// func vpSpawn(size int, start int, mt int, parent VisualPredator, context Context)
-	progeny := vpSpawn(n, start, mt, *vp, ctxt)
+	timestamp := fmt.Sprintf("%s", time.Now())
+	progeny := vpSpawn(n, start, mt, *vp, ctxt, timestamp)
 	vp.hunger++
 	vp.gravid = false
 	return progeny

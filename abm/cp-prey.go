@@ -66,12 +66,12 @@ func (c ColourPolymorphicPrey) GetDrawInfo() (ar render.AgentRender) {
 }
 
 // GeneratePopulationCPP will create `size` number of Colour Polymorphic Prey agents
-func GeneratePopulationCPP(size int, start int, mt int, context Context) []ColourPolymorphicPrey {
+func GeneratePopulationCPP(size int, start int, mt int, context Context, timestamp string) []ColourPolymorphicPrey {
 	pop := []ColourPolymorphicPrey{}
 	for i := 0; i < size; i++ {
 		agent := ColourPolymorphicPrey{}
 		agent.uuid = uuid()
-		agent.description = AgentDescription{AgentType: "cpp", AgentNum: start + i, ParentUUID: "", CreatedMT: mt, CreatedAT: fmt.Sprintf("%s", time.Now())}
+		agent.description = AgentDescription{AgentType: "cpp", AgentNum: start + i, ParentUUID: "", CreatedMT: mt, CreatedAT: timestamp}
 		agent.pos = geometry.RandVector(context.Bounds)
 		if context.CppAgeing {
 			if context.RandomAges {
@@ -99,7 +99,7 @@ func GeneratePopulationCPP(size int, start int, mt int, context Context) []Colou
 	return pop
 }
 
-func cppSpawn(size int, parent ColourPolymorphicPrey, context Context) []ColourPolymorphicPrey {
+func cppSpawn(size int, parent ColourPolymorphicPrey, context Context, timestamp string) []ColourPolymorphicPrey {
 	pop := []ColourPolymorphicPrey{}
 	for i := 0; i < size; i++ {
 		agent := parent
@@ -272,7 +272,8 @@ func (c *ColourPolymorphicPrey) Birth(ctxt Context) []ColourPolymorphicPrey {
 	if ctxt.CppSpawnSize > 1 {
 		n = rand.Intn(ctxt.CppSpawnSize) + 1 //	i.e. range [1, b]
 	}
-	progeny := cppSpawn(n, *c, ctxt)
+	timestamp := fmt.Sprintf("%s", time.Now())
+	progeny := cppSpawn(n, *c, ctxt, timestamp)
 	for i := 0; i < len(progeny); i++ {
 		progeny[i].mutation(ctxt.CppMutationFactor)
 		progeny[i].pos, _ = geometry.FuzzifyVector(c.pos, c.movS)
@@ -339,5 +340,6 @@ func cppTesterAgent(xPos float64, yPos float64) (tester ColourPolymorphicPrey) {
 }
 
 func cppTestPop(size int) []ColourPolymorphicPrey {
-	return GeneratePopulationCPP(size, 0, 0, TestContext)
+	timestamp := fmt.Sprintf("%s", time.Now())
+	return GeneratePopulationCPP(size, 0, 0, TestContext, timestamp)
 }

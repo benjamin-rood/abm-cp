@@ -17,6 +17,8 @@ const (
 	d              = 1.0
 	dimensionality = 2
 
+	abmlogPath = "abmlog"
+
 	dCppPopStart           = 3
 	dCppPopCap             = 500
 	dCppAgeing             = true
@@ -57,6 +59,8 @@ const (
 	dLimitDuration         = false
 	dSessionIdentifier     = "DefaultContextSession"
 
+	testStamp = "TESTING ONLY"
+
 	tCppPopStart           = 5
 	tCppPopCap             = 5
 	tCppAgeing             = false
@@ -92,7 +96,8 @@ const (
 	tFuzzy                 = 0.1
 	tLogging               = true
 	tLogFreq               = 0 // write every turn
-	tCustomLogPath         = false
+	tUseCustomLogPath      = false
+	tCustomLogPath         = ""
 	tLimitDuration         = true
 	tFixedDuration         = 2 // two turns only
 	tSessionIdentifier     = "TestContextSession"
@@ -187,6 +192,7 @@ var (
 		Fuzzy:                 tFuzzy,
 		Logging:               tLogging,
 		LogFreq:               tLogFreq,
+		UseCustomLogPath:      tUseCustomLogPath,
 		CustomLogPath:         tCustomLogPath,
 		LimitDuration:         tLimitDuration,
 		FixedDuration:         tFixedDuration,
