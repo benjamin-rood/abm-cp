@@ -1,5 +1,6 @@
+###Note that all code is alpha until version 1.0
 
-###Current Version: 0.3.6b
+###Current Version: 0.3.6a
 
 <s>Known problem: Sometimes when restarting a running model the app will crash from `panic: runtime error: index out of range`. Investigating. I think I know why, but without inserting a whole bunch of slice length tests (ugly, inelegant, ham-fisted), I am not sure of the way to solve it.</s>  
 
