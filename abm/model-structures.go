@@ -65,7 +65,7 @@ type Context struct {
 	RandomAges            bool      `json:"abm-random-ages"`
 	RNGRandomSeed         bool      `json:"abm-rng-random-seed"` //	flag for using server-set random seed val.
 	RNGSeedVal            int64     `json:"abm-rng-seedval"`     //	RNG seed value
-	Fuzzy                 float64   `json:"abm-fuzziness"`
+	Fuzzy                 float64   `json:"abm-rng-fuzziness"`
 	Logging               bool      `json:"abm-logging-flag"`  //	log abm on/off
 	LogFreq               int       `json:"abm-log-frequency"` // how many turns between writing log files.
 	UseCustomLogPath      bool      `json:"abm-use-custom-log-filepath"`
@@ -148,7 +148,9 @@ type AgentDescription struct {
 }
 
 // NewModel is a constructor for initialising a Model instance
-func NewModel() (m *Model) {
+func NewModel() *Model {
+	_ = "breakpoint" // godebug
+	m := Model{}
 	m.timestamp = fmt.Sprintf("%s", time.Now())
 	m.running = false
 	m.Timeframe = Timeframe{}
@@ -163,8 +165,9 @@ func NewModel() (m *Model) {
 	m.Quit = make(chan struct{})
 	m.rc = make(chan struct{})
 	m.render = make(chan render.AgentRender)
+	_ = "breakpoint" // godebug
 	m.turnSignal = gobr.NewSignalHub()
-	return
+	return &m
 }
 
 // PopLog prints the current time and populations

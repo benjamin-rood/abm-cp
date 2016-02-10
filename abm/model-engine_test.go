@@ -10,6 +10,23 @@ import (
 	"github.com/benjamin-rood/gobr"
 )
 
+func TestLogMarshalling(t *testing.T) {
+	// _ = "breakpoint" // godebug
+	// create a new model instance, run for a limited set of turns
+	// write marshalled JSON records to log files
+	// read from log files, compare with expected values
+	tm := newTestModel()
+	go tm.Controller()
+	go tm.ErrPrinter()
+	tm.Start()
+	select {
+	case <-tm.rc:
+		close(tm.Quit)
+		return
+	default:
+	}
+}
+
 func newTestModel() *Model {
 	tm := Model{}
 	tm.running = false
@@ -52,20 +69,4 @@ func (tm *Model) testModelStart() error {
 		go tm.log(tm.e)
 	}
 	return nil
-}
-
-func TestLogMarshalling(t *testing.T) {
-	_ = "breakpoint" // godebug
-	// create a new model instance, run for a limited set of turns
-	// write marshalled JSON records to log files
-	// read from log files, compare with expected values
-	tm := newTestModel()
-	go tm.ErrPrinter()
-	tm.Start()
-	select {
-	case <-tm.rc:
-		close(tm.Quit)
-		return
-	default:
-	}
 }

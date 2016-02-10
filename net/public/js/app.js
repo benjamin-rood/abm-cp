@@ -177,7 +177,17 @@ $(function () {
       ['abm-vp-spawn-size']: parseInt($('#abm-vp-spawn-size').val()),
       ['abm-random-ages']: parseBool($('#abm-random-ages').is(':checked')),
       ['abm-rng-random-seed']: parseBool($('#abm-rng-random-seed').is(':checked')),
-      ['abm-rng-seedval']: parseInt($('#abm-rng-seedval').val())
+      ['abm-rng-seedval']: parseInt($('#abm-rng-seedval').val()),
+      ['abm-rng-fuzziness']: 0.1,
+      ['abm-logging-flag']: false,
+      ['abm-log-frequency']: 0, // log every turn!
+      ['abm-use-custom-log-filepath']: false,
+      ['abm-custom-log-filepath']: "",
+      ['abm-log-filepath']: "",
+      ['abm-visualise-flag']: true,
+      ['abm-limit-duration']: false,
+      ['abm-fixed-duration']: 9999999999,
+      ['abm-session-identifier']: "DebugSession"
     }
 
     var OutMsg = {

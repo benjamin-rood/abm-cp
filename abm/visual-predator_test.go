@@ -54,7 +54,7 @@ func TestVisualSearch(t *testing.T) {
 	// 	fmt.Printf("%v %v %v %v %v %p\n", i, prey[i].pos, prey[i].δ, prey[i].colouration, prey[i].𝛘, &prey[i])
 	// }
 
-	_ = "breakpoint" //	godebug
+	// _ = "breakpoint" //	godebug
 	want := &prey[6] // <- the best match with the least visual difference (distance) from the predator's expectation * the TestContext.VpSearchChance odds of 0.5 (50%).
 
 	got, err := predator.PreySearch(prey, TestContext.VpSearchChance)

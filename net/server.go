@@ -24,7 +24,8 @@ type Client struct {
 }
 
 // NewClient constructs an initialised Client session.
-func NewClient(ws *websocket.Conn, uuid string) (c Client) {
+func NewClient(ws *websocket.Conn, uuid string) Client {
+	c := Client{}
 	c.Conn = ws
 	c.UUID = uuid
 	c.Name = name()
@@ -32,7 +33,7 @@ func NewClient(ws *websocket.Conn, uuid string) (c Client) {
 	c.Active = true
 	c.Stamp = time.Now()
 	c.Quit = make(chan struct{})
-	return
+	return c
 }
 
 // Monitor keeps the client's connection alive,
@@ -73,6 +74,7 @@ func uuid() string {
 	return uuid
 }
 
+/*
 func networkError(err error, c chan struct{}) {
 	log.Println(err)
 	close(c)
@@ -89,6 +91,7 @@ func dataError(err error, c chan struct{}) {
 	// do something with the error value
 	close(c)
 }
+*/
 
 const (
 	sweepFreq   = time.Minute
@@ -116,6 +119,7 @@ func sweepSocketClients() {
 
 // TODO: too hackneyed?
 func wsSession(ws *websocket.Conn) {
+	// _ = "breakpoint" // godebug
 	uuid := uuid()
 	log.Println("wsSession uuid:", uuid)
 	c := NewClient(ws, uuid)
@@ -128,14 +132,16 @@ func wsSession(ws *websocket.Conn) {
 		delete(socketUsers, uuid)
 	}()
 	wsCh := make(chan struct{})
+	go c.ErrPrinter()
+	go c.Controller()
 	go wsReader(ws, c.Im, wsCh)
 	go wsWriter(ws, c.Om, wsCh)
-	go c.Controller()
 	c.Monitor(wsCh) //	keep alive
 }
 
 // TODO: don't pass the raw CONN! Instead, pass the *client*
 func wsReader(ws *websocket.Conn, in chan<- gobr.InMsg, quit chan struct{}) {
+	_ = "breakpoint" // godebug
 	defer func() {
 		//	clean up
 	}()
@@ -146,6 +152,7 @@ func wsReader(ws *websocket.Conn, in chan<- gobr.InMsg, quit chan struct{}) {
 			return
 		default:
 			err := websocket.JSON.Receive(ws, &msg)
+			log.Printf("received JSON msg: %s\n", msg)
 			if err != nil {
 				log.Println("error: wsReader:", err)
 				log.Println("Disconnected User.")
@@ -158,6 +165,7 @@ func wsReader(ws *websocket.Conn, in chan<- gobr.InMsg, quit chan struct{}) {
 }
 
 func wsWriter(ws *websocket.Conn, out <-chan gobr.OutMsg, quit <-chan struct{}) {
+	// _ = "breakpoint" // godebug
 	defer func() {
 		// clean up
 	}()
@@ -175,6 +183,7 @@ func wsWriter(ws *websocket.Conn, out <-chan gobr.OutMsg, quit <-chan struct{}) 
 }
 
 func main() {
+	// _ = "breakpoint" // godebug
 	http.Handle("/", http.FileServer(http.Dir("./public")))
 	http.Handle("/ws", websocket.Handler(wsSession))
 	http.ListenAndServe(":8080", nil)

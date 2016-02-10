@@ -1,6 +1,7 @@
 package abm
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -10,17 +11,14 @@ import (
 
 // Visualisation process local to the model instance.
 func (m *Model) vis(ec chan<- error) {
-	var turn chan struct{}
-	var clash bool
-	var signature string
-	defer m.turnSignal.Deregister(signature)
-
-Registration: // register to receive from m.turnSignal - loop until no clash with existing entry in map.
-	signature = uuid()
-	turn, clash = m.turnSignal.Register(signature)
+	signature := "VIS_" + m.SessionIdentifier
+	turn, clash := m.turnSignal.Register(signature)
 	if clash {
-		goto Registration
+		errStr := "Clash when registering Model: " + m.SessionIdentifier + " vis: for sync with m.turnSignal"
+		ec <- errors.New(errStr)
+		return
 	}
+	defer m.turnSignal.Deregister(signature)
 
 	msg := gobr.OutMsg{Type: "render", Data: nil}
 	bg := m.BG.To256()
@@ -35,6 +33,8 @@ Registration: // register to receive from m.turnSignal - loop until no clash wit
 	for {
 		select {
 		case job := <-m.render:
+			// fmt.Println("VIS_ received on render channel:")
+			// spew.Dump(job)
 			switch job.Type {
 			case "cpp":
 				dl.CPP = append(dl.CPP, job)
@@ -46,6 +46,8 @@ Registration: // register to receive from m.turnSignal - loop until no clash wit
 			dl.VpPop = fmt.Sprintf("vp  %d", len(m.PopVP))
 			dl.TurnCount = fmt.Sprintf("%08d", m.Turn)
 			msg.Data = dl
+			// fmt.Println("VIS_ sending out on Om channel:")
+			// spew.Dump(msg)
 			m.Om <- msg
 			// reset msg contents
 			msg = gobr.OutMsg{Type: "render", Data: nil}

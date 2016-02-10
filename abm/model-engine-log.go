@@ -3,6 +3,7 @@ package abm
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -17,20 +18,19 @@ func (m *Model) log(ec chan<- error) {
 	fmt.Println("starting logging...")
 	time.Sleep(pause)
 	_ = "breakpoint" // godebug
-	var turn chan struct{}
-	var clash bool
-	var signature string
+
+	signature := "LOG_" + m.SessionIdentifier
+	turn, clash := m.turnSignal.Register(signature)
+	if clash {
+		errStr := "Clash when registering Model: " + m.SessionIdentifier + " log: for sync with m.turnSignal"
+		ec <- errors.New(errStr)
+		return
+	}
+
 	defer func() {
 		m.turnSignal.Deregister(signature)
-		// Need to wipe the agent records too? -yes, probably.
+		// Need to wipe the agent records too? -yes, probably... but should be in Stop()?
 	}()
-
-Registration: // register to receive from m.turnSignal - loop until no clash with existing entry in map.
-	signature = uuid()
-	turn, clash = m.turnSignal.Register(signature)
-	if clash {
-		goto Registration
-	}
 
 	if m.UseCustomLogPath {
 		m.LogPath = path.Join(os.Getenv("HOME")+os.Getenv("HOMEPATH"), m.CustomLogPath, abmlogPath, m.SessionIdentifier, m.timestamp)
@@ -47,7 +47,9 @@ Registration: // register to receive from m.turnSignal - loop until no clash wit
 				reccpp := m.copyCppRecord()
 				recvp := m.copyVpRecord()
 				go func(rc map[string]ColourPolymorphicPrey, errCh chan<- error) {
-					path := m.LogPath + string(filepath.Separator) + "0" + "_vp_pop_record.dat"
+					// write map as json to file.
+					dir := m.LogPath
+					path := dir + string(filepath.Separator) + "0" + "_cpp_pop_record.dat"
 
 					msg, err := json.MarshalIndent(rc, "", "  ")
 					if err != nil {
@@ -67,7 +69,7 @@ Registration: // register to receive from m.turnSignal - loop until no clash wit
 						return
 					}
 
-					err = os.MkdirAll(m.LogPath, 0777)
+					err = os.MkdirAll(dir, 0777)
 					if err != nil {
 						log.Println(err)
 						errCh <- err
@@ -80,9 +82,9 @@ Registration: // register to receive from m.turnSignal - loop until no clash wit
 						return
 					}
 				}(reccpp, ec)
-				go func(rv map[string]VisualPredator) {
+				go func(rv map[string]VisualPredator, errCh chan<- error) {
 					// write map as json to file.
-				}(recvp)
+				}(recvp, ec)
 			}()
 		}
 	}

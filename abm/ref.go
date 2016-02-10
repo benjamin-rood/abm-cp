@@ -61,8 +61,8 @@ const (
 
 	testStamp = "TESTING ONLY"
 
-	tCppPopStart           = 5
-	tCppPopCap             = 5
+	tCppPopStart           = 25
+	tCppPopCap             = 100
 	tCppAgeing             = false
 	tCppLifespan           = 1
 	tCppMovS               = 0.005

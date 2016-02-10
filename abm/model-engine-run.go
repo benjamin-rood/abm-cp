@@ -3,48 +3,37 @@ package abm
 import (
 	"sync"
 	"time"
+
+	"github.com/benjamin-rood/gobr"
 )
 
 func (m *Model) run(ec chan<- error) {
-	_ = "breakpoint" // godebug
-	var turn chan struct{}
-	var clash bool
-	var signature string
-
-	for {
-		signature = uuid()
-		turn, clash = m.turnSignal.Register(signature)
-		if !clash {
-			break
-		}
-	}
-
-	defer func() {
-		m.turnSignal.Deregister(signature)
-		// Need to wipe the agent records too? -yes, probably.
-	}()
-
+	signature := "RUN_" + m.SessionIdentifier
 	for {
 		select {
 		case <-m.rc:
-			<-turn // block while waiting for turn to end.
+			_ = "breakpoint"                                // godebug
+			gobr.WaitForSignalOnce(signature, m.turnSignal) // block while waiting for turn to end.
 			time.Sleep(pause)
 			return
 		case <-m.Quit:
-			<-turn // block while waiting for turn to end.
+			_ = "breakpoint"                                // godebug
+			gobr.WaitForSignalOnce(signature, m.turnSignal) // block while waiting for turn to end.
 			ec <- m.Stop()
 			time.Sleep(pause)
 			return
 		default:
+			_ = "breakpoint" // godebug
+			m.PopLog()
+			if m.LimitDuration && m.Turn >= m.FixedDuration {
+				ec <- m.Stop()
+				return
+			}
 			if (len(m.PopCPP) == 0) || (len(m.PopVP) == 0) {
 				ec <- m.Stop()
 				return
 			}
 			m.turn(ec) //	PROCEED WITH TURN
-		}
-		if m.LimitDuration && m.Turn >= m.FixedDuration {
-			ec <- m.Stop()
-			return
 		}
 	}
 }
@@ -108,10 +97,10 @@ func (m *Model) turn(errCh chan<- error) {
 	vpAgentWg.Wait()
 	m.PopVP = vpAgents //	update the population based on the results from each agent's rule-based behaviour of the turn.
 	m.Phase++
-	m.Action = 0             // reset at phase end
-	m.Phase = 0              // reset at Turn end
-	_ = "breakpoint"         // godebug
-	m.turnSignal.Broadcast() // use blocking version turn ensure synchronisation?
+	m.Action = 0                 // reset at phase end
+	m.Phase = 0                  // reset at Turn end
+	_ = "breakpoint"             // godebug
+	m.turnSignal.Broadcast(true) // using blocking version to ensure turn synchronisation
 	m.Turn++
 	time.Sleep(time.Millisecond * 50) // sync wiggle room
 }

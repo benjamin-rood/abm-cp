@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/benjamin-rood/gobr"
 	"github.com/davecgh/go-spew/spew"
 )
 
@@ -17,21 +18,7 @@ const (
 // Controller processes instructions from client (web, command-line)
 // for now, we just send errors to the general error channel for the model instance (m.e)
 func (m *Model) Controller() {
-	var turn chan struct{}
-	var clash bool
-	var signature string
-	defer func() {
-		m.turnSignal.Deregister(signature)
-		// Need to wipe the agent records too? -yes, probably.
-	}()
-
-Registration: // register to receive from m.turnSignal - loop until no clash with existing entry in map.
-	signature = uuid()
-	turn, clash = m.turnSignal.Register(signature)
-	if clash {
-		goto Registration
-	}
-
+	signature := "CONTROLLER_" + m.SessionIdentifier
 	for {
 		select {
 		case msg := <-m.Im:
@@ -44,16 +31,17 @@ Registration: // register to receive from m.turnSignal - loop until no clash wit
 					m.e <- errors.New(errString)
 					break
 				}
-				<-turn //	block while waiting for turn to end.
 				m.Timeframe.Reset()
 				spew.Dump(m.Context)
-				m.e <- m.Stop()
+				if m.running {
+					m.e <- m.Stop()
+				}
 				m.e <- m.Start()
 			case "pause":
-				m.e <- m.Suspend() // if Suspend returns nil error, then the handler will just discard! Simple!
+				m.e <- m.Suspend()
 			}
 		case <-m.Quit:
-			<-turn //	block while waiting for turn to end.
+			gobr.WaitForSignalOnce(signature, m.turnSignal) //	will block until receiving turn broadcast once.
 			return
 		}
 	}
