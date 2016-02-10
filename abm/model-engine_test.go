@@ -64,6 +64,7 @@ func TestLogMarshalling(t *testing.T) {
 	tm.Start()
 	select {
 	case <-tm.rc:
+		close(tm.Quit)
 		return
 	default:
 	}

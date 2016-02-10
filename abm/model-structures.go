@@ -167,9 +167,9 @@ func NewModel() (m *Model) {
 	return
 }
 
-// Log prints the current state of time
+// PopLog prints the current time and populations
 // shit version
-func (m *Model) Log() {
+func (m *Model) PopLog() {
 	log.Printf("%04dT : %04dP : %04dA\n", m.Turn, m.Phase, m.Action)
 	log.Printf("cpp population size = %d\n", len(m.PopCPP))
 	log.Printf("vp population size = %d\n", len(m.PopVP))

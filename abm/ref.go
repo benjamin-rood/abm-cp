@@ -99,7 +99,7 @@ const (
 	tUseCustomLogPath      = false
 	tCustomLogPath         = ""
 	tLimitDuration         = true
-	tFixedDuration         = 2 // two turns only
+	tFixedDuration         = 10 // two turns only
 	tSessionIdentifier     = "TestContextSession"
 )
 
