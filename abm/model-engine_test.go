@@ -1,7 +1,8 @@
 package abm
 
 import (
-	"fmt"
+	"errors"
+	"math/rand"
 	"testing"
 	"time"
 
@@ -15,7 +16,7 @@ func newTestModel() *Model {
 	tm.Timeframe = Timeframe{}
 	tm.Environment = DefaultEnvironment
 	tm.Context = TestContext
-	tm.timestamp = fmt.Sprintf("%s", time.Now())
+	tm.timestamp = testStamp
 	tm.recordCPP = make(map[string]ColourPolymorphicPrey)
 	tm.recordVP = make(map[string]VisualPredator)
 	tm.Om = make(chan gobr.OutMsg)
@@ -28,17 +29,29 @@ func newTestModel() *Model {
 	return &tm
 }
 
-func newTestAgentPopulations() ([]ColourPolymorphicPrey, []VisualPredator) {
-	popCpp := GeneratePopulationCPP(10, 0, 0, TestContext, testStamp)
-	popVp := GeneratePopulationVP(4, 0, 0, TestContext, testStamp)
-
-	return popCpp, popVp
-}
-
-func (tm *Model) testModelStart() {
-	tm.PopCPP, tm.PopVP = newTestAgentPopulations()
-	tm.run(tm.e)
-	go tm.logging(tm.e)
+func (tm *Model) testModelStart() error {
+	// _ = "breakpoint" // godebug
+	if tm.running {
+		return errors.New("testModel: Start() failed: model already running")
+	}
+	tm.running = true
+	if tm.RNGRandomSeed {
+		rand.Seed(time.Now().UnixNano())
+	} else {
+		rand.Seed(tm.RNGSeedVal)
+	}
+	tm.PopCPP = GeneratePopulationCPP(tm.CppPopulationStart, tm.numCppCreated, tm.Turn, tm.Context, tm.timestamp)
+	tm.numCppCreated += tm.CppPopulationStart
+	tm.PopVP = GeneratePopulationVP(tm.VpPopulationStart, tm.numVpCreated, tm.Turn, tm.Context, tm.timestamp)
+	tm.numVpCreated += tm.VpPopulationStart
+	go tm.run(tm.e)
+	if tm.Visualise {
+		go tm.vis(tm.e)
+	}
+	if tm.Logging {
+		go tm.log(tm.e)
+	}
+	return nil
 }
 
 func TestLogMarshalling(t *testing.T) {
