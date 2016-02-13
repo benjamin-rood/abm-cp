@@ -1,7 +1,6 @@
 package abm
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -61,23 +60,12 @@ func (m *Model) log(ec chan<- error) {
 						return
 					}
 
-					var buff []byte
-					out := bytes.NewBuffer(buff)
-					out.Write(msg)
-					output := make([]byte, 1024*10)
-					n, rerr := out.Read(output)
-					if n == 0 || rerr != nil {
-						fmt.Println("n:", n, "rerr:", rerr.Error())
-						errCh <- err
-						return
-					}
-
 					err = os.MkdirAll(dir, 0777)
 					if err != nil {
 						errCh <- err
 						return
 					}
-					err = ioutil.WriteFile(path, output, 0777)
+					err = ioutil.WriteFile(path, msg, 0777)
 					if err != nil {
 						errCh <- err
 						return
