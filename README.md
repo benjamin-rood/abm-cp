@@ -1,6 +1,6 @@
 ###Note that all code is alpha until version 1.0
 
-###Current Version: 0.3.6a
+###Current Version: 0.3.7a
 
 <s>Known problem: Sometimes when restarting a running model the app will crash from `panic: runtime error: index out of range`. Investigating. I think I know why, but without inserting a whole bunch of slice length tests (ugly, inelegant, ham-fisted), I am not sure of the way to solve it.</s>  
 
@@ -84,8 +84,7 @@ Base requirements completed.
 
 * Toggle Visualisation on/off :white_check_mark:
 
-* Record data of a running model to log files as JSON for statistical analysis as a concurrent process, independent of Visualisation or model computation. Toggleable. 
-**(99% there, just need to resolve why the closing `}` at the end of each file is being truncated.)**
+* Record data of a running model to log files as JSON for statistical analysis as a concurrent process, independent of Visualisation or model computation. Toggleable. :white_check_mark:
 
 * User determined frequency of data logging on client side. :white_check_mark:
 
