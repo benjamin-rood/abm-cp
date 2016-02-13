@@ -88,7 +88,7 @@ Base requirements completed.
 
 * User determined frequency of data logging on client side. :white_check_mark:
 
-* Better model for Predator specialisation through colour-imprinting which directly gives search/attack advantage, rather than being decided randomly. **(Implement today.)**
+* Better model for Predator specialisation through colour-imprinting which directly gives search/attack advantage, rather than being decided randomly.
 
 * Client-side input validation.
 
