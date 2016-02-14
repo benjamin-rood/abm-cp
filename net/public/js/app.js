@@ -105,7 +105,7 @@ function absToView(p, d, n) {
 }
 
 
-
+var sessionString = chance.name()
 var wsUrl = "ws://" + window.location.hostname + ":" + window.location.port + "/ws"
 console.log(wsUrl)
 var vizSocket = new WebSocket(wsUrl)
@@ -187,7 +187,7 @@ $(function () {
       ['abm-log-filepath']: "",
       ['abm-limit-duration']: false,
       ['abm-fixed-duration']: 100,
-      ['abm-session-identifier']: "DebugSession"
+      ['abm-session-identifier']: sessionString
     }
 
     var OutMsg = {
