@@ -105,7 +105,7 @@ function absToView(p, d, n) {
 }
 
 
-var sessionString = chance.name()
+var sessionString = chance.word()
 var wsUrl = "ws://" + window.location.hostname + ":" + window.location.port + "/ws"
 console.log(wsUrl)
 var vizSocket = new WebSocket(wsUrl)
@@ -113,6 +113,7 @@ var viz = new p5(sketch, 'abm-viewport')
 
 vizSocket.onopen = function(e) {
   console.log('viz Stream (WebSocket) is opened.')
+  document.getElementById('sessionDetail').innerHTML += (" – Session Name: " + sessionString)
 }
 
 vizSocket.onmessage = function(e) {
