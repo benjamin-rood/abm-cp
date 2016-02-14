@@ -113,7 +113,7 @@ var viz = new p5(sketch, 'abm-viewport')
 
 vizSocket.onopen = function(e) {
   console.log('viz Stream (WebSocket) is opened.')
-  document.getElementById('sessionDetail').innerHTML += (" – Session Name: " + sessionString)
+  document.getElementById('sessionDetail').innerHTML = ("ABM Colour Polymorphism (CP) – Session Name: " + sessionString)
 }
 
 vizSocket.onmessage = function(e) {
