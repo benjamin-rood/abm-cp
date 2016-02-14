@@ -29,52 +29,55 @@ type Environment struct {
 
 // Context contains the local model context;
 type Context struct {
-	Bounds                []float64 // d value for each axis
-	CppPopulationStart    int       `json:"abm-cpp-pop-start"` // starting CPP agent population size
-	CppPopulationCap      int       `json:"abm-cpp-pop-cap"`
-	CppAgeing             bool      `json:"abm-cpp-ageing"`
-	CppLifespan           int       `json:"abm-cpp-lifespan"` //	CPP agent lifespan
-	CppS                  float64   `json:"abm-cpp-speed"`    // CPP agent speed
-	CppA                  float64   // CPP agent acceleration
-	CppTurn               float64   `json:"abm-cpp-turn"` //	CPP agent turn rate / range (in radians)
-	CppSr                 float64   // CPP agent search range for mating
-	CppGestation          int       `json:"abm-cpp-gestation"`           //	CPP gestation period
-	CppSexualCost         int       `json:"abm-cpp-sexual-cost"`         //	CPP sexual rest cost
-	CppReproductionChance float64   `json:"abm-cpp-reproduction-chance"` //	chance of CPP copulation success.
-	CppSpawnSize          int       `json:"abm-cpp-spawn-size"`          // possible number of progeny = [1, max]
-	CppMutationFactor     float64   `json:"abm-cpp-mf"`                  //	mutation factor
-	VpPopulationStart     int       `json:"abm-vp-pop-start"`            //	starting VP agent population size
-	VpPopulationCap       int       `json:"abm-vp-pop-cap"`              //
-	VpAgeing              bool      `json:"abm-vp-ageing"`               //
-	VpLifespan            int       `json:"abm-vp-lifespan"`             //	Visual Predator lifespan
-	VpStarvationPoint     int       `json:"abm-vp-starvation-point"`     //
-	VpGestation           int       `json:"abm-vp-gestation"`            //	Visual Predator gestation period
-	VpSexualRequirement   int       `json:"abm-vp-sex-req"`              //
-	VpMovS                float64   `json:"abm-vp-speed"`                // Visual Predator speed
-	VpMovA                float64   `json:"abm-vp-acceleration"`         // Visual Predator acceleration
-	VpTurn                float64   `json:"abm-vp-turn"`                 //	Visual Predator turn rate / range (in radians)
-	Vsr                   float64   `json:"abm-vp-vsr"`                  //	VP agent visual search range
-	Vγ                    float64   `json:"abm-vp-visual-acuity"`
-	VγBump                float64   `json:"abm-vp-visual-acuity-bump"`
-	VpReproductionChance  float64   `json:"abm-vp-reproduction-chance"` //	chance of VP copulation success.
-	VpSpawnSize           int       `json:"abm-vp-spawn-size"`
-	VpSearchChance        float64   `json:"abm-vp-vsr-chance"`
-	VpAttackChance        float64   `json:"abm-vp-attack-chance"`
-	VpColImprintFactor    float64   `json:"abm-vp-col-imprinting"`
-	Starvation            bool      `json:"abm-starvation"`
-	RandomAges            bool      `json:"abm-random-ages"`
-	RNGRandomSeed         bool      `json:"abm-rng-random-seed"` //	flag for using server-set random seed val.
-	RNGSeedVal            int64     `json:"abm-rng-seedval"`     //	RNG seed value
-	Fuzzy                 float64   `json:"abm-rng-fuzziness"`
-	Logging               bool      `json:"abm-logging-flag"`  //	log abm on/off
-	LogFreq               int       `json:"abm-log-frequency"` // how many turns between writing log files.
-	UseCustomLogPath      bool      `json:"abm-use-custom-log-filepath"`
-	CustomLogPath         string    `json:"abm-custom-log-filepath"`
-	LogPath               string    `json:"abm-log-filepath"`
-	Visualise             bool      `json:"abm-visualise-flag"` //	Visualise on/off
-	LimitDuration         bool      `json:"abm-limit-duration"`
-	FixedDuration         int       `json:"abm-fixed-duration"`     // fixed abm running length.
-	SessionIdentifier     string    `json:"abm-session-identifier"` //	user-friendly string (from client) to identify session
+	Bounds                []float64 `json:"abm-environment-bounds"`           // d value for each axis
+	CppPopulationStart    int       `json:"abm-cpp-pop-start"`                // starting CPP agent population size
+	CppPopulationCap      int       `json:"abm-cpp-pop-cap"`                  //
+	CppAgeing             bool      `json:"abm-cpp-ageing"`                   //
+	CppLifespan           int       `json:"abm-cpp-lifespan"`                 //	CPP agent lifespan
+	CppS                  float64   `json:"abm-cpp-speed"`                    // CPP agent speed
+	CppA                  float64   `json:"abm-cpp-acceleration"`             // CPP agent acceleration
+	CppTurn               float64   `json:"abm-cpp-turn"`                     //	CPP agent turn rate / range (in radians)
+	CppSr                 float64   `json:"abm-cpp-sr"`                       // CPP agent search range for mating
+	CppGestation          int       `json:"abm-cpp-gestation"`                //	CPP gestation period
+	CppSexualCost         int       `json:"abm-cpp-sexual-cost"`              //	CPP sexual rest cost
+	CppReproductionChance float64   `json:"abm-cpp-reproduction-chance"`      //	chance of CPP copulation success.
+	CppSpawnSize          int       `json:"abm-cpp-spawn-size"`               // possible number of progeny = [1, max]
+	CppMutationFactor     float64   `json:"abm-cpp-mf"`                       //	mutation factor
+	VpPopulationStart     int       `json:"abm-vp-pop-start"`                 //	starting VP agent population size
+	VpPopulationCap       int       `json:"abm-vp-pop-cap"`                   //
+	VpAgeing              bool      `json:"abm-vp-ageing"`                    //
+	VpLifespan            int       `json:"abm-vp-lifespan"`                  //	Visual Predator lifespan
+	VpStarvationPoint     int       `json:"abm-vp-starvation-point"`          //
+	VpPanicPoint          int       `json:"abm-vp-panic-point"`               //
+	VpGestation           int       `json:"abm-vp-gestation"`                 //	Visual Predator gestation period
+	VpSexualRequirement   int       `json:"abm-vp-sex-req"`                   //
+	VpMovS                float64   `json:"abm-vp-speed"`                     // Visual Predator speed
+	VpMovA                float64   `json:"abm-vp-acceleration"`              // Visual Predator acceleration
+	VpTurn                float64   `json:"abm-vp-turn"`                      //	Visual Predator turn rate / range (in radians)
+	Vsr                   float64   `json:"abm-vp-vsr"`                       //	VP agent visual search range
+	Vbγ                   float64   `json:"abm-vp-visual-acuity"`             //
+	VγBump                float64   `json:"abm-vp-visual-acuity-bump"`        //
+	Vbε                   float64   `json:"abm-vp-baseline-col-sig-strength"` // 	baseline colour signal strength factor
+	VpReproductionChance  float64   `json:"abm-vp-reproduction-chance"`       //	chance of VP copulation success.
+	VpSpawnSize           int       `json:"abm-vp-spawn-size"`                //
+	VpSearchChance        float64   `json:"abm-vp-vsr-chance"`                //
+	VpAttackChance        float64   `json:"abm-vp-attack-chance"`             //
+	Vbg                   float64   `json:"abm-vp-baseline-attack-gain"`      //
+	VpCaf                 float64   `json:"abm-vp-col-adaptation-factor"`     //
+	Starvation            bool      `json:"abm-starvation"`                   //
+	RandomAges            bool      `json:"abm-random-ages"`                  //
+	RNGRandomSeed         bool      `json:"abm-rng-random-seed"`              //	flag for using server-set random seed val.
+	RNGSeedVal            int64     `json:"abm-rng-seedval"`                  //	RNG seed value
+	Fuzzy                 float64   `json:"abm-rng-fuzziness"`                //
+	Logging               bool      `json:"abm-logging-flag"`                 //	log abm on/off
+	LogFreq               int       `json:"abm-log-frequency"`                // how many turns between writing log files.
+	UseCustomLogPath      bool      `json:"abm-use-custom-log-filepath"`      //
+	CustomLogPath         string    `json:"abm-custom-log-filepath"`          //
+	LogPath               string    `json:"abm-log-filepath"`                 //
+	Visualise             bool      `json:"abm-visualise-flag"`               //	Visualise on/off
+	LimitDuration         bool      `json:"abm-limit-duration"`               //
+	FixedDuration         int       `json:"abm-fixed-duration"`               // fixed abm running length.
+	SessionIdentifier     string    `json:"abm-session-identifier"`           //	user-friendly string (from client) to identify session
 }
 
 // PopulationCPP holds the agent population
@@ -126,9 +129,9 @@ type Model struct {
 	numCppCreated int
 	numVpCreated  int
 	recordCPP     map[string]ColourPolymorphicPrey
-	rcRW          sync.RWMutex
+	rcppRW        sync.RWMutex
 	recordVP      map[string]VisualPredator
-	rvRW          sync.RWMutex
+	rvpRW         sync.RWMutex
 	Om            chan gobr.OutMsg
 	Im            chan gobr.InMsg
 	e             chan error              //	error message channel (general)
@@ -174,8 +177,8 @@ func NewModel() *Model {
 // shit version
 func (m *Model) PopLog() {
 	log.Printf("%04dT : %04dP : %04dA\n", m.Turn, m.Phase, m.Action)
-	log.Printf("cpp population size = %d\n", len(m.PopCPP))
-	log.Printf("vp population size = %d\n", len(m.PopVP))
+	log.Printf("cpp population size = %v\n", len(m.PopCPP))
+	log.Printf("vp population size = %v\n", len(m.PopVP))
 }
 
 func uuid() string {
@@ -185,8 +188,8 @@ func uuid() string {
 }
 
 func (m *Model) cppRecordCopy() map[string]ColourPolymorphicPrey {
-	defer m.rcRW.RUnlock()
-	m.rcRW.RLock()
+	defer m.rcppRW.RUnlock()
+	m.rcppRW.RLock()
 	var record = make(map[string]ColourPolymorphicPrey)
 	for k, v := range m.recordCPP {
 		record[k] = v
@@ -195,15 +198,15 @@ func (m *Model) cppRecordCopy() map[string]ColourPolymorphicPrey {
 }
 
 func (m *Model) cppRecordAssignValue(key string, value ColourPolymorphicPrey) error {
-	defer m.rcRW.Unlock()
-	m.rcRW.Lock()
+	defer m.rcppRW.Unlock()
+	m.rcppRW.Lock()
 	m.recordCPP[key] = value
 	return nil
 }
 
 func (m *Model) vpRecordCopy() map[string]VisualPredator {
-	defer m.rvRW.RUnlock()
-	m.rvRW.RLock()
+	defer m.rvpRW.RUnlock()
+	m.rvpRW.RLock()
 	var record = make(map[string]VisualPredator)
 	for k, v := range m.recordVP {
 		record[k] = v
@@ -212,8 +215,8 @@ func (m *Model) vpRecordCopy() map[string]VisualPredator {
 }
 
 func (m *Model) vpRecordAssignValue(key string, value VisualPredator) error {
-	defer m.rcRW.Unlock()
-	m.rcRW.Lock()
+	defer m.rvpRW.Unlock()
+	m.rvpRW.Lock()
 	m.recordVP[key] = value
 	return nil
 }

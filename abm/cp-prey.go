@@ -31,8 +31,6 @@ type ColourPolymorphicPrey struct {
 	fertility   int        //	counter for interval between birth and sex
 	gravid      bool       //	i.e. pregnant
 	colouration colour.RGB //	colour
-	𝛘           float64    //	colour sorting value - colour distance/difference between vp.imprimt and cpp.colouration
-	δ           float64    //  position sorting value - vector distance between vp.pos and cpp.pos
 }
 
 // UUID is just a getter method for the unexported uuid field, which absolutely must not change after agent creation.
@@ -92,8 +90,6 @@ func GeneratePopulationCPP(size int, start int, mt int, context Context, timesta
 		agent.fertility = 1
 		agent.gravid = false
 		agent.colouration = colour.RandRGB()
-		agent.𝛘 = 0.0
-		agent.δ = 0.0
 		pop = append(pop, agent)
 	}
 	return pop
@@ -124,53 +120,9 @@ func cppSpawn(size int, parent ColourPolymorphicPrey, context Context, timestamp
 		agent.fertility = 1
 		agent.gravid = false
 		agent.colouration = parent.colouration
-		agent.𝛘 = 0.0
-		agent.δ = 0.0
 		pop = append(pop, agent)
 	}
 	return pop
-}
-
-// Proximity implements sort.Interface for []ColourPolymorphicPrey
-// based on δ field.
-type Proximity []ColourPolymorphicPrey
-
-func (px Proximity) Len() int           { return len(px) }
-func (px Proximity) Swap(i, j int)      { px[i], px[j] = px[j], px[i] }
-func (px Proximity) Less(i, j int) bool { return px[i].δ < px[j].δ }
-
-// ProximityP implements sort.Sort Interface for []*ColourPolymorphicPrey
-// based on δ field.
-type ProximityP []*ColourPolymorphicPrey
-
-func (px ProximityP) Len() int           { return len(px) }
-func (px ProximityP) Swap(i, j int)      { px[i], px[j] = px[j], px[i] }
-func (px ProximityP) Less(i, j int) bool { return px[i].δ < px[j].δ }
-
-// ColourDifference implements sort.Sort Interface for []ColourPolymorphicPrey
-// based on 𝛘 field – to assert visual bias of a VisualPredator based on it's colour imprinting value.
-type ColourDifference []ColourPolymorphicPrey
-
-func (vx ColourDifference) Len() int           { return len(vx) }
-func (vx ColourDifference) Swap(i, j int)      { vx[i], vx[j] = vx[j], vx[i] }
-func (vx ColourDifference) Less(i, j int) bool { return vx[i].𝛘 < vx[j].𝛘 }
-
-// ColourDifferentiation implements sort.Sort Interface for []*ColourPolymorphicPrey
-// based on 𝛘 field – to assert visual bias of a VisualPredator based on it's colour imprinting value.
-type ColourDifferentiation []*ColourPolymorphicPrey
-
-func (vx ColourDifferentiation) Len() int           { return len(vx) }
-func (vx ColourDifferentiation) Swap(i, j int)      { vx[i], vx[j] = vx[j], vx[i] }
-func (vx ColourDifferentiation) Less(i, j int) bool { return vx[i].𝛘 < vx[j].𝛘 }
-
-// VisualDifferentiation implements sort.Sort Interface for []*ColourPolymorphicPrey
-// based on the sum of 𝛘 and δ fields
-type VisualDifferentiation []*ColourPolymorphicPrey
-
-func (vx VisualDifferentiation) Len() int      { return len(vx) }
-func (vx VisualDifferentiation) Swap(i, j int) { vx[i], vx[j] = vx[j], vx[i] }
-func (vx VisualDifferentiation) Less(i, j int) bool {
-	return (vx[i].𝛘 + vx[i].δ) < (vx[j].𝛘 + vx[j].δ)
 }
 
 /*
@@ -327,19 +279,5 @@ func (c *ColourPolymorphicPrey) String() string {
 	buffer.WriteString(fmt.Sprintf("fertility=%v\n", c.fertility))
 	buffer.WriteString(fmt.Sprintf("gravid=%v\n", c.gravid))
 	buffer.WriteString(fmt.Sprintf("colouration=%v\n", c.colouration))
-	buffer.WriteString(fmt.Sprintf("δ=%v\n", c.δ))
-	buffer.WriteString(fmt.Sprintf("𝛘=%v\n", c.𝛘))
 	return buffer.String()
-}
-
-func cppTesterAgent(xPos float64, yPos float64) (tester ColourPolymorphicPrey) {
-	tester = cppTestPop(1)[0]
-	tester.pos[x] = xPos
-	tester.pos[y] = yPos
-	return
-}
-
-func cppTestPop(size int) []ColourPolymorphicPrey {
-	timestamp := fmt.Sprintf("%s", time.Now())
-	return GeneratePopulationCPP(size, 0, 0, TestContext, timestamp)
 }

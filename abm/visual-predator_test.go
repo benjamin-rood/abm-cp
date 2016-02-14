@@ -2,6 +2,7 @@ package abm
 
 import (
 	"log"
+	"math/rand"
 	"testing"
 
 	"github.com/benjamin-rood/abm-cp/calc"
@@ -14,14 +15,14 @@ func TestVPIntercept(t *testing.T) {
 	predator.tr = eigthpi / 2
 	predator.vsr = 0.5
 	predator.movS = 0.05
-	predator.colImprint = colour.RGB{Red: 0.71, Green: 0.1, Blue: 0.39}
+	predator.τ = colour.RGB{Red: 0.71, Green: 0.1, Blue: 0.39}
 	prey := []ColourPolymorphicPrey{cppTesterAgent(0.2, 0.2)}
 	prey[0].colouration = colour.RGB{Red: 0.5, Green: 0.5, Blue: 0.5} //  close enough to be recognised.
 
 	want := 0.3927
 	var got float64
 	for {
-		target, _ := predator.PreySearch(prey, 1.0)
+		target, _, _ := predator.PreySearch(prey, 1.0)
 		got = predator.𝚯
 		// fmt.Println(predator.pos, got)
 		if target != nil {
@@ -36,10 +37,19 @@ func TestVPIntercept(t *testing.T) {
 	}
 }
 
+func shuffle(arr []ColourPolymorphicPrey) {
+	rand.Seed(12345) // no shuffling without this line
+
+	for i := len(arr) - 1; i > 0; i-- {
+		j := rand.Intn(i)
+		arr[i], arr[j] = arr[j], arr[i]
+	}
+}
+
 func TestVisualSearch(t *testing.T) {
 	predator := vpTesterAgent(0.0, 0.0)
 	predator.vsr = 1.0
-	predator.colImprint = colour.RGB{Red: 0.71, Green: 0.1, Blue: 0.39}
+	predator.τ = colour.RGB{Red: 0.71, Green: 0.1, Blue: 0.39}
 	prey := []ColourPolymorphicPrey{}
 	for i := 1; i <= 10; i++ {
 		agentA := cppTesterAgent(float64(i)*(0.01), float64(i)*(0.01))
@@ -50,14 +60,12 @@ func TestVisualSearch(t *testing.T) {
 		prey = append(prey, agentB)
 	}
 
-	// for i := range prey {
-	// 	fmt.Printf("%v %v %v %v %v %p\n", i, prey[i].pos, prey[i].δ, prey[i].colouration, prey[i].𝛘, &prey[i])
-	// }
+	shuffle(prey)
 
 	// _ = "breakpoint" //	godebug
-	want := &prey[6] // <- the best match with the least visual difference (distance) from the predator's expectation * the TestContext.VpSearchChance odds of 0.5 (50%).
+	want := &prey[13] // <- the best match with the least visual difference (distance) from the predator's expectation * the TestContext.VpSearchChance odds of 0.5 (50%).
 
-	got, err := predator.PreySearch(prey, TestContext.VpSearchChance)
+	got, _, err := predator.PreySearch(prey, TestContext.VpSearchChance)
 
 	switch {
 	case err != nil:

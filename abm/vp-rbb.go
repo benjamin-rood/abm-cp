@@ -18,15 +18,15 @@ func (vp *VisualPredator) RBB(ctxt Context, start int, turn int, cppPop []Colour
 	case "PREY SEARCH":
 		var attack bool
 		var err error
-		target, err := vp.PreySearch(cppPop, ctxt.VpSearchChance) //	will move towards any viable prey it can see.
+		target, δ, err := vp.PreySearch(cppPop, ctxt.VpSearchChance) //	will move towards any viable prey it can see.
 		if target != nil {
-			attack, err = vp.Intercept(target.pos, target.δ)
+			attack, err = vp.Intercept(target.pos, δ)
 		}
 		if err != nil {
 			log.Println("vp.RBB:", err) // ARGH
 		}
 		if attack {
-			vp.Attack(target, ctxt.VpAttackChance, ctxt.VpColImprintFactor, ctxt.Vγ)
+			vp.Attack(target, ctxt.VpAttackChance, ctxt.VpCaf, ctxt.Vbg, ctxt.Vbγ, ctxt.Vbε)
 			goto Add
 		}
 		goto Patrol

@@ -24,7 +24,6 @@ func (m *Model) run(ec chan<- error) {
 			return
 		default:
 			_ = "breakpoint" // godebug
-			m.PopLog()
 			if m.LimitDuration && m.Turn >= m.FixedDuration {
 				ec <- m.Stop()
 				return
@@ -34,6 +33,8 @@ func (m *Model) run(ec chan<- error) {
 				return
 			}
 			m.turn(ec) //	PROCEED WITH TURN
+			// m.PopLog()
+			// time.Sleep(100 * time.Millisecond)
 		}
 	}
 }
@@ -41,7 +42,6 @@ func (m *Model) run(ec chan<- error) {
 func (m *Model) turn(errCh chan<- error) {
 	var am sync.Mutex
 	var cppAgentWg sync.WaitGroup
-	var vpAgentWg sync.WaitGroup
 	var cppAgents []ColourPolymorphicPrey
 
 	for i := range m.PopCPP {
@@ -70,13 +70,15 @@ func (m *Model) turn(errCh chan<- error) {
 	m.Phase++
 	m.Action = 0 // reset at phase end
 	time.Sleep(time.Millisecond * 20)
-
+	_ = "breakpoint" // godebug
+	// var vpAgentWg sync.WaitGroup
 	var vpAgents []VisualPredator
 	for i := range m.PopVP {
-		vpAgentWg.Add(1)
-		go func(agent VisualPredator, selfIndex int) {
+		// vpAgentWg.Add(1)
+		func(agent VisualPredator, selfIndex int) {
+			_ = "breakpoint" // godebug
 			defer func() {
-				vpAgentWg.Done()
+				// vpAgentWg.Done()
 				if m.Logging {
 					// do this copying to the record in a goroutine once proven stable and safe!
 					errCh <- m.vpRecordAssignValue(agent.UUID(), agent)
@@ -94,7 +96,7 @@ func (m *Model) turn(errCh chan<- error) {
 		}(m.PopVP[i], i)
 	}
 
-	vpAgentWg.Wait()
+	// vpAgentWg.Wait()
 	m.PopVP = vpAgents //	update the population based on the results from each agent's rule-based behaviour of the turn.
 	m.Phase++
 	m.Action = 0                 // reset at phase end

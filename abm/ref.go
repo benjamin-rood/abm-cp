@@ -46,7 +46,7 @@ const (
 	dVpGestation           = 5
 	dVpSearchChance        = 1.0
 	dVpAttackChance        = 1.0
-	dVpColImpFactor        = 0.2
+	dVpColAdaptationFactor = 0.2
 	dVpStarvationPoint     = 250
 	dVpStarvation          = false
 	dCppMf                 = 0.05
@@ -88,7 +88,7 @@ const (
 	tVpReproductiveChance  = 1.0
 	tVpSearchChance        = 1.0
 	tVpAttackChance        = 1.0
-	tVpColImpFactor        = 0.2
+	tVpColAdaptationFactor = 0.2
 	tCppMf                 = 0.1
 	tRNGRandomSeed         = false
 	tRandomAges            = false
@@ -101,6 +101,8 @@ const (
 	tLimitDuration         = true
 	tFixedDuration         = 10 // two turns only
 	tSessionIdentifier     = "TestContextSession"
+	tVbg                   = 20
+	tVbε                   = 3
 )
 
 var (
@@ -138,14 +140,14 @@ var (
 		VpMovA:                1.0,
 		VpTurn:                dVpTurn,
 		Vsr:                   dVsr,
-		Vγ:                    dVγ,
+		Vbγ:                   dVγ,
 		VγBump:                dVγBump,
 		VpReproductionChance:  dVpReproductiveChance,
 		VpSexualRequirement:   dVpSexualRequirement,
 		VpGestation:           dVpGestation,
 		VpSearchChance:        dVpSearchChance,
 		VpAttackChance:        dVpAttackChance,
-		VpColImprintFactor:    dVpColImpFactor,
+		VpCaf:                 dVpColAdaptationFactor,
 		CppMutationFactor:     dCppMf,
 		Starvation:            dVpStarvation,
 		RandomAges:            dRandomAges,
@@ -178,12 +180,14 @@ var (
 		VpMovA:                1.0,
 		VpTurn:                tVpTurn,
 		Vsr:                   tVpVsr,
-		Vγ:                    tVγ,
+		Vbγ:                   tVγ,
 		VγBump:                tVγBump,
+		Vbε:                   tVbε,
+		Vbg:                   tVbg,
 		VpReproductionChance:  tVpReproductiveChance,
 		VpSearchChance:        tVpSearchChance,
 		VpAttackChance:        tVpAttackChance,
-		VpColImprintFactor:    tVpColImpFactor,
+		VpCaf:                 tVpColAdaptationFactor,
 		CppMutationFactor:     tCppMf,
 		Starvation:            tStarvation,
 		RandomAges:            tRandomAges,
