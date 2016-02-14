@@ -2,7 +2,7 @@ package render
 
 import "testing"
 
-func Test(t *testing.T) {
+func TestTranslation(t *testing.T) {
 	var absToViewTests = []struct {
 		p, d, n, want float64
 	}{

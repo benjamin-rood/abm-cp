@@ -2,19 +2,23 @@ package abm
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"math"
 	"math/rand"
+	"time"
 
-	"github.com/benjamin-rood/abm-colour-polymorphism/calc"
-	"github.com/benjamin-rood/abm-colour-polymorphism/colour"
-	"github.com/benjamin-rood/abm-colour-polymorphism/geometry"
-	"github.com/benjamin-rood/abm-colour-polymorphism/render"
+	"github.com/benjamin-rood/abm-cp/calc"
+	"github.com/benjamin-rood/abm-cp/colour"
+	"github.com/benjamin-rood/abm-cp/geometry"
+	"github.com/benjamin-rood/abm-cp/render"
 )
 
 // ColourPolymorphicPrey – Prey agent type for Predator-Prey ABM
 type ColourPolymorphicPrey struct {
+	uuid        string //	do not export this field
+	description AgentDescription
 	pos         geometry.Vector //	position in the environment
 	movS        float64         //	speed
 	movA        float64         //	acceleration
@@ -31,8 +35,29 @@ type ColourPolymorphicPrey struct {
 	δ           float64    //  position sorting value - vector distance between vp.pos and cpp.pos
 }
 
+// UUID is just a getter method for the unexported uuid field, which absolutely must not change after agent creation.
+func (c *ColourPolymorphicPrey) UUID() string {
+	return c.uuid
+}
+
+// MarshalJSON implements json.Marshaler interface on a CPP object
+func (c ColourPolymorphicPrey) MarshalJSON() ([]byte, error) {
+	return json.Marshal(map[string]interface{}{
+		"description":  c.description,
+		"pos":          c.pos,
+		"speed":        c.movS,
+		"heading":      c.𝚯,
+		"turn-rate":    c.tr,
+		"search-range": c.sr,
+		"lifespan":     c.lifespan,
+		"hunger":       c.hunger,
+		"fertility":    c.fertility,
+		"colouration":  c.colouration,
+	})
+}
+
 // GetDrawInfo exports the data set needed for agent visualisation.
-func (c *ColourPolymorphicPrey) GetDrawInfo() (ar render.AgentRender) {
+func (c ColourPolymorphicPrey) GetDrawInfo() (ar render.AgentRender) {
 	ar.Type = "cpp"
 	ar.X = c.pos[x]
 	ar.Y = c.pos[y]
@@ -41,9 +66,12 @@ func (c *ColourPolymorphicPrey) GetDrawInfo() (ar render.AgentRender) {
 }
 
 // GeneratePopulationCPP will create `size` number of Colour Polymorphic Prey agents
-func GeneratePopulationCPP(size int, context Context) (pop []ColourPolymorphicPrey) {
+func GeneratePopulationCPP(size int, start int, mt int, context Context, timestamp string) []ColourPolymorphicPrey {
+	pop := []ColourPolymorphicPrey{}
 	for i := 0; i < size; i++ {
 		agent := ColourPolymorphicPrey{}
+		agent.uuid = uuid()
+		agent.description = AgentDescription{AgentType: "cpp", AgentNum: start + i, ParentUUID: "", CreatedMT: mt, CreatedAT: timestamp}
 		agent.pos = geometry.RandVector(context.Bounds)
 		if context.CppAgeing {
 			if context.RandomAges {
@@ -68,12 +96,14 @@ func GeneratePopulationCPP(size int, context Context) (pop []ColourPolymorphicPr
 		agent.δ = 0.0
 		pop = append(pop, agent)
 	}
-	return
+	return pop
 }
 
-func cppSpawn(size int, parent ColourPolymorphicPrey, context Context) (pop []ColourPolymorphicPrey) {
+func cppSpawn(size int, parent ColourPolymorphicPrey, context Context, timestamp string) []ColourPolymorphicPrey {
+	pop := []ColourPolymorphicPrey{}
 	for i := 0; i < size; i++ {
 		agent := parent
+		agent.uuid = uuid()
 		agent.pos = parent.pos
 		if context.CppAgeing {
 			if context.RandomAges {
@@ -98,7 +128,7 @@ func cppSpawn(size int, parent ColourPolymorphicPrey, context Context) (pop []Co
 		agent.δ = 0.0
 		pop = append(pop, agent)
 	}
-	return
+	return pop
 }
 
 // Proximity implements sort.Interface for []ColourPolymorphicPrey
@@ -242,7 +272,8 @@ func (c *ColourPolymorphicPrey) Birth(ctxt Context) []ColourPolymorphicPrey {
 	if ctxt.CppSpawnSize > 1 {
 		n = rand.Intn(ctxt.CppSpawnSize) + 1 //	i.e. range [1, b]
 	}
-	progeny := cppSpawn(n, *c, ctxt)
+	timestamp := fmt.Sprintf("%s", time.Now())
+	progeny := cppSpawn(n, *c, ctxt, timestamp)
 	for i := 0; i < len(progeny); i++ {
 		progeny[i].mutation(ctxt.CppMutationFactor)
 		progeny[i].pos, _ = geometry.FuzzifyVector(c.pos, c.movS)
@@ -309,5 +340,6 @@ func cppTesterAgent(xPos float64, yPos float64) (tester ColourPolymorphicPrey) {
 }
 
 func cppTestPop(size int) []ColourPolymorphicPrey {
-	return GeneratePopulationCPP(size, TestContext)
+	timestamp := fmt.Sprintf("%s", time.Now())
+	return GeneratePopulationCPP(size, 0, 0, TestContext, timestamp)
 }

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"math"
 
-	"github.com/benjamin-rood/abm-colour-polymorphism/calc"
+	"github.com/benjamin-rood/abm-cp/calc"
 )
 
 // Vector : Any sized dimension representation of a point of vector space.

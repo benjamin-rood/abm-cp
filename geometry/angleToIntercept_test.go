@@ -4,7 +4,7 @@ import (
 	"math"
 	"testing"
 
-	"github.com/benjamin-rood/abm-colour-polymorphism/calc"
+	"github.com/benjamin-rood/abm-cp/calc"
 )
 
 func TestAngleToIntercept(t *testing.T) {

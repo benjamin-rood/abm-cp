@@ -1,6 +1,6 @@
 package abm
 
-import "github.com/benjamin-rood/abm-colour-polymorphism/colour"
+import "github.com/benjamin-rood/abm-cp/colour"
 
 // Default holds baseline parameters for a running model.
 
@@ -16,6 +16,8 @@ const (
 
 	d              = 1.0
 	dimensionality = 2
+
+	abmlogPath = "abmlog"
 
 	dCppPopStart           = 3
 	dCppPopCap             = 500
@@ -52,9 +54,15 @@ const (
 	dRNGRandomSeed         = true
 	dRNGSeedVal            = 0
 	dFuzzy                 = 0.1
+	dLogging               = false
+	dVisualise             = true
+	dLimitDuration         = false
+	dSessionIdentifier     = "DefaultContextSession"
 
-	tCppPopStart           = 5
-	tCppPopCap             = 5
+	testStamp = "TESTING ONLY"
+
+	tCppPopStart           = 25
+	tCppPopCap             = 100
 	tCppAgeing             = false
 	tCppLifespan           = 1
 	tCppMovS               = 0.005
@@ -82,9 +90,17 @@ const (
 	tVpAttackChance        = 1.0
 	tVpColImpFactor        = 0.2
 	tCppMf                 = 0.1
+	tRNGRandomSeed         = false
 	tRandomAges            = false
 	tRNGSeedVal            = 0
 	tFuzzy                 = 0.1
+	tLogging               = true
+	tLogFreq               = 0 // write every turn
+	tUseCustomLogPath      = false
+	tCustomLogPath         = ""
+	tLimitDuration         = true
+	tFixedDuration         = 10 // two turns only
+	tSessionIdentifier     = "TestContextSession"
 )
 
 var (
@@ -170,9 +186,16 @@ var (
 		VpColImprintFactor:    tVpColImpFactor,
 		CppMutationFactor:     tCppMf,
 		Starvation:            tStarvation,
-		RandomAges:            dRandomAges,
-		RNGRandomSeed:         dRNGRandomSeed,
-		RNGSeedVal:            dRNGSeedVal,
-		Fuzzy:                 dFuzzy,
+		RandomAges:            tRandomAges,
+		RNGRandomSeed:         tRNGRandomSeed,
+		RNGSeedVal:            tRNGSeedVal,
+		Fuzzy:                 tFuzzy,
+		Logging:               tLogging,
+		LogFreq:               tLogFreq,
+		UseCustomLogPath:      tUseCustomLogPath,
+		CustomLogPath:         tCustomLogPath,
+		LimitDuration:         tLimitDuration,
+		FixedDuration:         tFixedDuration,
+		SessionIdentifier:     tSessionIdentifier,
 	}
 )

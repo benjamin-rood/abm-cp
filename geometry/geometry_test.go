@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/benjamin-rood/abm-colour-polymorphism/calc"
+	"github.com/benjamin-rood/abm-cp/calc"
 )
 
 func Test(t *testing.T) {

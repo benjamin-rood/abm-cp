@@ -2,35 +2,64 @@ package abm
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"math"
 	"math/rand"
 	"sort"
+	"time"
 
-	"github.com/benjamin-rood/abm-colour-polymorphism/calc"
-	"github.com/benjamin-rood/abm-colour-polymorphism/colour"
-	"github.com/benjamin-rood/abm-colour-polymorphism/geometry"
-	"github.com/benjamin-rood/abm-colour-polymorphism/render"
+	"github.com/benjamin-rood/abm-cp/calc"
+	"github.com/benjamin-rood/abm-cp/colour"
+	"github.com/benjamin-rood/abm-cp/geometry"
+	"github.com/benjamin-rood/abm-cp/render"
 )
 
 // VisualPredator - Predator agent type for Predator-Prey ABM
 type VisualPredator struct {
-	pos           geometry.Vector //	position in the environment
-	movS          float64         //	speed	/ movement range per turn
-	movA          float64         //	acceleration
-	tr            float64         // turn rate / range (in radians)
-	dir           geometry.Vector //	must be implemented as a unit vector
-	𝚯             float64         //	 heading angle
-	lifespan      int
-	hunger        int     //	counter for interval between needing food
-	attackSuccess bool    //	if during the turn, the VP agent successfully ate a CP prey agent
-	fertility     int     //	counter for interval between birth and sex
-	gravid        bool    //	i.e. pregnant
-	vsr           float64 //	visual search range
-	γ             float64 //	visual seach (colour) bias
-	colouration   colour.RGB
-	colImprint    colour.RGB
+	uuid               string //	do not export this field!
+	description        AgentDescription
+	pos                geometry.Vector //	position in the environment
+	movS               float64         //	speed	/ movement range per turn
+	movA               float64         //	acceleration
+	tr                 float64         // turn rate / range (in radians)
+	dir                geometry.Vector //	must be implemented as a unit vector
+	𝚯                  float64         //	 heading angle
+	lifespan           int
+	hunger             int     //	counter for interval between needing food
+	attackSuccess      bool    //	if during the turn, the VP agent successfully ate a CP prey agent
+	fertility          int     //	counter for interval between birth and sex
+	gravid             bool    //	i.e. pregnant
+	vsr                float64 //	visual search range
+	γ                  float64 //	visual seach (colour) bias
+	colImprint         colour.RGB
+	colImprintStrength float64
+}
+
+// UUID is just a getter method for the unexported uuid field, which absolutely must not change after agent creation.
+func (vp *VisualPredator) UUID() string {
+	return vp.uuid
+}
+
+// MarshalJSON implements json.Marshaler interface for VisualPredator object
+func (vp VisualPredator) MarshalJSON() ([]byte, error) {
+	return json.Marshal(map[string]interface{}{
+		"description":             vp.description,
+		"pos":                     vp.pos,
+		"speed":                   vp.movS,
+		"heading":                 vp.𝚯,
+		"turn-rate":               vp.tr,
+		"search-range":            vp.vsr,
+		"lifespan":                vp.lifespan,
+		"hunger":                  vp.hunger,
+		"attack-success":          vp.attackSuccess,
+		"fertility":               vp.fertility,
+		"γ":                       vp.γ,
+		"gravid":                  vp.gravid,
+		"colour-imprint-value":    vp.colImprint,
+		"colour-imprint-strength": vp.colImprintStrength,
+	})
 }
 
 func vpTesterAgent(xPos float64, yPos float64) (tester VisualPredator) {
@@ -41,13 +70,17 @@ func vpTesterAgent(xPos float64, yPos float64) (tester VisualPredator) {
 }
 
 func vpTestPop(size int) []VisualPredator {
-	return GeneratePopulationVP(size, TestContext)
+	timestamp := fmt.Sprintf("%s", time.Now())
+	return GeneratePopulationVP(size, 0, 0, TestContext, timestamp)
 }
 
 // GeneratePopulationVP will create `size` number of Visual Predator agents
-func GeneratePopulationVP(size int, context Context) (pop []VisualPredator) {
+func GeneratePopulationVP(size int, start int, mt int, context Context, timestamp string) []VisualPredator {
+	pop := []VisualPredator{}
 	for i := 0; i < size; i++ {
 		agent := VisualPredator{}
+		agent.uuid = uuid()
+		agent.description = AgentDescription{AgentType: "vp", AgentNum: start + i, ParentUUID: "", CreatedMT: mt, CreatedAT: timestamp}
 		agent.pos = geometry.RandVector(context.Bounds)
 		if context.VpAgeing {
 			if context.RandomAges {
@@ -69,15 +102,18 @@ func GeneratePopulationVP(size int, context Context) (pop []VisualPredator) {
 		agent.fertility = 1
 		agent.gravid = false
 		agent.colImprint = colour.RandRGB()
+		agent.colImprintStrength = 0
 		pop = append(pop, agent)
 	}
-	return
+	return pop
 }
 
-func vpSpawn(size int, parent VisualPredator, context Context) []VisualPredator {
+func vpSpawn(size int, start int, mt int, parent VisualPredator, context Context, timestamp string) []VisualPredator {
 	pop := []VisualPredator{}
 	for i := 0; i < size; i++ {
 		agent := parent
+		agent.uuid = uuid()
+		agent.description = AgentDescription{AgentType: "vp", AgentNum: start + i, ParentUUID: parent.uuid, CreatedMT: mt, CreatedAT: timestamp}
 		agent.pos = parent.pos
 		if context.VpAgeing {
 			if context.RandomAges {
@@ -97,8 +133,8 @@ func vpSpawn(size int, parent VisualPredator, context Context) []VisualPredator 
 		agent.hunger = context.VpSexualRequirement + 1
 		agent.fertility = 1
 		agent.gravid = false
-		agent.colouration = parent.colouration
-		agent.colImprint = parent.colImprint
+		agent.colImprint = colour.RandRGB()
+		agent.colImprintStrength = 0
 		pop = append(pop, agent)
 	}
 	return pop
@@ -284,7 +320,7 @@ func (vp *VisualPredator) Age(ctxt Context, popSize int) string {
 		t := ctxt.VpStarvationPoint - vp.hunger
 		r := int(ctxt.VpStarvationPoint / 5)
 		if t < r { //	if the agent is getting hungry, it starts looking harder.
-			vp.γ *= ctxt.VγBump // (default is 1.2 == a 20% bump)
+			vp.γ *= ctxt.VγBump // (default is 1.1 == a 10% bump)
 		}
 	}
 
@@ -333,12 +369,14 @@ func (vp *VisualPredator) Copulation(mate *VisualPredator, chance float64, gesta
 }
 
 // Birth spawns Visual Predator children
-func (vp *VisualPredator) Birth(ctxt Context) []VisualPredator {
+func (vp *VisualPredator) Birth(ctxt Context, start int, mt int) []VisualPredator {
 	n := 1
 	if ctxt.VpSpawnSize > 1 {
 		n = rand.Intn(ctxt.VpSpawnSize) + 1
 	}
-	progeny := vpSpawn(n, *vp, ctxt)
+	// func vpSpawn(size int, start int, mt int, parent VisualPredator, context Context)
+	timestamp := fmt.Sprintf("%s", time.Now())
+	progeny := vpSpawn(n, start, mt, *vp, ctxt, timestamp)
 	vp.hunger++
 	vp.gravid = false
 	return progeny
