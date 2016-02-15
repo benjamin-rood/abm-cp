@@ -183,7 +183,7 @@ func (vp *VisualPredator) PreySearch(prey []ColourPolymorphicPrey, searchChance 
 		δ, err = geometry.VectorDistance(vp.pos, prey[i].pos)
 		if δ <= vp.vsr { // ∴ only include the prey agent for considertion if within visual range
 			𝛘 = colour.RGBDistance(vp.τ, prey[i].colouration)
-			// fmt.Printf("%v\t%v\t%v\t%v\t%p\n", i, δ, 𝛘, c, &prey[i])
+			fmt.Printf("%v\t%v\t%v\t%v\t%p\n", i, δ, 𝛘, c, &prey[i])
 			if 𝛘 < vp.γ { // i.e. if and only if colour distance < predator's visual search bias
 				a := visualRecognition{δ, 𝛘, f, c, &prey[i]}
 				searchSet = append(searchSet, a)
@@ -191,15 +191,15 @@ func (vp *VisualPredator) PreySearch(prey []ColourPolymorphicPrey, searchChance 
 		}
 	}
 
-	// for i := range searchSet {
-	// 	fmt.Printf("%v\t%v\t%v\t%v\t%p\t%v\t%v\n", i, searchSet[i].δ, searchSet[i].𝛘, c, searchSet[i].ColourPolymorphicPrey, f(searchSet[i].𝛘), f(searchSet[i].𝛘)-searchSet[i].δ)
-	// }
+	for i := range searchSet {
+		fmt.Printf("%v\t%v\t%v\t%v\t%p\t%v\t%v\n", i, searchSet[i].δ, searchSet[i].𝛘, c, searchSet[i].ColourPolymorphicPrey, f(searchSet[i].𝛘), f(searchSet[i].𝛘)-searchSet[i].δ)
+	}
 
 	sort.Sort(byOptimalAttackVector(searchSet)) //	sort by f(x) - distance
 
-	// for i := range searchSet {
-	// 	fmt.Printf("%v\t%v\t%v\t%v\t%p\t%v\t%v\n", i, searchSet[i].δ, searchSet[i].𝛘, c, searchSet[i].ColourPolymorphicPrey, f(searchSet[i].𝛘), f(searchSet[i].𝛘)-searchSet[i].δ)
-	// }
+	for i := range searchSet {
+		fmt.Printf("%v\t%v\t%v\t%v\t%p\t%v\t%v\n", i, searchSet[i].δ, searchSet[i].𝛘, c, searchSet[i].ColourPolymorphicPrey, f(searchSet[i].𝛘), f(searchSet[i].𝛘)-searchSet[i].δ)
+	}
 
 	// search within biased and reduced set
 	for i, p := range searchSet {
