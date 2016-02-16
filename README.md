@@ -2,7 +2,9 @@
 
 ###Current Version: 0.4.0a
 
-![abm preview](https://giant.gfycat.com/NippyTidyCassowary.gif)
+![abm preview](https://giant.gfycat.com/MeekSpiritedBilby.gif)
+
+http://gfycat.com/NippyTidyCassowary (HD)
 
 ##Context
 Software for computing a Predator-Prey Agent Based Model of prey colour polymorphism (CP) in Go. 
@@ -29,7 +31,7 @@ Current version only tested on Safari on OS X and Chrome on Windows 8.1.
 
 Known issue:
 
-Sometimes when hitting the "Start ABM..." button on the app, nothing happens.
+Sometimes when hitting the "Start ABM..." button on the app (in the middle of an existing run) nothing happens.
 
 Error message (server-side): 
 ` SignalHub.register() failed: receiver signature already exists.
