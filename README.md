@@ -4,6 +4,8 @@
 
 ![abm preview](https://giant.gfycat.com/MeekSpiritedBilby.gif)
 
+http://gfycat.com/NippyTidyCassowary (HD)
+
 ##Context
 Software for computing a Predator-Prey Agent Based Model of prey colour polymorphism (CP) in Go. 
 
