@@ -2,11 +2,7 @@
 
 ###Current Version: 0.4.0a
 
-<s>Known problem: Sometimes when restarting a running model the app will crash from `panic: runtime error: index out of range`. Investigating. I think I know why, but without inserting a whole bunch of slice length tests (ugly, inelegant, ham-fisted), I am not sure of the way to solve it.</s>  
-
-(I *think* I have fixed this now.)
-
-![abm preview](https://giant.gfycat.com/AggressiveGregariousAidi.gif)
+![abm preview](https://giant.gfycat.com/NippyTidyCassowary.gif)
 
 ##Context
 Software for computing a Predator-Prey Agent Based Model of prey colour polymorphism (CP) in Go. 
@@ -20,12 +16,18 @@ Server-side computation, client-side GUI controls and visualisation of the runni
 Generalise system so any `abm` package with local model context, agent design, etc can be hot-swapped in (linked via a command line flag) and run.
 
 ###How to use:
-Install Go from [here](https://golang.org/dl/).
-Download this repository:  run `go get -u github.com/benjamin-rood/abm-colour-polymorphism`
-Change current directory to `$GOPATH/src/github.com/benjamin-rood/abm-colour-polymorphism` and run `cd net && go build && ./net`
-Point web browser at `localhost:8080`
 
-Current version only tested a bit on Safari on OS X. Will test more asap.
+Install Go from [here](https://golang.org/dl/).
+Download these repositories:  run `go get -u github.com/benjamin-rood/abm-cp && go get -u github.com/benjamin-rood/gobr` 
+Change current directory to `$GOPATH/src/github.com/benjamin-rood/abm-cp` and run `cd net && go build && ./net`
+Point web browser at `localhost:9999`
+
+Current version only tested on Safari on OS X and Chrome on Windows 8.1.
+
+Known issue:
+
+` SignalHub.register() failed: receiver signature already exists
+ Clash when registering Model: wo vis: for sync with m.turnSignal `
 
 
 
@@ -105,6 +107,10 @@ Base requirements completed.
 * Have complete control over ABM computation, logging, visualisation from command-line, rather than just starting up a web server and controlling through the (limited) in-browser Visualisation GUI.
 
 * Import JSON-formatted text files as pre-defined modelling Context.
+
+* Use JSON-formatted logging for debug only.
+
+* Switch to a compressed binary encoding for log files. 
 
 
 ### 1.0.0
