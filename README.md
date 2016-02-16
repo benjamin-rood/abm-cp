@@ -2,7 +2,7 @@
 
 ###Current Version: 0.4.0a
 
-![abm preview](https://giant.gfycat.com/NippyTidyCassowary.gif)
+![abm preview](https://giant.gfycat.com/MeekSpiritedBilby.gif)
 
 ##Context
 Software for computing a Predator-Prey Agent Based Model of prey colour polymorphism (CP) in Go. 
