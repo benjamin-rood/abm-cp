@@ -1,6 +1,6 @@
 ###Note that all code is alpha until version 1.0
 
-###Current Version: 0.3.7a
+###Current Version: 0.4.0a
 
 <s>Known problem: Sometimes when restarting a running model the app will crash from `panic: runtime error: index out of range`. Investigating. I think I know why, but without inserting a whole bunch of slice length tests (ugly, inelegant, ham-fisted), I am not sure of the way to solve it.</s>  
 
@@ -88,9 +88,9 @@ Base requirements completed.
 
 * User determined frequency of data logging on client side. :white_check_mark:
 
-* Better model for Predator specialisation through colour-imprinting which directly gives search/attack advantage, rather than being decided randomly.
+* Better model for Predator specialisation through colour-imprinting which directly gives search/attack advantage, rather than being decided randomly. :white_check_mark:
 
-* Client-side input validation.
+* Complete tests for `abm` package :white_check_mark:
 
 ### 0.4.0
 
@@ -98,7 +98,7 @@ Base requirements completed.
 
 * Better Prey Search (using grid system). Will be at least a 2X speedup.
 
-* Complete tests for `abm` package
+* Client-side input validation.
 
 ### 0.5.0
 
