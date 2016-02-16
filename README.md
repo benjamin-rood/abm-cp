@@ -18,16 +18,26 @@ Generalise system so any `abm` package with local model context, agent design, e
 ###How to use:
 
 Install Go from [here](https://golang.org/dl/).
+
 Download these repositories:  run `go get -u github.com/benjamin-rood/abm-cp && go get -u github.com/benjamin-rood/gobr` 
+
 Change current directory to `$GOPATH/src/github.com/benjamin-rood/abm-cp` and run `cd net && go build && ./net`
+
 Point web browser at `localhost:9999`
 
 Current version only tested on Safari on OS X and Chrome on Windows 8.1.
 
 Known issue:
 
-` SignalHub.register() failed: receiver signature already exists
+Sometimes when hitting the "Start ABM..." button on the app, nothing happens.
+
+Error message (server-side): 
+` SignalHub.register() failed: receiver signature already exists.
  Clash when registering Model: wo vis: for sync with m.turnSignal `
+
+Meaning: I'm not cleaning up properly inside of an individual session when resetting the modelling contextual parameters, including deleting the registered receiver for `Model.vis()`
+
+Workaround: just reload the browser window. 
 
 
 
