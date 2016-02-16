@@ -2,11 +2,7 @@
 
 ###Current Version: 0.4.0a
 
-<s>Known problem: Sometimes when restarting a running model the app will crash from `panic: runtime error: index out of range`. Investigating. I think I know why, but without inserting a whole bunch of slice length tests (ugly, inelegant, ham-fisted), I am not sure of the way to solve it.</s>  
-
-(I *think* I have fixed this now.)
-
-![abm preview](https://giant.gfycat.com/AggressiveGregariousAidi.gif)
+![abm preview](https://giant.gfycat.com/NippyTidyCassowary.gif)
 
 ##Context
 Software for computing a Predator-Prey Agent Based Model of prey colour polymorphism (CP) in Go. 
