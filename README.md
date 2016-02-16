@@ -16,12 +16,18 @@ Server-side computation, client-side GUI controls and visualisation of the runni
 Generalise system so any `abm` package with local model context, agent design, etc can be hot-swapped in (linked via a command line flag) and run.
 
 ###How to use:
-Install Go from [here](https://golang.org/dl/).
-Download this repository:  run `go get -u github.com/benjamin-rood/abm-colour-polymorphism`
-Change current directory to `$GOPATH/src/github.com/benjamin-rood/abm-colour-polymorphism` and run `cd net && go build && ./net`
-Point web browser at `localhost:8080`
 
-Current version only tested a bit on Safari on OS X. Will test more asap.
+Install Go from [here](https://golang.org/dl/).
+Download these repositories:  run `go get -u github.com/benjamin-rood/abm-cp && go get -u github.com/benjamin-rood/gobr` 
+Change current directory to `$GOPATH/src/github.com/benjamin-rood/abm-cp` and run `cd net && go build && ./net`
+Point web browser at `localhost:9999`
+
+Current version only tested on Safari on OS X and Chrome on Windows 8.1.
+
+Known issue:
+
+` SignalHub.register() failed: receiver signature already exists
+ Clash when registering Model: wo vis: for sync with m.turnSignal `
 
 
 
