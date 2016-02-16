@@ -2,6 +2,7 @@
 
 ###Current Version: 0.4.0a
 
+![hd-abm-preview](https://giant.gfycat.com/NippyTidyCassowary.gif)
 ![abm preview](https://giant.gfycat.com/MeekSpiritedBilby.gif)
 
 http://gfycat.com/NippyTidyCassowary (HD)
