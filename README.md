@@ -102,6 +102,10 @@ Base requirements completed.
 
 * Import JSON-formatted text files as pre-defined modelling Context.
 
+* Use JSON-formatted logging for debug only.
+
+* Switch to a compressed binary encoding for log files. 
+
 
 ### 1.0.0
 
