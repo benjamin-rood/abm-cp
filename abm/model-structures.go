@@ -55,9 +55,10 @@ type Context struct {
 	VpMovA                float64   `json:"abm-vp-acceleration"`              // Visual Predator acceleration
 	VpTurn                float64   `json:"abm-vp-turn"`                      //	Visual Predator turn rate / range (in radians)
 	Vsr                   float64   `json:"abm-vp-vsr"`                       //	VP agent visual search range
-	Vbγ                   float64   `json:"abm-vp-visual-acuity"`             //
-	VγBump                float64   `json:"abm-vp-visual-acuity-bump"`        //
+	Vb𝛄                   float64   `json:"abm-vp-visual-acuity"`             //
+	V𝛄Bump                float64   `json:"abm-vp-visual-acuity-bump"`        //
 	Vbε                   float64   `json:"abm-vp-baseline-col-sig-strength"` // 	baseline colour signal strength factor
+	Vmε                   float64   `json:"abm-vp-max-col-sig-strength"`      // 	max limit colour signal strength factor
 	VpReproductionChance  float64   `json:"abm-vp-reproduction-chance"`       //	chance of VP copulation success.
 	VpSpawnSize           int       `json:"abm-vp-spawn-size"`                //
 	VpSearchChance        float64   `json:"abm-vp-vsr-chance"`                //

@@ -25,7 +25,11 @@ func (m *Model) Controller() {
 			switch msg.Type {
 			case "context": //	if context params msg is recieved, (re)start
 				if m.running {
-					gobr.WaitForSignalOnce(signature, m.turnSignal) //	will block until receiving turn broadcast once.
+				register:
+					if clash := gobr.WaitForSignalOnce(signature, m.turnSignal); clash {
+						time.Sleep(pause)
+						goto register
+					} //	will block until receiving turn broadcast once.
 					m.e <- m.Stop()
 				}
 				err := json.Unmarshal(msg.Data, &m.Context)

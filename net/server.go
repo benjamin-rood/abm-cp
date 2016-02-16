@@ -186,5 +186,5 @@ func main() {
 	// _ = "breakpoint" // godebug
 	http.Handle("/", http.FileServer(http.Dir("./public")))
 	http.Handle("/ws", websocket.Handler(wsSession))
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":9999", nil)
 }

@@ -7,7 +7,8 @@ import (
 )
 
 // RBB : Rule-Based-Behaviour for Visual Predator Agent
-func (vp *VisualPredator) RBB(ctxt Context, start int, turn int, cppPop []ColourPolymorphicPrey, vpPop []VisualPredator, me int) (returning []VisualPredator) {
+func (vp *VisualPredator) RBB(errCh chan<- error, ctxt Context, start int, turn int, cppPop []ColourPolymorphicPrey, vpPop []VisualPredator, me int) []VisualPredator {
+	var returning []VisualPredator
 	var Φ float64
 	popSize := len(vpPop)
 	jump := vp.Age(ctxt, popSize)
@@ -16,25 +17,15 @@ func (vp *VisualPredator) RBB(ctxt Context, start int, turn int, cppPop []Colour
 	case "DEATH":
 		goto End
 	case "PREY SEARCH":
-		var attack bool
-		var err error
-		target, δ, err := vp.PreySearch(cppPop, ctxt.VpSearchChance) //	will move towards any viable prey it can see.
-		if target != nil {
-			attack, err = vp.Intercept(target.pos, δ)
-		}
-		if err != nil {
-			log.Println("vp.RBB:", err) // ARGH
-		}
-		if attack {
-			vp.Attack(target, ctxt.VpAttackChance, ctxt.VpCaf, ctxt.Vbg, ctxt.Vbγ, ctxt.Vbε)
+		success, err := vp.SearchAndAttack(cppPop, ctxt)
+		errCh <- err
+		if success {
 			goto Add
 		}
 		goto Patrol
 	case "FERTILE":
 		mate, err := vp.MateSearch(vpPop, me)
-		if err != nil {
-			log.Println("vp.RBB:", err) // ARGH
-		}
+		errCh <- err
 		vp.Copulation(mate, ctxt.VpReproductionChance, ctxt.VpGestation, ctxt.VpSexualRequirement)
 	case "SPAWN":
 		// func (vp *VisualPredator) Birth(ctxt Context, start int, mt int)
@@ -50,5 +41,23 @@ Patrol:
 Add:
 	returning = append(returning, *vp)
 End:
-	return
+	return returning
+}
+
+// SearchAndAttack gathers the logic for these steps of the VP RBB
+func (vp *VisualPredator) SearchAndAttack(prey []ColourPolymorphicPrey, ctxt Context) (bool, error) {
+	var attacking bool
+	var err error
+	target, δ, err := vp.PreySearch(prey) //	will move towards any viable prey it can see.
+	if target != nil {
+		attacking, err = vp.Intercept(target.pos, δ)
+	}
+	if err != nil {
+		return false, err
+	}
+	if attacking {
+		vp.Attack(target, ctxt)
+		return true, nil
+	}
+	return false, nil
 }

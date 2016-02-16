@@ -11,7 +11,7 @@
 	
 #### 2. Visual Search ####
 	SEARCH PREY population of SECTORS within vsr:
-		where FIND PREY ⟮ ∂ * γ * colour∂ ⟯ > vsrSearchChance
+		where FIND PREY ⟮ ∂ * 𝛄 * colour∂ ⟯ > vsrSearchChance
 	IF FIND PREY: Jump to ATTACK
 	ELSE: Jump to PATROL
 	
@@ -65,7 +65,7 @@
 	
 	∂ = distance between vp and target
 	
-	γ = visual acuity of vp (operating in E)
+	𝛄 = visual acuity of vp (operating in E)
 	
 	colour∂ = colour distance (difference)
 	

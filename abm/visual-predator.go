@@ -1,7 +1,6 @@
 package abm
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -32,7 +31,7 @@ type VisualPredator struct {
 	fertility     int        //	counter for interval between birth and sex
 	gravid        bool       //	i.e. pregnant
 	vsr           float64    //	visual search range
-	γ             float64    //	visual seach (colour) bias
+	𝛄             float64    //	visual seach (colour) bias
 	τ             colour.RGB //	imprinted target / colour specialisation value
 	ετ            float64    //	imprinting / colour specialisation strength
 }
@@ -55,7 +54,7 @@ func (vp VisualPredator) MarshalJSON() ([]byte, error) {
 		"hunger":                  vp.hunger,
 		"attack-success":          vp.attackSuccess,
 		"fertility":               vp.fertility,
-		"γ":                       vp.γ,
+		"𝛄":                       vp.𝛄,
 		"gravid":                  vp.gravid,
 		"colour-target-value":     vp.τ,
 		"colour-imprint-strength": vp.ετ,
@@ -101,7 +100,7 @@ func GeneratePopulationVP(size int, start int, mt int, context Context, timestam
 		agent.dir = geometry.UnitVector(agent.𝚯)
 		agent.tr = context.VpTurn
 		agent.vsr = context.Vsr
-		agent.γ = context.Vbγ //	baseline acuity level
+		agent.𝛄 = context.Vb𝛄 //	baseline acuity level
 		agent.hunger = context.VpSexualRequirement + 1
 		agent.fertility = 1
 		agent.gravid = false
@@ -137,7 +136,7 @@ func vpSpawn(size int, start int, mt int, parent VisualPredator, context Context
 		agent.hunger = context.VpSexualRequirement + 1
 		agent.fertility = 1
 		agent.gravid = false
-		agent.τ = colour.RandRGB()
+		agent.τ = colour.RandRGBClamped(parent.τ, 0.1) //	fuzzy offset (10%) deviation from parent's target colour
 		agent.ετ = context.Vbε
 		pop = append(pop, agent)
 	}
@@ -171,42 +170,43 @@ func (vp *VisualPredator) Move() error {
 }
 
 // PreySearch – uses Visual Search to try to 'recognise' a nearby prey agent within model Environment to target
-func (vp *VisualPredator) PreySearch(prey []ColourPolymorphicPrey, searchChance float64) (*ColourPolymorphicPrey, float64, error) {
+func (vp *VisualPredator) PreySearch(prey []ColourPolymorphicPrey) (*ColourPolymorphicPrey, float64, error) {
 	_ = "breakpoint" // godebug
 	c := vp.ετ
-	var f = visualSignalStrength(c)
+	// var 𝒇 = visualSignalStrength(c)
+	var 𝒇 = visualSignalStrength2(c)
 	var 𝛘 float64 // colour sorting value - colour distance/difference between vp.imprimt and cpp.colouration
 	var δ float64 // position sorting value - vector distance between vp.pos and cpp.pos
 	var err error
 	var searchSet []visualRecognition
 	for i := range prey { //	exhaustive search 😱
 		δ, err = geometry.VectorDistance(vp.pos, prey[i].pos)
+		// fmt.Printf("δ=%v\t\tvsr=%v\n", δ, vp.vsr)
 		if δ <= vp.vsr { // ∴ only include the prey agent for considertion if within visual range
 			𝛘 = colour.RGBDistance(vp.τ, prey[i].colouration)
-			fmt.Printf("%v\t%v\t%v\t%v\t%p\n", i, δ, 𝛘, c, &prey[i])
-			if 𝛘 < vp.γ { // i.e. if and only if colour distance < predator's visual search bias
-				a := visualRecognition{δ, 𝛘, f, c, &prey[i]}
+			// fmt.Printf("𝛘=%v\t\t𝛄=%v\n", 𝛘, vp.𝛄)
+			if 𝛘 < vp.𝛄 { // i.e. if and only if colour distance falls within predator's current acuity
+				a := visualRecognition{δ, 𝛘, 𝒇, c, &prey[i]}
 				searchSet = append(searchSet, a)
 			}
 		}
 	}
 
-	for i := range searchSet {
-		fmt.Printf("%v\t%v\t%v\t%v\t%p\t%v\t%v\n", i, searchSet[i].δ, searchSet[i].𝛘, c, searchSet[i].ColourPolymorphicPrey, f(searchSet[i].𝛘), f(searchSet[i].𝛘)-searchSet[i].δ)
-	}
+	// for i := range searchSet {
+	// 	fmt.Printf("%v\tδ=%v\t𝛘=%v\tc=%v\t%p\t%v\t%v\n", i, searchSet[i].δ, searchSet[i].𝛘, c, searchSet[i].ColourPolymorphicPrey, 𝒇(searchSet[i].𝛘), 𝒇(searchSet[i].𝛘)-searchSet[i].δ)
+	// }
 
-	sort.Sort(byOptimalAttackVector(searchSet)) //	sort by f(x) - distance
+	sort.Sort(byOptimalAttackVector(searchSet)) //	sort by 𝒇(x) - distance
 
-	for i := range searchSet {
-		fmt.Printf("%v\t%v\t%v\t%v\t%p\t%v\t%v\n", i, searchSet[i].δ, searchSet[i].𝛘, c, searchSet[i].ColourPolymorphicPrey, f(searchSet[i].𝛘), f(searchSet[i].𝛘)-searchSet[i].δ)
-	}
+	// for i := range searchSet {
+	// 	fmt.Printf("%v\tδ=%v\t𝛘=%v\tc=%v\t%p\t%v\t%v\n", i, searchSet[i].δ, searchSet[i].𝛘, c, searchSet[i].ColourPolymorphicPrey, 𝒇(searchSet[i].𝛘), 𝒇(searchSet[i].𝛘)-searchSet[i].δ)
+	// }
 
 	// search within biased and reduced set
 	for i, p := range searchSet {
-		return &(*searchSet[i].ColourPolymorphicPrey), p.δ, err
-		// if ((1.0 - p.𝛘) * (1.0 - p.δ)) > (1.0 - searchChance) {
-		// 	return &(*searchSet[i].ColourPolymorphicPrey), p.δ, err
-		// }
+		if 𝒇(p.𝛘) > (1 - vp.𝛄) { // i.e. is the colour detection strength sufficiently great
+			return &(*searchSet[i].ColourPolymorphicPrey), p.δ, err
+		}
 	}
 	return nil, 0, err
 }
@@ -214,18 +214,52 @@ func (vp *VisualPredator) PreySearch(prey []ColourPolymorphicPrey, searchChance 
 // Intercept attempts to turn and move towards target position (as much as vp is able)
 // note: generalised to a position vector and distance measurement so that Intercept can be used for any type of targeting.
 func (vp *VisualPredator) Intercept(vx geometry.Vector, dist float64) (bool, error) {
-	var inRange bool
 	Ψ, err := geometry.AngleToIntercept(vp.pos, vp.𝚯, vx)
 	if dist < vp.movS {
-		inRange = true
 		vp.pos = vx
 		vp.Turn(calc.ClampFloatIn(Ψ, -vp.tr, vp.tr))
-		return inRange, err
+		return true, err
 	}
 	vp.Turn(calc.ClampFloatIn(Ψ, -vp.tr, vp.tr))
 	// vp.Turn(Ψ)
 	vp.Move()
-	return inRange, err
+	return false, err
+}
+
+// Attack VP agent attempts to attack CP prey agent
+func (vp *VisualPredator) Attack(prey *ColourPolymorphicPrey, ctxt Context) bool {
+	if prey == nil {
+		return false
+	}
+	_ = "breakpoint" // godebug
+	α := rand.Float64()
+	if α > (1 - ctxt.VpAttackChance) {
+		vp.attackSuccess = true
+		vp.colourImprinting(prey.colouration, ctxt.VpCaf)
+		c := vp.ετ
+		𝒇 := visualSignalStrength(c)
+		𝛘 := colour.RGBDistance(vp.τ, prey.colouration)
+		Vg := 𝒇(𝛘) * ctxt.Vbg
+		vp.hunger -= int(Vg)
+		if vp.hunger < 0 {
+			vp.hunger = 0
+		}
+		prey.lifespan = 0 //	i.e. prey agent is flagged for removal at the beginning of next turn and will not be drawn again.
+		if ctxt.Vmε > vp.ετ {
+			vp.ετ++
+		}
+		if vp.𝛄 > ctxt.Vb𝛄 {
+			vp.𝛄 *= (1 - ctxt.V𝛄Bump) //	returning towards context-defined value
+		}
+		return vp.attackSuccess
+	}
+	// FAILURE
+	vp.attackSuccess = false
+	// MAYBE THIS SHOULD BE DETERMINED IF STARVING OR NOT?
+	if vp.ετ > ctxt.Vbε {
+		vp.ετ-- //	decrease target colour signal strength factor
+	}
+	return vp.attackSuccess
 }
 
 // MateSearch searches species population for sexual coupling
@@ -245,31 +279,6 @@ func (vp *VisualPredator) MateSearch(predators []VisualPredator, me int) (*Visua
 		}
 	}
 	return closest, err
-}
-
-// Attack VP agent attempts to attack CP prey agent
-func (vp *VisualPredator) Attack(prey *ColourPolymorphicPrey, vpAttackChance float64, caf float64, bg float64, bγ float64, bε float64) {
-	if prey == nil {
-		return
-	}
-	_ = "breakpoint" // godebug
-	vpAttackChance = 1 - vpAttackChance
-	α := rand.Float64()
-	if α > vpAttackChance {
-		vp.colourImprinting(prey.colouration, caf)
-		f := visualSignalStrength(math.Pow(2, vp.ετ))
-		Vg := f(colour.RGBDistance(vp.τ, prey.colouration)) * bg
-		vp.hunger -= int(Vg)
-		prey.lifespan = 0 //	i.e. prey agent is flagged for removal at the beginning of next turn and will not be drawn again.
-		vp.attackSuccess = true
-		vp.ετ++
-		vp.γ = bγ //	resetting to context-defined value
-		fmt.Println(vp.String())
-		return
-	}
-	if vp.ετ > bε {
-		vp.ετ-- //	decrease target colour signal strength factor
-	}
 }
 
 // colourImprinting updates VP colour / visual recognition bias
@@ -295,8 +304,8 @@ func (vp *VisualPredator) Age(ctxt Context, popSize int) string {
 
 	if ctxt.Starvation {
 		if vp.hunger > ctxt.VpPanicPoint { //	if the agent is getting desperate, it lowers its focus and has to start looking harder.
-			vp.γ *= ctxt.VγBump // (default is 1.1 == a 10% bump)
-			if vp.ετ > ctxt.Vbε {
+			vp.𝛄 *= ctxt.V𝛄Bump // (default is 1.1 == a 10% bump)
+			if (vp.hunger%5 == 0) && (vp.ετ > ctxt.Vbε) {
 				vp.ετ-- //	the energy gain from attack success reduces because it costs more energy to look harder!
 			}
 		}
@@ -358,22 +367,4 @@ func (vp *VisualPredator) Birth(ctxt Context, start int, mt int) []VisualPredato
 	vp.hunger++
 	vp.gravid = false
 	return progeny
-}
-
-// String returns a clear textual presentation the internal values of the VP agent
-func (vp *VisualPredator) String() string {
-	var buffer bytes.Buffer
-	buffer.WriteString(fmt.Sprintf("pos=(%v,%v)\n", vp.pos[x], vp.pos[y]))
-	buffer.WriteString(fmt.Sprintf("movS=%v\n", vp.movS))
-	buffer.WriteString(fmt.Sprintf("movA=%v\n", vp.movA))
-	buffer.WriteString(fmt.Sprintf("𝚯=%v\n", vp.𝚯))
-	buffer.WriteString(fmt.Sprintf("dir=(%v,%v)\n", vp.dir[x], vp.dir[y]))
-	buffer.WriteString(fmt.Sprintf("tr=%v\n", vp.tr))
-	buffer.WriteString(fmt.Sprintf("Vsr=%v\n", vp.vsr))
-	buffer.WriteString(fmt.Sprintf("lifespan=%v\n", vp.lifespan))
-	buffer.WriteString(fmt.Sprintf("hunger=%v\n", vp.hunger))
-	buffer.WriteString(fmt.Sprintf("fertility=%v\n", vp.fertility))
-	buffer.WriteString(fmt.Sprintf("gravid=%v\n", vp.gravid))
-	buffer.WriteString(fmt.Sprintf("τ=%v\n", vp.τ))
-	return buffer.String()
 }

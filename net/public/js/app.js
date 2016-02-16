@@ -34,7 +34,7 @@ var sketch = function(p) {
   var cpSize = 4
   p.setup = function() {
     var w = $('#abm-viewport').innerWidth()
-    var h = w * 0.625
+    var h = w * 0.5625
     p.createCanvas(w, h)
     p.noLoop()
     p.background(0, 0, 255)
@@ -94,7 +94,7 @@ var sketch = function(p) {
 
   p.windowResized = function() {
     var w = $('#abm-viewport').innerWidth()
-    var h = w * 0.625
+    var h = w * 0.5625
     p.resizeCanvas(w, h)
   }
 }
@@ -106,6 +106,7 @@ function absToView(p, d, n) {
 
 
 
+var sessionString = chance.word()
 var wsUrl = "ws://" + window.location.hostname + ":" + window.location.port + "/ws"
 console.log(wsUrl)
 var vizSocket = new WebSocket(wsUrl)
@@ -113,6 +114,7 @@ var viz = new p5(sketch, 'abm-viewport')
 
 vizSocket.onopen = function(e) {
   console.log('viz Stream (WebSocket) is opened.')
+  document.getElementById('sessionDetail').innerHTML = ("ABM Colour Polymorphism (CP) – Session Name: " + sessionString)
 }
 
 vizSocket.onmessage = function(e) {
@@ -169,28 +171,28 @@ $(function () {
       ['abm-vp-speed']: parseFloat($('#abm-vp-speed').val()),
       ['abm-vp-turn']: parseFloat($('#abm-vp-turn').val()),
       ['abm-vp-vsr']: parseFloat($('#abm-vp-vsr').val()),
-      ['abm-vp-vsr-chance']: parseFloat($('#abm-vp-vsr-chance').val()),
       ['abm-vp-attack-chance']: parseFloat($('#abm-vp-attack-chance').val()),
       ['abm-vp-visual-acuity']: parseFloat($('#abm-vp-visual-acuity').val()),
       ['abm-vp-visual-acuity-bump']: parseFloat($('#abm-vp-visual-acuity-bump').val()),
       ['abm-vp-baseline-attack-gain']: 50,
-      ['abm-vp-baseline-col-sig-strength']: 1.0,
-      ['abm-vp-col-adaptation-factor']: parseFloat($('#abm-vp-col-imprinting').val()),
+      ['abm-vp-baseline-col-sig-strength']: 1,
+      ['abm-vp-max-col-sig-strength']: 8,
+      ['abm-vp-col-adaptation-factor']: parseFloat($('#abm-vp-col-adaptation-factor').val()),
       ['abm-vp-reproduction-chance']: parseFloat($('#abm-vp-reproduction-chance').val()),
+      ['abm-vp-gestation']: 1,
       ['abm-vp-spawn-size']: parseInt($('#abm-vp-spawn-size').val()),
       ['abm-random-ages']: parseBool($('#abm-random-ages').is(':checked')),
       ['abm-rng-random-seed']: parseBool($('#abm-rng-random-seed').is(':checked')),
       ['abm-rng-seedval']: parseInt($('#abm-rng-seedval').val()),
       ['abm-rng-fuzziness']: 0.1,
       ['abm-visualise-flag']: true,
-      ['abm-logging-flag']: true,
-      ['abm-log-frequency']: 0, // log every turn!
+      ['abm-logging-flag']: false,
+      ['abm-log-frequency']: 10, // log every turn ten turns!
       ['abm-use-custom-log-filepath']: false,
       ['abm-custom-log-filepath']: "",
-      ['abm-log-filepath']: "",
       ['abm-limit-duration']: false,
       ['abm-fixed-duration']: 100,
-      ['abm-session-identifier']: "DebugSession"
+      ['abm-session-identifier']: sessionString
     }
 
     var OutMsg = {

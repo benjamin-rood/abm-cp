@@ -12,18 +12,19 @@
   <link rel=stylesheet href=css/abm-style.css>
   <script src=https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.4.21/p5.min.js charset=utf-8></script>
   <script src=https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.4.21/addons/p5.dom.min.js charset=utf-8></script>
+  <script src=https://cdnjs.cloudflare.com/ajax/libs/chance/1.0.0/chance.min.js charset=utf8></script>
   <script src=js/app.js charset=utf-8></script>
 </head>
 
 <body>
   <div class="container-fluid" id="render-area">
     <div class="text-center">
-      <h1>Colour Polymorphism (CP) ABM</h1>
+      <h1 id="sessionDetail">ABM Colour Polymorphism (CP)</h1>
       <p class="lead">
         <br>
       </p>
     </div>
-    <div class="row" style="margin:30px">
+    <div class="row" style="margin-top:30px; margin-bottom:30px">
       <div id="abm-viewport"></div>
     </div>
   </div>
@@ -42,11 +43,11 @@
       <h4>Colour Polymorphic Prey Settings:</h4>
       <div class="form-group" style="margin:15px">
         <label for="abm-cpp-pop-start">CP Prey Starting Population </label>
-        <input type="number" class="form-control" id="abm-cpp-pop-start" value="10">
+        <input type="number" class="form-control" id="abm-cpp-pop-start" value="25">
       </div>
       <div class="form-group" style="margin:15px">
         <label for="abm-cpp-pop-cap">CP Prey Population Cap</label>
-        <input type="number" class="form-control" id="abm-cpp-pop-cap" value="1200">
+        <input type="number" class="form-control" id="abm-cpp-pop-cap" value="2000">
       </div>
       <div class="form-group" style="margin:15px">
         <label for="abm-cpp-ageing"></label>
@@ -55,7 +56,7 @@
       </div>
       <div class="form-group" style="margin:15px">
         <label for="abm-cpp-lifespan">CP Prey Lifespan</label>
-        <input type="number" class="form-control" id="abm-cpp-lifespan" value="100">
+        <input type="number" class="form-control" id="abm-cpp-lifespan" value="40">
       </div>
       <div class="form-group" style="margin:15px">
         <label for="abm-cpp-speed">CP Prey Speed</label>
@@ -67,7 +68,7 @@
       </div>
       <div class="form-group" style="margin:15px">
         <label for="abm-cpp-sexual-cost">CP Prey Sexual Cost</label>
-        <input type="number" class="form-control" id="abm-cpp-sexual-cost" value="3" min="1">
+        <input type="number" class="form-control" id="abm-cpp-sexual-cost" value="1" min="1">
       </div>
       <div class="form-group" style="margin:15px">
         <label for="abm-cpp-reproduction-chance">CP Prey Reproduction Chance</label>
@@ -75,15 +76,15 @@
       </div>
       <div class="form-group" style="margin:15px">
         <label for="abm-cpp-gestation">CP Prey Gestation Period</label>
-        <input type="number" class="form-control" id="abm-cpp-gestation" value="5" min="1">
+        <input type="number" class="form-control" id="abm-cpp-gestation" value="1" min="1">
       </div>
       <div class="form-group" style="margin:15px">
         <label for="abm-cpp-spawn-size">CP Prey Spawn Size</label>
-        <input type="number" class="form-control" id="abm-cpp-spawn-size" value="10" min="1">
+        <input type="number" class="form-control" id="abm-cpp-spawn-size" value="2" min="1">
       </div>
       <div class="form-group" style="margin:15px">
         <label for="abm-cpp-mf">CP Prey Mutation Factor</label>
-        <input type="number" class="form-control" id="abm-cpp-mf" value="0.1" min="0.0" max="1.0" step="0.003">
+        <input type="number" class="form-control" id="abm-cpp-mf" value="0.05" min="0.0" max="1.0" step="0.003">
       </div>
       <br>
       <hr>
@@ -91,15 +92,15 @@
       <h4>Visual Predator Settings:</h4>
       <div class="form-group" style="margin:15px">
         <label for="abm-vp-pop-start">Visual Predator Starting Population</label>
-        <input type="number" class="form-control" id="abm-vp-pop-start" value="25">
+        <input type="number" class="form-control" id="abm-vp-pop-start" value="5">
       </div>
       <div class="form-group" style="margin:15px">
         <label for="abm-vp-pop-cap">Visual Predator Population Cap</label>
-        <input type="number" class="form-control" id="abm-vp-pop-cap" value="30">
+        <input type="number" class="form-control" id="abm-vp-pop-cap" value="50">
       </div>
       <div class="form-group" style="margin:15px">
         <label for="abm-vp-ageing"></label>
-        <input type="checkbox" checked="checked" id="abm-vp-ageing" style="margin-right:10px">
+        <input type="checkbox" id="abm-vp-ageing" style="margin-right:10px">
         <b>Visual Predator Ageing</b>
       </div>
       <div class="form-group" style="margin:15px">
@@ -113,11 +114,11 @@
       </div>
       <div class="form-group" style="margin:15px">
         <label for="abm-vp-starvation-point">Visual Predator Starvation Point</label>
-        <input type="number" class="form-control" id="abm-vp-starvation-point" value="250" min="1" max="1000">
+        <input type="number" class="form-control" id="abm-vp-starvation-point" value="200" min="1" max="1000">
       </div>
       <div class="form-group" style="margin:15px">
         <label for="abm-vp-panic-point">Visual Predator Hunger Panic Point</label>
-        <input type="number" class="form-control" id="abm-vp-panic-point" value="250" min="1" max="1000">
+        <input type="number" class="form-control" id="abm-vp-panic-point" value="160" min="1" max="1000">
       </div>
       <div class="form-group" style="margin:15px">
         <label for="abm-vp-speed">Visual Predator Speed</label>
@@ -125,7 +126,7 @@
       </div>
       <div class="form-group" style="margin:15px">
         <label for="abm-vp-turn">Visual Predator Turn Rate</label>
-        <input type="number" class="form-control" id="abm-vp-turn" value="0.392699081698724" min="0.0" max="3.14" step="0.1">
+        <input type="number" class="form-control" id="abm-vp-turn" value="0.5" min="0.0" max="3.14" step="0.1">
       </div>
       <div class="form-group" style="margin:15px">
         <label for="abm-vp-vsr">Visual Predator Visual Search Range</label>
@@ -140,12 +141,8 @@
         <input type="number" class="form-control" id="abm-vp-visual-acuity-bump" value="1.05" min="0.0" step="0.05">
       </div>
       <div class="form-group" style="margin:15px">
-        <label for="abm-vp-vsr-chance">Visual Predator Visual Search Chance</label>
-        <input type="number" class="form-control" id="abm-vp-vsr-chance" value="0.6" min="0.0" max="1.0" step="0.001">
-      </div>
-      <div class="form-group" style="margin:15px">
         <label for="abm-vp-attack-chance">Visual Predator Visual Attack Chance</label>
-        <input type="number" class="form-control" id="abm-vp-attack-chance" value="0.5" min="0.0" max="1.0" step="0.001">
+        <input type="number" class="form-control" id="abm-vp-attack-chance" value="0.9" min="0.0" max="1.0" step="0.001">
       </div>
       <div class="form-group" style="margin:15px">
         <label for="abm-vp-col-adaptation-factor">Visual Predator Prey Colouration Adaptation Rate</label>

@@ -1,12 +1,32 @@
 package abm
 
 import (
+	"bytes"
 	"fmt"
 	"math"
-	"time"
 
 	"github.com/benjamin-rood/abm-cp/geometry"
 )
+
+// String returns a clear textual presentation the internal values of the VP agent
+func (vp *VisualPredator) String() string {
+	var buffer bytes.Buffer
+	buffer.WriteString(fmt.Sprintf("pos=(%v,%v)\n", vp.pos[x], vp.pos[y]))
+	buffer.WriteString(fmt.Sprintf("movS=%v\n", vp.movS))
+	buffer.WriteString(fmt.Sprintf("movA=%v\n", vp.movA))
+	buffer.WriteString(fmt.Sprintf("𝚯=%v\n", vp.𝚯))
+	buffer.WriteString(fmt.Sprintf("dir=(%v,%v)\n", vp.dir[x], vp.dir[y]))
+	buffer.WriteString(fmt.Sprintf("tr=%v\n", vp.tr))
+	buffer.WriteString(fmt.Sprintf("Vsr=%v\n", vp.vsr))
+	buffer.WriteString(fmt.Sprintf("lifespan=%v\n", vp.lifespan))
+	buffer.WriteString(fmt.Sprintf("hunger=%v\n", vp.hunger))
+	buffer.WriteString(fmt.Sprintf("fertility=%v\n", vp.fertility))
+	buffer.WriteString(fmt.Sprintf("gravid=%v\n", vp.gravid))
+	buffer.WriteString(fmt.Sprintf("τ=%v\n", vp.τ))
+	buffer.WriteString(fmt.Sprintf("ετ=%v\n", vp.ετ))
+	buffer.WriteString(fmt.Sprintf("𝛄=%v\n", vp.𝛄))
+	return buffer.String()
+}
 
 func vpTesterAgent(xPos float64, yPos float64) (tester VisualPredator) {
 	tester = vpTestPop(1)[0]
@@ -16,8 +36,7 @@ func vpTesterAgent(xPos float64, yPos float64) (tester VisualPredator) {
 }
 
 func vpTestPop(size int) []VisualPredator {
-	timestamp := fmt.Sprintf("%s", time.Now())
-	return GeneratePopulationVP(size, 0, 0, TestContext, timestamp)
+	return GeneratePopulationVP(size, 0, 0, TestContext, testStamp)
 }
 
 // VSRSectorSampling checks which sectors the VP agent's

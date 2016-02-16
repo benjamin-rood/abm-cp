@@ -39,8 +39,8 @@ const (
 	dVpMovA                = 1.0
 	dVpTurn                = eigthpi
 	dVsr                   = dVpMovS
-	dVγ                    = 0.3
-	dVγBump                = 1.2
+	dV𝛄                    = 0.3
+	dV𝛄Bump                = 1.2
 	dVpReproductiveChance  = 1.0
 	dVpSexualRequirement   = 50
 	dVpGestation           = 5
@@ -79,12 +79,12 @@ const (
 	tVpLifespan            = 9999
 	tVpStarvationPoint     = 9999
 	tStarvation            = false
-	tVpMovS                = 0.05
+	tVpMovS                = 0.2
 	tVpMovA                = 1.0
 	tVpTurn                = eigthpi / 2
 	tVpVsr                 = 0.2
-	tVγ                    = 1.0
-	tVγBump                = 1.2
+	tV𝛄                    = 0.2
+	tV𝛄Bump                = 1.2
 	tVpReproductiveChance  = 1.0
 	tVpSearchChance        = 1.0
 	tVpAttackChance        = 1.0
@@ -140,8 +140,8 @@ var (
 		VpMovA:                1.0,
 		VpTurn:                dVpTurn,
 		Vsr:                   dVsr,
-		Vbγ:                   dVγ,
-		VγBump:                dVγBump,
+		Vb𝛄:                   dV𝛄,
+		V𝛄Bump:                dV𝛄Bump,
 		VpReproductionChance:  dVpReproductiveChance,
 		VpSexualRequirement:   dVpSexualRequirement,
 		VpGestation:           dVpGestation,
@@ -180,8 +180,8 @@ var (
 		VpMovA:                1.0,
 		VpTurn:                tVpTurn,
 		Vsr:                   tVpVsr,
-		Vbγ:                   tVγ,
-		VγBump:                tVγBump,
+		Vb𝛄:                   tV𝛄,
+		V𝛄Bump:                tV𝛄Bump,
 		Vbε:                   tVbε,
 		Vbg:                   tVbg,
 		VpReproductionChance:  tVpReproductiveChance,

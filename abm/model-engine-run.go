@@ -84,7 +84,7 @@ func (m *Model) turn(errCh chan<- error) {
 					errCh <- m.vpRecordAssignValue(agent.UUID(), agent)
 				}
 			}()
-			result := agent.RBB(m.Context, m.numVpCreated, m.Turn, m.PopCPP, m.PopVP, selfIndex)
+			result := agent.RBB(errCh, m.Context, m.numVpCreated, m.Turn, m.PopCPP, m.PopVP, selfIndex)
 			if m.Visualise {
 				m.render <- agent.GetDrawInfo()
 			}
@@ -99,10 +99,10 @@ func (m *Model) turn(errCh chan<- error) {
 	// vpAgentWg.Wait()
 	m.PopVP = vpAgents //	update the population based on the results from each agent's rule-based behaviour of the turn.
 	m.Phase++
-	m.Action = 0                 // reset at phase end
-	m.Phase = 0                  // reset at Turn end
-	_ = "breakpoint"             // godebug
-	m.turnSignal.Broadcast(true) // using blocking version to ensure turn synchronisation
+	m.Action = 0                  // reset at phase end
+	m.Phase = 0                   // reset at Turn end
+	_ = "breakpoint"              // godebug
+	m.turnSignal.Broadcast(false) // using blocking version to ensure turn synchronisation
 	m.Turn++
 	time.Sleep(time.Millisecond * 50) // sync wiggle room
 }
