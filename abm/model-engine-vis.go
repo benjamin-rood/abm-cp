@@ -3,7 +3,6 @@ package abm
 import (
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/benjamin-rood/abm-cp/render"
 	"github.com/benjamin-rood/gobr"
@@ -61,7 +60,6 @@ func (m *Model) vis(ec chan<- error) {
 				TurnCount: "0",
 			}
 		case <-m.rc: //	run channel closed!
-			time.Sleep(time.Second)
 			return
 		}
 	}

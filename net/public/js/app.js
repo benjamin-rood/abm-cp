@@ -176,7 +176,7 @@ $(function () {
       ['abm-vp-visual-acuity-bump']: parseFloat($('#abm-vp-visual-acuity-bump').val()),
       ['abm-vp-baseline-attack-gain']: 50,
       ['abm-vp-baseline-col-sig-strength']: 1,
-      ['abm-vp-max-col-sig-strength']: 8,
+      ['abm-vp-max-col-sig-strength']: 9999,
       ['abm-vp-col-adaptation-factor']: parseFloat($('#abm-vp-col-adaptation-factor').val()),
       ['abm-vp-reproduction-chance']: parseFloat($('#abm-vp-reproduction-chance').val()),
       ['abm-vp-gestation']: 1,
