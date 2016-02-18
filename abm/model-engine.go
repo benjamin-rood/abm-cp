@@ -26,7 +26,8 @@ func (m *Model) Controller() {
 			case "context": //	if context params msg is recieved, (re)start
 				if m.running {
 				register:
-					if clash := gobr.WaitForSignalOnce(signature, m.turnSignal); clash {
+					clash := gobr.WaitForSignalOnce(signature, m.turnSignal)
+					if clash {
 						time.Sleep(pause)
 						goto register
 					} //	will block until receiving turn broadcast once.

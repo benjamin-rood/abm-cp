@@ -12,6 +12,8 @@
   <link rel=stylesheet href=css/abm-style.css>
   <script src=https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.4.21/p5.min.js charset=utf-8></script>
   <script src=https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.4.21/addons/p5.dom.min.js charset=utf-8></script>
+  <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.0/css/bootstrap-toggle.min.css" rel="stylesheet">
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.0/js/bootstrap-toggle.min.js"></script>
   <script src=https://cdnjs.cloudflare.com/ajax/libs/chance/1.0.0/chance.min.js charset=utf8></script>
   <script src=js/app.js charset=utf-8></script>
 </head>
@@ -32,7 +34,8 @@
 
   <div class="container container-parameters">
     <h3>Context Parameters</h3>
-    <p>Define the variable ABM parameters below, then press the submit button to start.</p>
+    <br>
+    <h4>Define the variable ABM parameters below, then press the submit button to start.</h4>
     <br>
     <div>
       <button type="button" class="btn btn-primary btn-lg" id="contextParamsSend" style="margin:15px">Start ABM with these settings</button>
@@ -40,7 +43,25 @@
     <hr>
     <br>
     <form id="context-params">
+      <h4>Setup:</h4>
+      <br>
+      <div class="form-group" style="margin:15px">
+        <input type="checkbox" checked disabled data-toggle="toggle" id="abm-visualise-flag" style="margin-right:30px">
+        <label for="abm-visualise-flag"><b style="margin-left:30px">Visual Presenation</b></label>
+      </div>
+      <div class="form-group" style="margin:15px">
+        <input type="checkbox" disabled data-toggle="toggle" id="abm-logging-flag" style="margin-right:30px">
+        <label for="abm-logging-flag"><b style="margin-left:30px">Data Logging to Local File</b></label>
+      </div>
+      <br>
+      <hr>
+      <br>
       <h4>Colour Polymorphic Prey Settings:</h4>
+      <br>
+      <div class="form-group" style="margin:15px">
+        <input type="checkbox" checked data-toggle="toggle" id="abm-cpp-ageing" style="margin-right:30px">
+        <label for="abm-cpp-ageing"><b style="margin-left:30px">CP Prey Ageing</b></label>
+      </div>
       <div class="form-group" style="margin:15px">
         <label for="abm-cpp-pop-start">CP Prey Starting Population </label>
         <input type="number" class="form-control" id="abm-cpp-pop-start" value="25">
@@ -48,11 +69,6 @@
       <div class="form-group" style="margin:15px">
         <label for="abm-cpp-pop-cap">CP Prey Population Cap</label>
         <input type="number" class="form-control" id="abm-cpp-pop-cap" value="2000">
-      </div>
-      <div class="form-group" style="margin:15px">
-        <label for="abm-cpp-ageing"></label>
-        <input type="checkbox" checked="checked" id="abm-cpp-ageing" style="margin-right:10px">
-        <b>CP Prey Ageing</b>
       </div>
       <div class="form-group" style="margin:15px">
         <label for="abm-cpp-lifespan">CP Prey Lifespan</label>
@@ -90,6 +106,15 @@
       <hr>
       <br>
       <h4>Visual Predator Settings:</h4>
+      <br>
+      <div class="form-group" style="margin:15px">
+        <input type="checkbox" data-toggle="toggle" id="abm-vp-ageing" style="margin-right:30px">
+        <label for="abm-vp-ageing"><b style="margin-left:30px">Visual Predator Ageing</b></label>
+      </div>
+      <div class="form-group" style="margin:15px">
+        <input type="checkbox" checked data-toggle="toggle" id="abm-vp-starvation" style="margin-right:30px">
+        <label for="abm-vp-starvation"><b style="margin-left:30px">Visual Predator death from Starvation</b></label>
+      </div>
       <div class="form-group" style="margin:15px">
         <label for="abm-vp-pop-start">Visual Predator Starting Population</label>
         <input type="number" class="form-control" id="abm-vp-pop-start" value="5">
@@ -99,18 +124,8 @@
         <input type="number" class="form-control" id="abm-vp-pop-cap" value="50">
       </div>
       <div class="form-group" style="margin:15px">
-        <label for="abm-vp-ageing"></label>
-        <input type="checkbox" id="abm-vp-ageing" style="margin-right:10px">
-        <b>Visual Predator Ageing</b>
-      </div>
-      <div class="form-group" style="margin:15px">
         <label for="abm-vp-pop-cap">Visual Predator Lifespan</label>
         <input type="number" class="form-control" id="abm-vp-lifespan" value="600" min="1" max="1000">
-      </div>
-      <div class="form-group" style="margin:15px">
-        <label for="abm-starvation"></label>
-        <input type="checkbox" checked="checked" id="abm-starvation" style="margin-right:10px">
-        <b>Starvation</b>
       </div>
       <div class="form-group" style="margin:15px">
         <label for="abm-vp-starvation-point">Visual Predator Starvation Point</label>
@@ -160,18 +175,18 @@
       <hr>
       <br>
       <h4>RNG Settings:</h4>
+      <br>
       <div class="form-group" style="margin:15px">
-        <label for="abm-random-ages"></label>
-        <input type="checkbox" checked="checked" id="abm-random-ages" style="margin-right:10px">
-        <b>Randomise Ages</b>
+        <input type="checkbox" checked data-toggle="toggle" id="abm-random-agesg" style="margin-right:30px">
+        <label for="abm-random-ages"><b style="margin-left:30px">Randomise Ages</b></label>
       </div>
       <div class="form-group" style="margin:15px">
-        <label for="abm-rng-random-seed"></label>
-        <input type="checkbox" checked="checked" id="abm-rng-random-seed" style="margin-right:10px">
-        <b>RNG Random Seed</b>
+        <input type="checkbox" checked="checked" data-toggle="toggle" id="abm-rng-random-seed" style="margin-right:30px">
+        <label for="abm-rng-random-seed"><b style="margin-left:30px">RNG Random Seed</b></label>
       </div>
+      <br>
       <div class="form-group" style="margin:15px">
-        <label for="abm-rng-seedval">RNG Seed Value</label>
+        <label for="abm-rng-seedval">RNG Seed Value</label><br>
         <input type="number" class="form-control" id="abm-rng-seedval" value="0" min="0">
       </div>
       <br>

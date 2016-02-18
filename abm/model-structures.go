@@ -65,7 +65,7 @@ type Context struct {
 	VpAttackChance        float64   `json:"abm-vp-attack-chance"`             //
 	Vbg                   float64   `json:"abm-vp-baseline-attack-gain"`      //
 	VpCaf                 float64   `json:"abm-vp-col-adaptation-factor"`     //
-	Starvation            bool      `json:"abm-starvation"`                   //
+	VpStarvation          bool      `json:"abm-vp-starvation"`                //
 	RandomAges            bool      `json:"abm-random-ages"`                  //
 	RNGRandomSeed         bool      `json:"abm-rng-random-seed"`              //	flag for using server-set random seed val.
 	RNGSeedVal            int64     `json:"abm-rng-seedval"`                  //	RNG seed value

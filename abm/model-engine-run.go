@@ -73,9 +73,10 @@ func (m *Model) turn(errCh chan<- error) {
 	_ = "breakpoint" // godebug
 	// var vpAgentWg sync.WaitGroup
 	var vpAgents []VisualPredator
+
 	for i := range m.PopVP {
 		// vpAgentWg.Add(1)
-		func(agent VisualPredator, selfIndex int) {
+		func(agent VisualPredator) {
 			_ = "breakpoint" // godebug
 			defer func() {
 				// vpAgentWg.Done()
@@ -84,7 +85,7 @@ func (m *Model) turn(errCh chan<- error) {
 					errCh <- m.vpRecordAssignValue(agent.UUID(), agent)
 				}
 			}()
-			result := agent.RBB(errCh, m.Context, m.numVpCreated, m.Turn, m.PopCPP, m.PopVP, selfIndex)
+			result := agent.RBB(errCh, m.Context, m.numVpCreated, m.Turn, m.PopCPP, m.PopVP, i)
 			if m.Visualise {
 				m.render <- agent.GetDrawInfo()
 			}
@@ -93,7 +94,7 @@ func (m *Model) turn(errCh chan<- error) {
 			vpAgents = append(vpAgents, result...)
 			am.Unlock()
 			m.Action++
-		}(m.PopVP[i], i)
+		}(m.PopVP[i])
 	}
 
 	// vpAgentWg.Wait()

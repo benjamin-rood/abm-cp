@@ -1,6 +1,7 @@
 package abm
 
 import (
+	"fmt"
 	"math/rand"
 	"testing"
 
@@ -19,7 +20,7 @@ func TestVPIntercept(t *testing.T) {
 	prey[0].colouration = colour.RGB{Red: 0.6, Green: 0.2, Blue: 0.4} //  close enough to be recognised.
 
 	want := 0.3927
-	target, _, _ := predator.PreySearch(prey, 1.0)
+	target, _ := predator.PreySearch(prey)
 	if target == nil {
 		t.Errorf("No target found.")
 	}
@@ -54,7 +55,7 @@ func TestSearchAndAttack(t *testing.T) {
 	// }
 
 	var err error
-	target, δ, err := predator.PreySearch(prey, TestContext.VpSearchChance) //	previous test made sure this was true.
+	target, err := predator.PreySearch(prey) //	previous test made sure this was true.
 	if target == nil {
 		t.Errorf("No target found in PreySearch")
 		return
@@ -66,7 +67,7 @@ func TestSearchAndAttack(t *testing.T) {
 		t.Errorf(err.Error())
 		return
 	}
-	intercepted, err := predator.Intercept(target.pos, δ)
+	intercepted, err := predator.Intercept(target.pos)
 	if !intercepted {
 		t.Errorf("Failed to intercept target.")
 	}
@@ -74,8 +75,48 @@ func TestSearchAndAttack(t *testing.T) {
 		t.Errorf(err.Error())
 		return
 	}
-	success := predator.Attack(target, TestContext.VpAttackChance, TestContext.VpCaf, TestContext.Vbg, TestContext.Vb𝛄, TestContext.Vbε)
+	success := predator.Attack(target, TestContext)
 	if !success {
 		t.Errorf("Attack unsuccessful.")
+	}
+}
+
+func TestMateSearch(t *testing.T) {
+	rand.Seed(0)
+	neighbours := vpTestPop(10)
+	// for i := range neighbours {
+	// 	fmt.Printf("%v\t%p\n", i, &neighbours[i])
+	// }
+	ec := make(chan error)
+	go func() {
+		for {
+			select {
+			case err := <-ec:
+				if err != nil {
+					fmt.Println(err)
+				}
+			}
+		}
+	}()
+	vp := &neighbours[0]
+	// fmt.Printf("%v\t%p\n", vp.pos, vp)
+	for i := range neighbours {
+		neighbours[i].fertility = 100
+	}
+
+	want := &neighbours[2]
+	got := vp.MateSearch(neighbours, 0, ec)
+	// fmt.Printf("%p\n", got)
+	if got == nil {
+		t.Error("returned nil")
+	}
+	if got == vp {
+		t.Error("test agent wants to try asexual reproduction")
+	}
+	if got != want {
+		t.Errorf("want = %p\tgot = %p\n", want, got)
+	}
+	if !vp.pos.Equal(got.pos) {
+		t.Errorf("want = %v\tgot = %v\n", vp.pos, got.pos)
 	}
 }
