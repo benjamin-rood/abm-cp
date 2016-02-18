@@ -1,6 +1,6 @@
 ###Note that all code is alpha until version 1.0
 
-###Current Version: 0.4.0a
+###Current Version: 0.3.9a
 
 ![abm preview](https://giant.gfycat.com/MeekSpiritedBilby.gif)
 
