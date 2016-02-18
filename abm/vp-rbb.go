@@ -7,26 +7,30 @@ import (
 )
 
 // RBB : Rule-Based-Behaviour for Visual Predator Agent
-func (vp *VisualPredator) RBB(errCh chan<- error, ctxt Context, start int, turn int, cppPop []ColourPolymorphicPrey, vpPop []VisualPredator, me int) []VisualPredator {
+func (vp *VisualPredator) RBB(errCh chan<- error, ctxt Context, start int, turn int, cppPop []ColourPolymorphicPrey, neighbours []VisualPredator, me int) []VisualPredator {
 	var returning []VisualPredator
 	var Φ float64
-	popSize := len(vpPop)
+	popSize := len(neighbours)
 	jump := vp.Age(ctxt, popSize)
 	_ = "breakpoint" // godebug
 	switch jump {
 	case "DEATH":
 		goto End
 	case "PREY SEARCH":
-		success, err := vp.SearchAndAttack(cppPop, ctxt)
-		errCh <- err
+		success := vp.SearchAndAttack(cppPop, ctxt, errCh)
 		if success {
 			goto Add
 		}
 		goto Patrol
 	case "FERTILE":
-		mate, err := vp.MateSearch(vpPop, me)
-		errCh <- err
-		vp.Copulation(mate, ctxt.VpReproductionChance, ctxt.VpGestation, ctxt.VpSexualRequirement)
+		if len(neighbours) <= 0 {
+			goto Patrol
+		}
+		mate := vp.MateSearch(neighbours, me, errCh)
+		success := vp.Copulation(mate, ctxt)
+		if !success {
+			goto Patrol
+		}
 	case "SPAWN":
 		// func (vp *VisualPredator) Birth(ctxt Context, start int, mt int)
 		children := vp.Birth(ctxt, start, turn)
@@ -45,19 +49,18 @@ End:
 }
 
 // SearchAndAttack gathers the logic for these steps of the VP RBB
-func (vp *VisualPredator) SearchAndAttack(prey []ColourPolymorphicPrey, ctxt Context) (bool, error) {
+func (vp *VisualPredator) SearchAndAttack(prey []ColourPolymorphicPrey, ctxt Context, errCh chan<- error) bool {
 	var attacking bool
 	var err error
-	target, δ, err := vp.PreySearch(prey) //	will move towards any viable prey it can see.
+	target, err := vp.PreySearch(prey) //	will move towards any viable prey it can see.
+	errCh <- err
 	if target != nil {
-		attacking, err = vp.Intercept(target.pos, δ)
-	}
-	if err != nil {
-		return false, err
+		attacking, err = vp.Intercept(target.pos)
+		errCh <- err
 	}
 	if attacking {
 		vp.Attack(target, ctxt)
-		return true, nil
+		return true
 	}
-	return false, nil
+	return false
 }

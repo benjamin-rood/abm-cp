@@ -30,8 +30,8 @@ console.log(drawlist)
 var sketch = function(p) {
   var modelDw = 1.0
   var modelDh = 1.0
-  var vpSize = 10
-  var cpSize = 4
+  var vpSize = 7
+  var cpSize = 3
   p.setup = function() {
     var w = $('#abm-viewport').innerWidth()
     var h = w * 0.5625
@@ -165,7 +165,7 @@ $(function () {
       ['abm-vp-pop-cap']: parseInt($('#abm-vp-pop-cap').val()),
       ['abm-vp-ageing']: parseBool($('#abm-vp-ageing').is(':checked')),
       ['abm-vp-lifespan']: parseInt($('#abm-vp-lifespan').val()),
-      ['abm-starvation']: parseBool($('#abm-starvation').is(':checked')),
+      ['abm-vp-starvation']: parseBool($('#abm-vp-starvation').is(':checked')),
       ['abm-vp-panic-point']: parseInt($('#abm-vp-panic-point').val()),
       ['abm-vp-starvation-point']: parseInt($('#abm-vp-starvation-point').val()),
       ['abm-vp-speed']: parseFloat($('#abm-vp-speed').val()),

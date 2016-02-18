@@ -2,11 +2,68 @@ package abm
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"math"
 
+	"github.com/benjamin-rood/abm-cp/colour"
 	"github.com/benjamin-rood/abm-cp/geometry"
+	"github.com/benjamin-rood/abm-cp/render"
 )
+
+// UUID is just a getter method for the unexported uuid field, which absolutely must not change after agent creation.
+func (vp *VisualPredator) UUID() string {
+	return vp.uuid
+}
+
+// MarshalJSON implements json.Marshaler interface for VisualPredator object
+func (vp VisualPredator) MarshalJSON() ([]byte, error) {
+	return json.Marshal(map[string]interface{}{
+		"description":             vp.description,
+		"pos":                     vp.pos,
+		"speed":                   vp.movS,
+		"heading":                 vp.𝚯,
+		"turn-rate":               vp.tr,
+		"search-range":            vp.vsr,
+		"lifespan":                vp.lifespan,
+		"hunger":                  vp.hunger,
+		"attack-success":          vp.attackSuccess,
+		"fertility":               vp.fertility,
+		"𝛄":                       vp.𝛄,
+		"gravid":                  vp.gravid,
+		"colour-target-value":     vp.τ,
+		"colour-imprint-strength": vp.ετ,
+	})
+}
+
+// GetDrawInfo exports the data set needed for agent visualisation.
+func (vp *VisualPredator) GetDrawInfo() (ar render.AgentRender) {
+	ar.Type = "vp"
+	ar.X = vp.pos[x]
+	ar.Y = vp.pos[y]
+	ar.Heading = vp.𝚯
+	if vp.attackSuccess {
+		// inv := vp.τ.Invert()
+		// ar.Colour = inv.To256()
+		ar.Colour = colour.RGB256{Red: 0, Green: 0, Blue: 0} // blink black on successful attack!
+	} else {
+		ar.Colour = vp.τ.To256()
+	}
+	return
+}
+
+type proxVP struct {
+	comp func(geometry.Vector) float64
+	*VisualPredator
+}
+
+type byProximityVp []proxVP
+
+func (p byProximityVp) Len() int      { return len(p) }
+func (p byProximityVp) Swap(i, j int) { p[i], p[j] = p[j], p[i] }
+func (p byProximityVp) Less(i, j int) bool {
+	return (p[i].comp(p[i].pos) < p[j].comp(p[j].pos)) //
+}
 
 // String returns a clear textual presentation the internal values of the VP agent
 func (vp *VisualPredator) String() string {
@@ -33,6 +90,18 @@ func vpTesterAgent(xPos float64, yPos float64) (tester VisualPredator) {
 	tester.pos[x] = xPos
 	tester.pos[y] = yPos
 	return
+}
+
+// colourImprinting updates VP colour / visual recognition bias
+// Uses a bias / weighting value, 𝜎 (sigma) to control the degree of
+// adaptation VP will make to differences in 'eaten' CPP colours.
+func (vp *VisualPredator) colourImprinting(target colour.RGB, 𝜎 float64) {
+	𝚫red := (vp.τ.Red - target.Red) * 𝜎
+	𝚫green := (vp.τ.Green - target.Green) * 𝜎
+	𝚫blue := (vp.τ.Blue - target.Blue) * 𝜎
+	vp.τ.Red = vp.τ.Red - 𝚫red
+	vp.τ.Green = vp.τ.Green - 𝚫green
+	vp.τ.Blue = vp.τ.Blue - 𝚫blue
 }
 
 func vpTestPop(size int) []VisualPredator {

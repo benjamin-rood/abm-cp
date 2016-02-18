@@ -78,7 +78,7 @@ const (
 	tVpAgeing              = false
 	tVpLifespan            = 9999
 	tVpStarvationPoint     = 9999
-	tStarvation            = false
+	tVpStarvation          = false
 	tVpMovS                = 0.2
 	tVpMovA                = 1.0
 	tVpTurn                = eigthpi / 2
@@ -149,7 +149,7 @@ var (
 		VpAttackChance:        dVpAttackChance,
 		VpCaf:                 dVpColAdaptationFactor,
 		CppMutationFactor:     dCppMf,
-		Starvation:            dVpStarvation,
+		VpStarvation:          dVpStarvation,
 		RandomAges:            dRandomAges,
 		RNGRandomSeed:         dRNGRandomSeed,
 		RNGSeedVal:            dRNGSeedVal,
@@ -189,7 +189,7 @@ var (
 		VpAttackChance:        tVpAttackChance,
 		VpCaf:                 tVpColAdaptationFactor,
 		CppMutationFactor:     tCppMf,
-		Starvation:            tStarvation,
+		VpStarvation:          tVpStarvation,
 		RandomAges:            tRandomAges,
 		RNGRandomSeed:         tRNGRandomSeed,
 		RNGSeedVal:            tRNGSeedVal,
