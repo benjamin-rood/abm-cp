@@ -241,6 +241,10 @@ func (vp *VisualPredator) MateSearch(neighbours []VisualPredator, me int, errCh 
 		searchSet = append(searchSet, proxVP{f, &neighbours[i]})
 	}
 
+	if len(searchSet) == 0 {
+		return nil
+	}
+
 	// fmt.Println()
 	// for i := range searchSet {
 	// 	fmt.Printf("%v\tδ=%v\t%v\t%p\n", i, searchSet[i].comp(searchSet[i].pos), searchSet[i].pos, searchSet[i].VisualPredator)
@@ -252,7 +256,7 @@ func (vp *VisualPredator) MateSearch(neighbours []VisualPredator, me int, errCh 
 	// for i := range searchSet {
 	// 	fmt.Printf("%v\tδ=%v\t%v\t%p\n", i, searchSet[i].comp(searchSet[i].pos), searchSet[i].pos, searchSet[i].VisualPredator)
 	// }
-	target := searchSet[0].pos // guaranteed to exist by test on first line
+	target := searchSet[0].pos // guaranteed to exist by test on test of searchSet length above
 
 	// fmt.Printf("Before Intercept:\n%v\t%p\n", vp.pos, vp)
 
