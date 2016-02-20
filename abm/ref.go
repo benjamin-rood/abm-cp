@@ -118,7 +118,7 @@ var (
 
 	// DefaultContext to be used as a baseline example
 	DefaultContext = Context{
-		Bounds:                DefaultEnvironment.Bounds,
+		Environment:           DefaultEnvironment,
 		CppPopulationStart:    dCppPopStart,
 		CppPopulationCap:      dCppPopCap,
 		CppAgeing:             dCppAgeing,
@@ -158,7 +158,7 @@ var (
 
 	// TestContext to be used for unit testing.
 	TestContext = Context{
-		Bounds:                DefaultEnvironment.Bounds,
+		Environment:           DefaultEnvironment,
 		CppPopulationStart:    tCppPopStart,
 		CppPopulationCap:      tCppPopCap,
 		CppAgeing:             tCppAgeing,

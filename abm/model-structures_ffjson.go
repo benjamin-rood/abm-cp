@@ -421,17 +421,14 @@ func (mj *Context) MarshalJSONBuf(buf fflib.EncodingBuffer) error {
 	_ = obj
 	_ = err
 	buf.WriteString(`{"abm-environment-bounds":`)
-	if mj.Bounds != nil {
-		buf.WriteString(`[`)
-		for i, v := range mj.Bounds {
-			if i != 0 {
-				buf.WriteString(`,`)
-			}
-			fflib.AppendFloat(buf, float64(v), 'g', -1, 64)
+
+	{
+
+		err = mj.Environment.MarshalJSONBuf(buf)
+		if err != nil {
+			return err
 		}
-		buf.WriteString(`]`)
-	} else {
-		buf.WriteString(`null`)
+
 	}
 	buf.WriteString(`,"abm-cpp-pop-start":`)
 	fflib.FormatBits2(buf, uint64(mj.CppPopulationStart), 10, mj.CppPopulationStart < 0)
@@ -566,7 +563,7 @@ const (
 	ffj_t_Contextbase = iota
 	ffj_t_Contextno_such_key
 
-	ffj_t_Context_Bounds
+	ffj_t_Context_Environment
 
 	ffj_t_Context_CppPopulationStart
 
@@ -667,7 +664,7 @@ const (
 	ffj_t_Context_SessionIdentifier
 )
 
-var ffj_key_Context_Bounds = []byte("abm-environment-bounds")
+var ffj_key_Context_Environment = []byte("abm-environment-bounds")
 
 var ffj_key_Context_CppPopulationStart = []byte("abm-cpp-pop-start")
 
@@ -828,8 +825,8 @@ mainparse:
 
 				case 'a':
 
-					if bytes.Equal(ffj_key_Context_Bounds, kn) {
-						currentKey = ffj_t_Context_Bounds
+					if bytes.Equal(ffj_key_Context_Environment, kn) {
+						currentKey = ffj_t_Context_Environment
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
@@ -1375,8 +1372,8 @@ mainparse:
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Context_Bounds, kn) {
-					currentKey = ffj_t_Context_Bounds
+				if fflib.EqualFoldRight(ffj_key_Context_Environment, kn) {
+					currentKey = ffj_t_Context_Environment
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
@@ -1398,8 +1395,8 @@ mainparse:
 			if tok == fflib.FFTok_left_brace || tok == fflib.FFTok_left_bracket || tok == fflib.FFTok_integer || tok == fflib.FFTok_double || tok == fflib.FFTok_string || tok == fflib.FFTok_bool || tok == fflib.FFTok_null {
 				switch currentKey {
 
-				case ffj_t_Context_Bounds:
-					goto handle_Bounds
+				case ffj_t_Context_Environment:
+					goto handle_Environment
 
 				case ffj_t_Context_CppPopulationStart:
 					goto handle_CppPopulationStart
@@ -1562,78 +1559,22 @@ mainparse:
 		}
 	}
 
-handle_Bounds:
+handle_Environment:
 
-	/* handler: uj.Bounds type=[]float64 kind=slice quoted=false*/
+	/* handler: uj.Environment type=abm.Environment kind=struct quoted=false*/
 
 	{
-
-		{
-			if tok != fflib.FFTok_left_brace && tok != fflib.FFTok_null {
-				return fs.WrapErr(fmt.Errorf("cannot unmarshal %s into Go value for ", tok))
-			}
-		}
-
 		if tok == fflib.FFTok_null {
-			uj.Bounds = nil
-		} else {
 
-			uj.Bounds = make([]float64, 0)
-
-			wantVal := true
-
-			for {
-
-				var tmp_uj__Bounds float64
-
-				tok = fs.Scan()
-				if tok == fflib.FFTok_error {
-					goto tokerror
-				}
-				if tok == fflib.FFTok_right_brace {
-					break
-				}
-
-				if tok == fflib.FFTok_comma {
-					if wantVal == true {
-						// TODO(pquerna): this isn't an ideal error message, this handles
-						// things like [,,,] as an array value.
-						return fs.WrapErr(fmt.Errorf("wanted value token, but got token: %v", tok))
-					}
-					continue
-				} else {
-					wantVal = true
-				}
-
-				/* handler: tmp_uj__Bounds type=float64 kind=float64 quoted=false*/
-
-				{
-					if tok != fflib.FFTok_double && tok != fflib.FFTok_integer && tok != fflib.FFTok_null {
-						return fs.WrapErr(fmt.Errorf("cannot unmarshal %s into Go value for float64", tok))
-					}
-				}
-
-				{
-
-					if tok == fflib.FFTok_null {
-
-					} else {
-
-						tval, err := fflib.ParseFloat(fs.Output.Bytes(), 64)
-
-						if err != nil {
-							return fs.WrapErr(err)
-						}
-
-						tmp_uj__Bounds = float64(tval)
-
-					}
-				}
-
-				uj.Bounds = append(uj.Bounds, tmp_uj__Bounds)
-				wantVal = false
-			}
+			state = fflib.FFParse_after_value
+			goto mainparse
 		}
+
+		err = uj.Environment.UnmarshalJSONFFLexer(fs, fflib.FFParse_want_key)
+		if err != nil {
+			return err
+		}
+		state = fflib.FFParse_after_value
 	}
 
 	state = fflib.FFParse_after_value
@@ -3180,7 +3121,7 @@ func (mj *Environment) MarshalJSONBuf(buf fflib.EncodingBuffer) error {
 	var obj []byte
 	_ = obj
 	_ = err
-	buf.WriteString(`{"Bounds":`)
+	buf.WriteString(`{"abm-environment-bounds":`)
 	if mj.Bounds != nil {
 		buf.WriteString(`[`)
 		for i, v := range mj.Bounds {
@@ -3193,13 +3134,17 @@ func (mj *Environment) MarshalJSONBuf(buf fflib.EncodingBuffer) error {
 	} else {
 		buf.WriteString(`null`)
 	}
-	buf.WriteString(`,"Dimensionality":`)
+	buf.WriteString(`,"abm-environment-dimensionality":`)
 	fflib.FormatBits2(buf, uint64(mj.Dimensionality), 10, mj.Dimensionality < 0)
-	/* Struct fall back. type=colour.RGB kind=struct */
-	buf.WriteString(`,"BG":`)
-	err = buf.Encode(&mj.BG)
-	if err != nil {
-		return err
+	buf.WriteString(`,"abm-environment-background":`)
+
+	{
+
+		err = mj.BG.MarshalJSONBuf(buf)
+		if err != nil {
+			return err
+		}
+
 	}
 	buf.WriteByte('}')
 	return nil
@@ -3216,11 +3161,11 @@ const (
 	ffj_t_Environment_BG
 )
 
-var ffj_key_Environment_Bounds = []byte("Bounds")
+var ffj_key_Environment_Bounds = []byte("abm-environment-bounds")
 
-var ffj_key_Environment_Dimensionality = []byte("Dimensionality")
+var ffj_key_Environment_Dimensionality = []byte("abm-environment-dimensionality")
 
-var ffj_key_Environment_BG = []byte("BG")
+var ffj_key_Environment_BG = []byte("abm-environment-background")
 
 func (uj *Environment) UnmarshalJSON(input []byte) error {
 	fs := fflib.NewFFLexer(input)
@@ -3281,10 +3226,15 @@ mainparse:
 			} else {
 				switch kn[0] {
 
-				case 'B':
+				case 'a':
 
 					if bytes.Equal(ffj_key_Environment_Bounds, kn) {
 						currentKey = ffj_t_Environment_Bounds
+						state = fflib.FFParse_want_colon
+						goto mainparse
+
+					} else if bytes.Equal(ffj_key_Environment_Dimensionality, kn) {
+						currentKey = ffj_t_Environment_Dimensionality
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
@@ -3294,17 +3244,9 @@ mainparse:
 						goto mainparse
 					}
 
-				case 'D':
-
-					if bytes.Equal(ffj_key_Environment_Dimensionality, kn) {
-						currentKey = ffj_t_Environment_Dimensionality
-						state = fflib.FFParse_want_colon
-						goto mainparse
-					}
-
 				}
 
-				if fflib.SimpleLetterEqualFold(ffj_key_Environment_BG, kn) {
+				if fflib.EqualFoldRight(ffj_key_Environment_BG, kn) {
 					currentKey = ffj_t_Environment_BG
 					state = fflib.FFParse_want_colon
 					goto mainparse
@@ -3474,16 +3416,17 @@ handle_BG:
 	/* handler: uj.BG type=colour.RGB kind=struct quoted=false*/
 
 	{
-		/* Falling back. type=colour.RGB kind=struct */
-		tbuf, err := fs.CaptureField(tok)
-		if err != nil {
-			return fs.WrapErr(err)
+		if tok == fflib.FFTok_null {
+
+			state = fflib.FFParse_after_value
+			goto mainparse
 		}
 
-		err = json.Unmarshal(tbuf, &uj.BG)
+		err = uj.BG.UnmarshalJSONFFLexer(fs, fflib.FFParse_want_key)
 		if err != nil {
-			return fs.WrapErr(err)
+			return err
 		}
+		state = fflib.FFParse_after_value
 	}
 
 	state = fflib.FFParse_after_value
@@ -3556,27 +3499,6 @@ func (mj *Model) MarshalJSONBuf(buf fflib.EncodingBuffer) error {
 	fflib.FormatBits2(buf, uint64(mj.Phase), 10, mj.Phase < 0)
 	buf.WriteString(`,"Action":`)
 	fflib.FormatBits2(buf, uint64(mj.Action), 10, mj.Action < 0)
-	buf.WriteString(`,"Bounds":`)
-	if mj.Bounds != nil {
-		buf.WriteString(`[`)
-		for i, v := range mj.Bounds {
-			if i != 0 {
-				buf.WriteString(`,`)
-			}
-			fflib.AppendFloat(buf, float64(v), 'g', -1, 64)
-		}
-		buf.WriteString(`]`)
-	} else {
-		buf.WriteString(`null`)
-	}
-	buf.WriteString(`,"Dimensionality":`)
-	fflib.FormatBits2(buf, uint64(mj.Dimensionality), 10, mj.Dimensionality < 0)
-	/* Struct fall back. type=colour.RGB kind=struct */
-	buf.WriteString(`,"BG":`)
-	err = buf.Encode(&mj.BG)
-	if err != nil {
-		return err
-	}
 	buf.WriteString(`,"abm-environment-bounds":`)
 	if mj.Bounds != nil {
 		buf.WriteString(`[`)
@@ -3589,6 +3511,28 @@ func (mj *Model) MarshalJSONBuf(buf fflib.EncodingBuffer) error {
 		buf.WriteString(`]`)
 	} else {
 		buf.WriteString(`null`)
+	}
+	buf.WriteString(`,"abm-environment-dimensionality":`)
+	fflib.FormatBits2(buf, uint64(mj.Dimensionality), 10, mj.Dimensionality < 0)
+	buf.WriteString(`,"abm-environment-background":`)
+
+	{
+
+		err = mj.BG.MarshalJSONBuf(buf)
+		if err != nil {
+			return err
+		}
+
+	}
+	buf.WriteString(`,"abm-environment-bounds":`)
+
+	{
+
+		err = mj.Environment.MarshalJSONBuf(buf)
+		if err != nil {
+			return err
+		}
+
 	}
 	buf.WriteString(`,"abm-cpp-pop-start":`)
 	fflib.FormatBits2(buf, uint64(mj.CppPopulationStart), 10, mj.CppPopulationStart < 0)
@@ -3813,7 +3757,7 @@ const (
 
 	ffj_t_Model_BG
 
-	ffj_t_Model_Bounds
+	ffj_t_Model_Environment
 
 	ffj_t_Model_CppPopulationStart
 
@@ -3936,13 +3880,13 @@ var ffj_key_Model_Phase = []byte("Phase")
 
 var ffj_key_Model_Action = []byte("Action")
 
-var ffj_key_Model_Bounds = []byte("Bounds")
-
-var ffj_key_Model_Dimensionality = []byte("Dimensionality")
-
-var ffj_key_Model_BG = []byte("BG")
-
 var ffj_key_Model_Bounds = []byte("abm-environment-bounds")
+
+var ffj_key_Model_Dimensionality = []byte("abm-environment-dimensionality")
+
+var ffj_key_Model_BG = []byte("abm-environment-background")
+
+var ffj_key_Model_Environment = []byte("abm-environment-bounds")
 
 var ffj_key_Model_CppPopulationStart = []byte("abm-cpp-pop-start")
 
@@ -4117,28 +4061,10 @@ mainparse:
 						goto mainparse
 					}
 
-				case 'B':
-
-					if bytes.Equal(ffj_key_Model_Bounds, kn) {
-						currentKey = ffj_t_Model_Bounds
-						state = fflib.FFParse_want_colon
-						goto mainparse
-
-					} else if bytes.Equal(ffj_key_Model_BG, kn) {
-						currentKey = ffj_t_Model_BG
-						state = fflib.FFParse_want_colon
-						goto mainparse
-					}
-
 				case 'D':
 
 					if bytes.Equal(ffj_key_Model_Dead, kn) {
 						currentKey = ffj_t_Model_Dead
-						state = fflib.FFParse_want_colon
-						goto mainparse
-
-					} else if bytes.Equal(ffj_key_Model_Dimensionality, kn) {
-						currentKey = ffj_t_Model_Dimensionality
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
@@ -4207,6 +4133,21 @@ mainparse:
 
 					if bytes.Equal(ffj_key_Model_Bounds, kn) {
 						currentKey = ffj_t_Model_Bounds
+						state = fflib.FFParse_want_colon
+						goto mainparse
+
+					} else if bytes.Equal(ffj_key_Model_Dimensionality, kn) {
+						currentKey = ffj_t_Model_Dimensionality
+						state = fflib.FFParse_want_colon
+						goto mainparse
+
+					} else if bytes.Equal(ffj_key_Model_BG, kn) {
+						currentKey = ffj_t_Model_BG
+						state = fflib.FFParse_want_colon
+						goto mainparse
+
+					} else if bytes.Equal(ffj_key_Model_Environment, kn) {
+						currentKey = ffj_t_Model_Environment
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
@@ -4776,13 +4717,13 @@ mainparse:
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Model_Bounds, kn) {
-					currentKey = ffj_t_Model_Bounds
+				if fflib.EqualFoldRight(ffj_key_Model_Environment, kn) {
+					currentKey = ffj_t_Model_Environment
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.SimpleLetterEqualFold(ffj_key_Model_BG, kn) {
+				if fflib.EqualFoldRight(ffj_key_Model_BG, kn) {
 					currentKey = ffj_t_Model_BG
 					state = fflib.FFParse_want_colon
 					goto mainparse
@@ -4889,8 +4830,8 @@ mainparse:
 				case ffj_t_Model_BG:
 					goto handle_BG
 
-				case ffj_t_Model_Bounds:
-					goto handle_Bounds
+				case ffj_t_Model_Environment:
+					goto handle_Environment
 
 				case ffj_t_Model_CppPopulationStart:
 					goto handle_CppPopulationStart
@@ -5362,93 +5303,38 @@ handle_BG:
 	/* handler: uj.BG type=colour.RGB kind=struct quoted=false*/
 
 	{
-		/* Falling back. type=colour.RGB kind=struct */
-		tbuf, err := fs.CaptureField(tok)
-		if err != nil {
-			return fs.WrapErr(err)
+		if tok == fflib.FFTok_null {
+
+			state = fflib.FFParse_after_value
+			goto mainparse
 		}
 
-		err = json.Unmarshal(tbuf, &uj.BG)
+		err = uj.BG.UnmarshalJSONFFLexer(fs, fflib.FFParse_want_key)
 		if err != nil {
-			return fs.WrapErr(err)
+			return err
 		}
+		state = fflib.FFParse_after_value
 	}
 
 	state = fflib.FFParse_after_value
 	goto mainparse
 
-handle_Bounds:
+handle_Environment:
 
-	/* handler: uj.Bounds type=[]float64 kind=slice quoted=false*/
+	/* handler: uj.Environment type=abm.Environment kind=struct quoted=false*/
 
 	{
-
-		{
-			if tok != fflib.FFTok_left_brace && tok != fflib.FFTok_null {
-				return fs.WrapErr(fmt.Errorf("cannot unmarshal %s into Go value for ", tok))
-			}
-		}
-
 		if tok == fflib.FFTok_null {
-			uj.Bounds = nil
-		} else {
 
-			uj.Bounds = make([]float64, 0)
-
-			wantVal := true
-
-			for {
-
-				var tmp_uj__Bounds float64
-
-				tok = fs.Scan()
-				if tok == fflib.FFTok_error {
-					goto tokerror
-				}
-				if tok == fflib.FFTok_right_brace {
-					break
-				}
-
-				if tok == fflib.FFTok_comma {
-					if wantVal == true {
-						// TODO(pquerna): this isn't an ideal error message, this handles
-						// things like [,,,] as an array value.
-						return fs.WrapErr(fmt.Errorf("wanted value token, but got token: %v", tok))
-					}
-					continue
-				} else {
-					wantVal = true
-				}
-
-				/* handler: tmp_uj__Bounds type=float64 kind=float64 quoted=false*/
-
-				{
-					if tok != fflib.FFTok_double && tok != fflib.FFTok_integer && tok != fflib.FFTok_null {
-						return fs.WrapErr(fmt.Errorf("cannot unmarshal %s into Go value for float64", tok))
-					}
-				}
-
-				{
-
-					if tok == fflib.FFTok_null {
-
-					} else {
-
-						tval, err := fflib.ParseFloat(fs.Output.Bytes(), 64)
-
-						if err != nil {
-							return fs.WrapErr(err)
-						}
-
-						tmp_uj__Bounds = float64(tval)
-
-					}
-				}
-
-				uj.Bounds = append(uj.Bounds, tmp_uj__Bounds)
-				wantVal = false
-			}
+			state = fflib.FFParse_after_value
+			goto mainparse
 		}
+
+		err = uj.Environment.UnmarshalJSONFFLexer(fs, fflib.FFParse_want_key)
+		if err != nil {
+			return err
+		}
+		state = fflib.FFParse_after_value
 	}
 
 	state = fflib.FFParse_after_value
@@ -7003,17 +6889,16 @@ handle_PopCPP:
 				/* handler: tmp_uj__PopCPP type=abm.ColourPolymorphicPrey kind=struct quoted=false*/
 
 				{
-					if tok == fflib.FFTok_null {
-
-						state = fflib.FFParse_after_value
-						goto mainparse
-					}
-
-					err = tmp_uj__PopCPP.UnmarshalJSONFFLexer(fs, fflib.FFParse_want_key)
+					/* Falling back. type=abm.ColourPolymorphicPrey kind=struct */
+					tbuf, err := fs.CaptureField(tok)
 					if err != nil {
-						return err
+						return fs.WrapErr(err)
 					}
-					state = fflib.FFParse_after_value
+
+					err = json.Unmarshal(tbuf, &tmp_uj__PopCPP)
+					if err != nil {
+						return fs.WrapErr(err)
+					}
 				}
 
 				uj.PopCPP = append(uj.PopCPP, tmp_uj__PopCPP)
@@ -7500,17 +7385,16 @@ handle_PopCPP:
 				/* handler: tmp_uj__PopCPP type=abm.ColourPolymorphicPrey kind=struct quoted=false*/
 
 				{
-					if tok == fflib.FFTok_null {
-
-						state = fflib.FFParse_after_value
-						goto mainparse
-					}
-
-					err = tmp_uj__PopCPP.UnmarshalJSONFFLexer(fs, fflib.FFParse_want_key)
+					/* Falling back. type=abm.ColourPolymorphicPrey kind=struct */
+					tbuf, err := fs.CaptureField(tok)
 					if err != nil {
-						return err
+						return fs.WrapErr(err)
 					}
-					state = fflib.FFParse_after_value
+
+					err = json.Unmarshal(tbuf, &tmp_uj__PopCPP)
+					if err != nil {
+						return fs.WrapErr(err)
+					}
 				}
 
 				uj.PopCPP = append(uj.PopCPP, tmp_uj__PopCPP)

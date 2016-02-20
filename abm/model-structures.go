@@ -22,63 +22,63 @@ most cases, a 2D environment will be sufficient.
 In the future it may include some environmental factors etc.
 */
 type Environment struct {
-	Bounds         []float64 // d value for each axis
-	Dimensionality int
-	BG             colour.RGB
+	Bounds         []float64  `json:"abm-environment-bounds"` // d value for each axis
+	Dimensionality int        `json:"abm-environment-dimensionality"`
+	BG             colour.RGB `json:"abm-environment-background"`
 }
 
 // Context contains the local model context;
 type Context struct {
-	Bounds                []float64 `json:"abm-environment-bounds"`           // d value for each axis
-	CppPopulationStart    int       `json:"abm-cpp-pop-start"`                // starting CPP agent population size
-	CppPopulationCap      int       `json:"abm-cpp-pop-cap"`                  //
-	CppAgeing             bool      `json:"abm-cpp-ageing"`                   //
-	CppLifespan           int       `json:"abm-cpp-lifespan"`                 //	CPP agent lifespan
-	CppS                  float64   `json:"abm-cpp-speed"`                    // CPP agent speed
-	CppA                  float64   `json:"abm-cpp-acceleration"`             // CPP agent acceleration
-	CppTurn               float64   `json:"abm-cpp-turn"`                     //	CPP agent turn rate / range (in radians)
-	CppSr                 float64   `json:"abm-cpp-sr"`                       // CPP agent search range for mating
-	CppGestation          int       `json:"abm-cpp-gestation"`                //	CPP gestation period
-	CppSexualCost         int       `json:"abm-cpp-sexual-cost"`              //	CPP sexual rest cost
-	CppReproductionChance float64   `json:"abm-cpp-reproduction-chance"`      //	chance of CPP copulation success.
-	CppSpawnSize          int       `json:"abm-cpp-spawn-size"`               // possible number of progeny = [1, max]
-	CppMutationFactor     float64   `json:"abm-cpp-mf"`                       //	mutation factor
-	VpPopulationStart     int       `json:"abm-vp-pop-start"`                 //	starting VP agent population size
-	VpPopulationCap       int       `json:"abm-vp-pop-cap"`                   //
-	VpAgeing              bool      `json:"abm-vp-ageing"`                    //
-	VpLifespan            int       `json:"abm-vp-lifespan"`                  //	Visual Predator lifespan
-	VpStarvationPoint     int       `json:"abm-vp-starvation-point"`          //
-	VpPanicPoint          int       `json:"abm-vp-panic-point"`               //
-	VpGestation           int       `json:"abm-vp-gestation"`                 //	Visual Predator gestation period
-	VpSexualRequirement   int       `json:"abm-vp-sex-req"`                   //
-	VpMovS                float64   `json:"abm-vp-speed"`                     // Visual Predator speed
-	VpMovA                float64   `json:"abm-vp-acceleration"`              // Visual Predator acceleration
-	VpTurn                float64   `json:"abm-vp-turn"`                      //	Visual Predator turn rate / range (in radians)
-	Vsr                   float64   `json:"abm-vp-vsr"`                       //	VP agent visual search range
-	Vb𝛄                   float64   `json:"abm-vp-visual-acuity"`             //
-	V𝛄Bump                float64   `json:"abm-vp-visual-acuity-bump"`        //
-	Vbε                   float64   `json:"abm-vp-baseline-col-sig-strength"` // 	baseline colour signal strength factor
-	Vmε                   float64   `json:"abm-vp-max-col-sig-strength"`      // 	max limit colour signal strength factor
-	VpReproductionChance  float64   `json:"abm-vp-reproduction-chance"`       //	chance of VP copulation success.
-	VpSpawnSize           int       `json:"abm-vp-spawn-size"`                //
-	VpSearchChance        float64   `json:"abm-vp-vsr-chance"`                //
-	VpAttackChance        float64   `json:"abm-vp-attack-chance"`             //
-	Vbg                   float64   `json:"abm-vp-baseline-attack-gain"`      //
-	VpCaf                 float64   `json:"abm-vp-col-adaptation-factor"`     //
-	VpStarvation          bool      `json:"abm-vp-starvation"`                //
-	RandomAges            bool      `json:"abm-random-ages"`                  //
-	RNGRandomSeed         bool      `json:"abm-rng-random-seed"`              //	flag for using server-set random seed val.
-	RNGSeedVal            int64     `json:"abm-rng-seedval"`                  //	RNG seed value
-	Fuzzy                 float64   `json:"abm-rng-fuzziness"`                //
-	Logging               bool      `json:"abm-logging-flag"`                 //	log abm on/off
-	LogFreq               int       `json:"abm-log-frequency"`                // how many turns between writing log files.
-	UseCustomLogPath      bool      `json:"abm-use-custom-log-filepath"`      //
-	CustomLogPath         string    `json:"abm-custom-log-filepath"`          //
-	LogPath               string    `json:"abm-log-filepath"`                 //
-	Visualise             bool      `json:"abm-visualise-flag"`               //	Visualise on/off
-	LimitDuration         bool      `json:"abm-limit-duration"`               //
-	FixedDuration         int       `json:"abm-fixed-duration"`               // fixed abm running length.
-	SessionIdentifier     string    `json:"abm-session-identifier"`           //	user-friendly string (from client) to identify session
+	Environment           `json:"abm-environment-bounds"` // d value for each axis
+	CppPopulationStart    int                             `json:"abm-cpp-pop-start"`                // starting CPP agent population size
+	CppPopulationCap      int                             `json:"abm-cpp-pop-cap"`                  //
+	CppAgeing             bool                            `json:"abm-cpp-ageing"`                   //
+	CppLifespan           int                             `json:"abm-cpp-lifespan"`                 //	CPP agent lifespan
+	CppS                  float64                         `json:"abm-cpp-speed"`                    // CPP agent speed
+	CppA                  float64                         `json:"abm-cpp-acceleration"`             // CPP agent acceleration
+	CppTurn               float64                         `json:"abm-cpp-turn"`                     //	CPP agent turn rate / range (in radians)
+	CppSr                 float64                         `json:"abm-cpp-sr"`                       // CPP agent search range for mating
+	CppGestation          int                             `json:"abm-cpp-gestation"`                //	CPP gestation period
+	CppSexualCost         int                             `json:"abm-cpp-sexual-cost"`              //	CPP sexual rest cost
+	CppReproductionChance float64                         `json:"abm-cpp-reproduction-chance"`      //	chance of CPP copulation success.
+	CppSpawnSize          int                             `json:"abm-cpp-spawn-size"`               // possible number of progeny = [1, max]
+	CppMutationFactor     float64                         `json:"abm-cpp-mf"`                       //	mutation factor
+	VpPopulationStart     int                             `json:"abm-vp-pop-start"`                 //	starting VP agent population size
+	VpPopulationCap       int                             `json:"abm-vp-pop-cap"`                   //
+	VpAgeing              bool                            `json:"abm-vp-ageing"`                    //
+	VpLifespan            int                             `json:"abm-vp-lifespan"`                  //	Visual Predator lifespan
+	VpStarvationPoint     int                             `json:"abm-vp-starvation-point"`          //
+	VpPanicPoint          int                             `json:"abm-vp-panic-point"`               //
+	VpGestation           int                             `json:"abm-vp-gestation"`                 //	Visual Predator gestation period
+	VpSexualRequirement   int                             `json:"abm-vp-sex-req"`                   //
+	VpMovS                float64                         `json:"abm-vp-speed"`                     // Visual Predator speed
+	VpMovA                float64                         `json:"abm-vp-acceleration"`              // Visual Predator acceleration
+	VpTurn                float64                         `json:"abm-vp-turn"`                      //	Visual Predator turn rate / range (in radians)
+	Vsr                   float64                         `json:"abm-vp-vsr"`                       //	VP agent visual search range
+	Vb𝛄                   float64                         `json:"abm-vp-visual-acuity"`             //
+	V𝛄Bump                float64                         `json:"abm-vp-visual-acuity-bump"`        //
+	Vbε                   float64                         `json:"abm-vp-baseline-col-sig-strength"` // 	baseline colour signal strength factor
+	Vmε                   float64                         `json:"abm-vp-max-col-sig-strength"`      // 	max limit colour signal strength factor
+	VpReproductionChance  float64                         `json:"abm-vp-reproduction-chance"`       //	chance of VP copulation success.
+	VpSpawnSize           int                             `json:"abm-vp-spawn-size"`                //
+	VpSearchChance        float64                         `json:"abm-vp-vsr-chance"`                //
+	VpAttackChance        float64                         `json:"abm-vp-attack-chance"`             //
+	Vbg                   float64                         `json:"abm-vp-baseline-attack-gain"`      //
+	VpCaf                 float64                         `json:"abm-vp-col-adaptation-factor"`     //
+	VpStarvation          bool                            `json:"abm-vp-starvation"`                //
+	RandomAges            bool                            `json:"abm-random-ages"`                  //
+	RNGRandomSeed         bool                            `json:"abm-rng-random-seed"`              //	flag for using server-set random seed val.
+	RNGSeedVal            int64                           `json:"abm-rng-seedval"`                  //	RNG seed value
+	Fuzzy                 float64                         `json:"abm-rng-fuzziness"`                //
+	Logging               bool                            `json:"abm-logging-flag"`                 //	log abm on/off
+	LogFreq               int                             `json:"abm-log-frequency"`                // how many turns between writing log files.
+	UseCustomLogPath      bool                            `json:"abm-use-custom-log-filepath"`      //
+	CustomLogPath         string                          `json:"abm-custom-log-filepath"`          //
+	LogPath               string                          `json:"abm-log-filepath"`                 //
+	Visualise             bool                            `json:"abm-visualise-flag"`               //	Visualise on/off
+	LimitDuration         bool                            `json:"abm-limit-duration"`               //
+	FixedDuration         int                             `json:"abm-fixed-duration"`               // fixed abm running length.
+	SessionIdentifier     string                          `json:"abm-session-identifier"`           //	user-friendly string (from client) to identify session
 }
 
 // PopulationCPP holds the agent population
