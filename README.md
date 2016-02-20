@@ -25,11 +25,12 @@ Download external dependencies:
 
 `go get -u golang.org/x/net/websocket`
 `go get -u github.com/benjamin-rood/gobr`
+`go get -u github.com/pquerna/ffjson`
 `go get -u github.com/davecgh/go-spew/spew`
 
-*(All dependecies will be vendored into the `abm-cp` package from v1.0.0)*
+*(All dependecies will be vendored into the `abm-cp` package from v1.0.0 onwards)*
 
-Change current directory to `$GOPATH/src/github.com/benjamin-rood/abm-cp` and run `cd net && go build && ./net`
+Change current directory to `$GOPATH/src/github.com/benjamin-rood/abm-cp/net` and run `go run server.go`
 
 Point web browser at `localhost:9999`
 
