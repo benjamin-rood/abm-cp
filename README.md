@@ -1,10 +1,8 @@
 ###Note that all code is alpha until version 1.0
 
-###Current Version: 0.3.9a
+###Current Version: 0.4.1a
 
-![abm preview](https://giant.gfycat.com/MeekSpiritedBilby.gif)
-
-http://gfycat.com/NippyTidyCassowary (HD)
+![abm preview](https://giant.gfycat.com/IdolizedMadeupBasenji.gif)
 
 ##Context
 Software for computing a Predator-Prey Agent Based Model of prey colour polymorphism (CP) in Go. 
@@ -21,25 +19,23 @@ Generalise system so any `abm` package with local model context, agent design, e
 
 Install Go from [here](https://golang.org/dl/).
 
-Download these repositories:  run `go get -u github.com/benjamin-rood/abm-cp && go get -u github.com/benjamin-rood/gobr` 
+Download my repo: `go get -u github.com/benjamin-rood/abm-cp`
+
+Download external dependencies: 
+
+`go get -u golang.org/x/net/websocket`
+`go get -u github.com/benjamin-rood/gobr`
+`go get -u github.com/davecgh/go-spew/spew`
+
+*(All dependecies will be vendored into the `abm-cp` package from v1.0.0)*
 
 Change current directory to `$GOPATH/src/github.com/benjamin-rood/abm-cp` and run `cd net && go build && ./net`
 
 Point web browser at `localhost:9999`
 
-Current version only tested on Safari on OS X and Chrome on Windows 8.1.
+Current version only tested on Safari/Chrome on OS X and Chrome on Windows 7/8.1.
 
-Known issue:
-
-Sometimes when hitting the "Start ABM..." button on the app (in the middle of an existing run) nothing happens.
-
-Error message (server-side): 
-` SignalHub.register() failed: receiver signature already exists.
- Clash when registering Model: wo vis: for sync with m.turnSignal `
-
-Meaning: I'm not cleaning up properly inside of an individual session when resetting the modelling contextual parameters, including deleting the registered receiver for `Model.vis()`
-
-Workaround: just reload the browser window. 
+Can be left running for days:
 
 
 
@@ -108,36 +104,44 @@ Base requirements completed.
 
 ### 0.4.0
 
-* Switch data serialisation to Protocol Buffers (protobuf) ~10X speedup. Marshalling drawing instructions to JSON is currently the single most expensive action!
+* Use `ffjson`–generated custom Marshal/Unmarshal JSON methods for ~2X speedup when serialising render messages to client  :white_check_mark:
 
-* Better Prey Search (using grid system). Will be at least a 2X speedup.
+* Import JSON-formatted text files as pre-defined modelling Context via browser upload.
+
+* Automatically gzip JSON-formatted logging files.
+
+* Better Prey Search (using grid system), for ~2X speedup.
 
 * Client-side input validation.
 
 ### 0.5.0
 
-* Have complete control over ABM computation, logging, visualisation from command-line, rather than just starting up a web server and controlling through the (limited) in-browser Visualisation GUI.
+* Have complete control over ABM computation, logging, visualisation from command-line, rather than just starting up a web server and controlling through the the browser.
 
-* Import JSON-formatted text files as pre-defined modelling Context.
-
-* Use JSON-formatted logging for debug only.
+* Use uncompressed JSON-formatted logging for debug only.
 
 * Switch to a compressed binary encoding for log files. 
 
+### 0.6.0
 
-### 1.0.0
+* Switch data serialisation to Protocol Buffers (protobuf) ~10X speedup. Marshalling drawing instructions to JSON is currently the single most expensive action!
 
-* Switch all public html file to templated/generated ones based on context parameters etc. Send JSON to client, let Javascript API process that into the formatted HTML?
 
-* Use *k-dimensional tree* for spatial partitioning of model environment.
+### 1.0.0 – June 2016?
 
-* <s>Live statistical graphing widgets</s>  (No longer a requirement.)
+* Switch all public html file to templated/generated ones based on context parameters etc.
 
-* Allow end-user to switch between different browser layouts: Visualisation only, Standard <s> and Statistical.</s>
+* Switch to `gopherjs` for all front-end code?
 
-*  Offline ABM computation (start the model running, leave it, reconnect, see what it's up to).
+* Use *k-dimensional tree* for spatial partitioning of model environment, permitting optimal search.
+
+* Allow end-user to switch between different browser layouts: Visualisation only, Standard *and Statistical?*  ⟵ Could use Jupyter to present graphing in browser?
+
+*  Start ABM computation remotely and keep running after disconnection? *i.e. start the model running, leave it, reconnect based on session UUID at a later tim to check up or review results.*
 
 * Batch processing.
+
+* Email user when model session finishes.
 
 * Enable use in a distributed environment.
 
@@ -147,6 +151,6 @@ Base requirements completed.
 
 * Store modelling sessions to server database along with statistical data for later retrieval.
 
-* Fluid ABM timescale controls.
+* Fluid ABM timescale controls? ⟵ Doable, but probably not without switching to `gopherjs` so I can integrate it all within the same codebase.
 
-* Optional recording of Visualisation to SVG frame sequence. 
+* Optional recording of Visualisation to SVG frame sequence using `ajstarks/svgo`
