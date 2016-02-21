@@ -241,9 +241,9 @@ func (c *ColourPolymorphicPrey) mutation(Mf float64) {
 
 // set of methods implementing Mortal interface
 
-// Age decrements the lifespan of an agent,
+// BeginTurn increases the hunger and fertility of an agent,
 // and applies the effects of ageing (if any)
-func (c *ColourPolymorphicPrey) Age(ctxt Context) (jump string) {
+func (c *ColourPolymorphicPrey) BeginTurn(ctxt Context) (jump string) {
 	c.hunger++
 	c.fertility++
 	if ctxt.CppAgeing {

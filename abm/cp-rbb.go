@@ -7,7 +7,7 @@ func (c *ColourPolymorphicPrey) RBB(ctxt Context, popSize int) (newpop []ColourP
 	newkids := []ColourPolymorphicPrey{}
 	jump := ""
 	// BEGIN
-	jump = c.Age(ctxt)
+	jump = c.BeginTurn(ctxt)
 	switch jump {
 	case "DEATH":
 		goto End
