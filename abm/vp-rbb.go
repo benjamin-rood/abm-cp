@@ -11,7 +11,7 @@ func (vp *VisualPredator) RBB(errCh chan<- error, ctxt Context, start int, turn 
 	var returning []VisualPredator
 	var Φ float64
 	popSize := len(neighbours)
-	jump := vp.Age(ctxt, popSize)
+	jump := vp.BeginTurn(ctxt, popSize)
 	_ = "breakpoint" // godebug
 	switch jump {
 	case "DEATH":

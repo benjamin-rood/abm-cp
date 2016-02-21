@@ -272,8 +272,8 @@ func (vp *VisualPredator) MateSearch(neighbours []VisualPredator, me int, errCh 
 
 // animal-agent Mortal interface methods:
 
-// Age the vp agent
-func (vp *VisualPredator) Age(ctxt Context, popSize int) string {
+// BeginTurn to start the next turn of the vp agent's lifespan
+func (vp *VisualPredator) BeginTurn(ctxt Context, popSize int) string {
 	_ = "breakpoint" // godebug
 	vp.attackSuccess = false
 	vp.fertility++
