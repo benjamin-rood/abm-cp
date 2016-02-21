@@ -1,7 +1,9 @@
 
 ##ABM Animal Agent Types
 
-Completely wrong from a code perspective, because you just don't write Go interfaces this way. Kept for conceptual reference for later exploration.
+Completely wrong from a code perspective, because you just don't write Go interfaces this way! 
+
+Kept for conceptual reference for later exploration.
 
 ```
 
@@ -9,7 +11,7 @@ Completely wrong from a code perspective, because you just don't write Go interf
 
 // Mover defines an agent whose position is non-static
 type Mover interface {
-	Turn(theta float64)
+	Turn(Θ float64)
 	Move(target geometry.Vector)
 }
 
