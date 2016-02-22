@@ -306,7 +306,7 @@ func (vp *VisualPredator) jump(ctxt Context, popSize int) (jump string) {
 	case ctxt.VpStarvation && (vp.hunger > ctxt.VpStarvationPoint):
 		jump = "DEATH"
 	case (popSize < ctxt.VpPopulationCap) && (vp.fertility > ctxt.VpSexualRequirement/2) && (vp.hunger < ctxt.VpSexualRequirement):
-		jump = "FERTILE"
+		jump = "MATE SEARCH"
 	default:
 		jump = "PREY SEARCH"
 	}

@@ -22,7 +22,7 @@ func (vp *VisualPredator) RBB(errCh chan<- error, ctxt Context, start int, turn 
 			goto Add
 		}
 		goto Patrol
-	case "FERTILE":
+	case "MATE SEARCH":
 		if len(neighbours) <= 0 {
 			goto Patrol
 		}
