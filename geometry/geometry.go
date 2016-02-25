@@ -20,7 +20,7 @@ func (v Vector) Equal(u VectorEquality) bool {
 	if len(v) != len(u.(Vector)) {
 		return false
 	}
-	for i := 0; i < len(v); i++ {
+	for i := range v {
 		if v[i] != u.(Vector)[i] {
 			return false
 		}
