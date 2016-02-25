@@ -6,7 +6,7 @@ $$\therefore \ E\ = \  \{\ (x,y) \in\, \mathbb{R}^{2} \, \lvert\  (\,-1 \leq x \
 
 The range of $E$ will be sufficient to act as a "petrie dish" to observe the behaviour of the two populations of agents, with the point $\,(0,0)\,$ as the absolute center of our surface.
 
-Values $(x,y) \in  E\,$ **wrap** when exceeding the limits of the surface area, *s.t.* the surface is in effect quasi-spherical. 
+Rather than agents 'bouncing' or 'avoiding' the boundaries of $E$, values $(x,y) \in  E\,$ **wrap** when exceeding the limits of the surface area, *s.t.* the surface is in effect quasi-spherical. 
 
 $\ \forall \ a \in [-1, +1]\,$ we have three cases:
 
@@ -29,4 +29,4 @@ Case $\ a < 1 :$
 
 ![enter image description here](http://i.imgur.com/DGgASF3.jpg)
 
-<CENTER><font size=2>*Sketch of $E$ with various Colour Polymorphic Prey agents *</font></CENTER>
+<CENTER><font size=2>*Planar projection sketch of $E$ with various Colour Polymorphic Prey agents *</font></CENTER>
