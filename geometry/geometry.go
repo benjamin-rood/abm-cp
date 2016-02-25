@@ -45,7 +45,7 @@ func VecAddition(v Vector, u Vector) (Vector, error) {
 		return nil, errors.New("vector dimensions do not coincide")
 	}
 	var vPlusU Vector
-	for i := 0; i < len(v); i++ {
+	for i := range v {
 		vPlusU = append(vPlusU, (v[i] + u[i])) //	add an element to the new vector which is the sum of element i from v and u
 	}
 	return vPlusU, nil
@@ -72,7 +72,7 @@ func DotProduct(v Vector, u Vector) (float64, error) {
 		return 0, errors.New("vector dimensions do not coincide")
 	}
 	var f float64
-	for i := 0; i < len(v); i++ {
+	for i := range v {
 		f += (v[i] * u[i])
 	}
 	return f, nil
@@ -155,7 +155,7 @@ func Magnitude(v Vector) (float64, error) {
 		return 0, errors.New("v is an empty vector")
 	}
 	var ǁvǁsq float64
-	for i := 0; i < len(v); i++ {
+	for i := range v {
 		ǁvǁsq += v[i] * v[i]
 	}
 	return calc.ToFixed(math.Sqrt(ǁvǁsq), 5), nil
@@ -167,7 +167,7 @@ func VectorDistance(v Vector, u Vector) (float64, error) {
 		return 0, errors.New("vector dimensions do not coincide")
 	}
 	vd := Vector{}
-	for i := 0; i < len(v); i++ {
+	for i := range v {
 		diff := (v[i] - u[i])
 		vd = append(vd, diff)
 	}
@@ -186,7 +186,7 @@ func Normalise(v Vector) (Vector, error) {
 	var norm Vector
 	var ǁvǁ float64
 	var err error
-	for i := 0; i < len(v); i++ {
+	for i := range v {
 		ǁvǁ, err = Magnitude(v)
 		if err != nil {
 			return nil, err
@@ -210,7 +210,7 @@ func FuzzifyVector(v Vector, ε float64) (Vector, error) {
 		return nil, errors.New("v is an empty vector")
 	}
 	vf := v
-	for i := 0; i < len(vf); i++ {
+	for i := range vf {
 		vf[i] = vf[i] + calc.RandFloatIn(-ε, ε)
 	}
 	return vf, nil
@@ -219,7 +219,7 @@ func FuzzifyVector(v Vector, ε float64) (Vector, error) {
 // RandVector will give a random vector within boundaries the axes of len(bounds) dimensions
 func RandVector(bounds []float64) Vector {
 	var v Vector
-	for i := 0; i < len(bounds); i++ {
+	for i := range v {
 		d := bounds[i]
 		val := calc.RandFloatIn(-d, d)
 		v = append(v, val)
