@@ -27,6 +27,6 @@ Case $\ a < 1 :$
 
 <br>
 
-![enter image description here](http://i.imgur.com/DGgASF3.jpg)
+![sketch of E](http://i.imgur.com/illhUd7.jpg)
 
-<CENTER><font size=2>*Planar projection sketch of $E$ with various Colour Polymorphic Prey agents *</font></CENTER>
+<CENTER><font size=3>*Planar projection sketch of $E$ with various Colour Polymorphic Prey agents*</font></CENTER>
