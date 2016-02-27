@@ -26,6 +26,8 @@ After consideration and discussion with Assoc. Prof. Scogings, the following con
 	* GUI stable and low-overhead, programmable by CSS, HTML, JS
 	* Allows for local and remote execution — both cases, same UI & UX
 
+I knew from prior experiments in visualising simple 2D agents using the C++ graphics library **Cinder** that, for the purposes of determining what needs to be rendered on screen, treating each agent purely as a *vector* from some origin and translating that from "model world" space to screen space would be the easiest way decoupling the modelling computation from its presentation. However, even though I had experience with Cinder and C++, I knew that I needed to work in the language and frameworks best suited to delivering a *Web App* — it would be easy to write the all the code necessary for the vector computation and colour representations in memory by hand.
+
 I made the decision to develop the application software in [**Go**](golang.org), a language designed by Rob Pike, Ken Thompson, and Robert Griesemer at Google[^golang.org - history] and released to the public in 2009. It was designed for composing concurrent web/cloud backend software using concepts from *Communicating Sequential Processes* by Tony Hoare.[^golang.org - ancestors] [^Hoare]
 The front-end would naturally be presented as a web page written in HTML, CSS, and Javascript. In particular, after an exhaustive search, the [**P5js**](http://p5js.org/) library was chosen for its simplicity and emphasis on 2D drawing, in order to render the visualisation viewport inside the browser window.
 
