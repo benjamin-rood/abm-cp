@@ -12,18 +12,15 @@ func (m *Model) run(ec chan<- error) {
 	for {
 		select {
 		case <-m.rc:
-			_ = "breakpoint"                                // godebug
 			gobr.WaitForSignalOnce(signature, m.turnSignal) // block while waiting for turn to end.
 			time.Sleep(pause)
 			return
 		case <-m.Quit:
-			_ = "breakpoint"                                // godebug
 			gobr.WaitForSignalOnce(signature, m.turnSignal) // block while waiting for turn to end.
 			ec <- m.Stop()
 			time.Sleep(pause)
 			return
 		default:
-			_ = "breakpoint" // godebug
 			if m.LimitDuration && m.Turn >= m.FixedDuration {
 				ec <- m.Stop()
 				return
@@ -70,14 +67,12 @@ func (m *Model) turn(errCh chan<- error) {
 	m.Phase++
 	m.Action = 0 // reset at phase end
 	time.Sleep(time.Millisecond * 20)
-	_ = "breakpoint" // godebug
 	// var vpAgentWg sync.WaitGroup
 	var vpAgents []VisualPredator
 
 	for i := range m.PopVP {
 		// vpAgentWg.Add(1)
 		func(agent VisualPredator) {
-			_ = "breakpoint" // godebug
 			defer func() {
 				// vpAgentWg.Done()
 				if m.Logging {
@@ -102,7 +97,6 @@ func (m *Model) turn(errCh chan<- error) {
 	m.Phase++
 	m.Action = 0                  // reset at phase end
 	m.Phase = 0                   // reset at Turn end
-	_ = "breakpoint"              // godebug
 	m.turnSignal.Broadcast(false) // using blocking version to ensure turn synchronisation
 	m.Turn++
 	time.Sleep(time.Millisecond * 50) // sync wiggle room

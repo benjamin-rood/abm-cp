@@ -128,7 +128,6 @@ func (vp *VisualPredator) Move() error {
 
 // PreySearch – uses Visual Search to try to 'recognise' a nearby prey agent within model Environment to target
 func (vp *VisualPredator) PreySearch(prey []ColourPolymorphicPrey) (*ColourPolymorphicPrey, error) {
-	_ = "breakpoint" // godebug
 	c := vp.ετ
 	// var 𝒇 = visualSignalStrength(c)
 	var 𝒇 = visualSignalStrength2(c)
@@ -173,7 +172,6 @@ func (vp *VisualPredator) Attack(prey *ColourPolymorphicPrey, ctxt Context) bool
 	if prey == nil {
 		return false
 	}
-	_ = "breakpoint" // godebug
 	α := rand.Float64()
 	if α > (1 - ctxt.VpAttackChance) {
 		vp.attackSuccess = true
@@ -274,7 +272,6 @@ func (vp *VisualPredator) MateSearch(neighbours []VisualPredator, me int, errCh 
 
 // Age the vp agent
 func (vp *VisualPredator) Age(ctxt Context, popSize int) string {
-	_ = "breakpoint" // godebug
 	vp.attackSuccess = false
 	vp.fertility++
 	vp.hunger++
@@ -296,7 +293,6 @@ func (vp *VisualPredator) Age(ctxt Context, popSize int) string {
 }
 
 func (vp *VisualPredator) jump(ctxt Context, popSize int) (jump string) {
-	_ = "breakpoint" // godebug
 	switch {
 	case vp.lifespan <= 0:
 		jump = "DEATH"

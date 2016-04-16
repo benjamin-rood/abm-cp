@@ -27,7 +27,7 @@ type Environment struct {
 	BG             colour.RGB `json:"abm-environment-background"`
 }
 
-// Context contains the local model context;
+// Context contains the local model contextual parameters
 type Context struct {
 	Environment           `json:"abm-environment-bounds"` // d value for each axis
 	CppPopulationStart    int                             `json:"abm-cpp-pop-start"`                // starting CPP agent population size
@@ -153,7 +153,6 @@ type AgentDescription struct {
 
 // NewModel is a constructor for initialising a Model instance
 func NewModel() *Model {
-	_ = "breakpoint" // godebug
 	m := Model{}
 	m.timestamp = fmt.Sprintf("%s", time.Now())
 	m.running = false
@@ -169,7 +168,6 @@ func NewModel() *Model {
 	m.Quit = make(chan struct{})
 	m.rc = make(chan struct{})
 	m.render = make(chan render.AgentRender)
-	_ = "breakpoint" // godebug
 	m.turnSignal = gobr.NewSignalHub()
 	return &m
 }
