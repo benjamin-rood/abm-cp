@@ -77,7 +77,7 @@
 	
 	∂ = distance between vp and target
 	
-	𝛄 = visual acuity of vp (operating in E)
+	𝛄 = search tolerance of vp (operating in E)
 	
 	colour∂ = colour distance (difference)
 	

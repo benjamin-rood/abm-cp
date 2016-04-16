@@ -29,7 +29,7 @@ type VisualPredator struct {
 	fertility     int        //	counter for interval between birth and sex
 	gravid        bool       //	i.e. pregnant
 	vsr           float64    //	visual search range
-	𝛄             float64    //	visual seach (colour) bias
+	𝛄             float64    // search target / colour variation tolerance
 	τ             colour.RGB //	imprinted target / colour specialisation value
 	ετ            float64    //	imprinting / colour specialisation strength
 }
@@ -57,7 +57,7 @@ func GeneratePopulationVP(size int, start int, mt int, context Context, timestam
 		agent.dir = geometry.UnitVector(agent.𝚯)
 		agent.tr = context.VpTurn
 		agent.vsr = context.Vsr
-		agent.𝛄 = context.Vb𝛄 //	baseline acuity level
+		agent.𝛄 = context.Vb𝛄 //	baseline search tolerance level
 		agent.hunger = context.VpSexualRequirement + 1
 		agent.fertility = 1
 		agent.gravid = false
@@ -142,7 +142,7 @@ func (vp *VisualPredator) PreySearch(prey []ColourPolymorphicPrey) (*ColourPolym
 		if δ <= vp.vsr { // ∴ only include the prey agent for considertion if within visual range
 			𝛘 = colour.RGBDistance(vp.τ, prey[i].colouration)
 			// fmt.Printf("𝛘=%v\t\t𝛄=%v\n", 𝛘, vp.𝛄)
-			if 𝛘 < vp.𝛄 { // i.e. if and only if colour distance falls within predator's current acuity
+			if 𝛘 < vp.𝛄 { // i.e. if and only if colour distance falls within predator's current search tolerance
 				a := visualRecognition{δ, 𝛘, 𝒇, c, &prey[i]}
 				searchSet = append(searchSet, a)
 			}

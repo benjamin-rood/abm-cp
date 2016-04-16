@@ -486,9 +486,9 @@ func (mj *Context) MarshalJSONBuf(buf fflib.EncodingBuffer) error {
 	fflib.AppendFloat(buf, float64(mj.VpTurn), 'g', -1, 64)
 	buf.WriteString(`,"abm-vp-vsr":`)
 	fflib.AppendFloat(buf, float64(mj.Vsr), 'g', -1, 64)
-	buf.WriteString(`,"abm-vp-visual-acuity":`)
+	buf.WriteString(`,"abm-vp-visual-search-tolerance":`)
 	fflib.AppendFloat(buf, float64(mj.Vb𝛄), 'g', -1, 64)
-	buf.WriteString(`,"abm-vp-visual-acuity-bump":`)
+	buf.WriteString(`,"abm-vp-visual-search-tolerance-bump":`)
 	fflib.AppendFloat(buf, float64(mj.V𝛄Bump), 'g', -1, 64)
 	buf.WriteString(`,"abm-vp-baseline-col-sig-strength":`)
 	fflib.AppendFloat(buf, float64(mj.Vbε), 'g', -1, 64)
@@ -716,9 +716,9 @@ var ffj_key_Context_VpTurn = []byte("abm-vp-turn")
 
 var ffj_key_Context_Vsr = []byte("abm-vp-vsr")
 
-var ffj_key_Context_Vb𝛄 = []byte("abm-vp-visual-acuity")
+var ffj_key_Context_Vb𝛄 = []byte("abm-vp-visual-search-tolerance")
 
-var ffj_key_Context_V𝛄Bump = []byte("abm-vp-visual-acuity-bump")
+var ffj_key_Context_V𝛄Bump = []byte("abm-vp-visual-search-tolerance-bump")
 
 var ffj_key_Context_Vbε = []byte("abm-vp-baseline-col-sig-strength")
 
@@ -3590,9 +3590,9 @@ func (mj *Model) MarshalJSONBuf(buf fflib.EncodingBuffer) error {
 	fflib.AppendFloat(buf, float64(mj.VpTurn), 'g', -1, 64)
 	buf.WriteString(`,"abm-vp-vsr":`)
 	fflib.AppendFloat(buf, float64(mj.Vsr), 'g', -1, 64)
-	buf.WriteString(`,"abm-vp-visual-acuity":`)
+	buf.WriteString(`,"abm-vp-visual-search-tolerance":`)
 	fflib.AppendFloat(buf, float64(mj.Vb𝛄), 'g', -1, 64)
-	buf.WriteString(`,"abm-vp-visual-acuity-bump":`)
+	buf.WriteString(`,"abm-vp-visual-search-tolerance-bump":`)
 	fflib.AppendFloat(buf, float64(mj.V𝛄Bump), 'g', -1, 64)
 	buf.WriteString(`,"abm-vp-baseline-col-sig-strength":`)
 	fflib.AppendFloat(buf, float64(mj.Vbε), 'g', -1, 64)
@@ -3938,9 +3938,9 @@ var ffj_key_Model_VpTurn = []byte("abm-vp-turn")
 
 var ffj_key_Model_Vsr = []byte("abm-vp-vsr")
 
-var ffj_key_Model_Vb𝛄 = []byte("abm-vp-visual-acuity")
+var ffj_key_Model_Vb𝛄 = []byte("abm-vp-visual-search-tolerance")
 
-var ffj_key_Model_V𝛄Bump = []byte("abm-vp-visual-acuity-bump")
+var ffj_key_Model_V𝛄Bump = []byte("abm-vp-visual-search-tolerance-bump")
 
 var ffj_key_Model_Vbε = []byte("abm-vp-baseline-col-sig-strength")
 
