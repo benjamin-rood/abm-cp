@@ -7,18 +7,6 @@ import (
 )
 
 func visualSignalStrength(c float64) func(float64) float64 {
-	var 𝓵 float64
-	if c >= 1 {
-		𝓵 = 1 / c
-	} else {
-		𝓵 = 1 - c
-	}
-	return func(𝛘 float64) float64 {
-		return c*math.Exp(-c*𝛘) + 𝓵
-	}
-}
-
-func visualSignalStrength2(c float64) func(float64) float64 {
 	return func(𝛘 float64) float64 {
 		return c * math.Exp(-c*𝛘)
 	}
@@ -55,8 +43,8 @@ func (c byComparitor) Less(i, j int) bool {
 }
 
 type visualRecognition struct {
-	δ    float64 //  position sorting value - vector distance between vp.pos and cpp.pos
-	𝛘    float64 //	colour sorting value - colour distance/difference between vp.imprimt and cpp.colouration
+	δ    float64 //  position sorting value - vector distance between vp.pos and cpPrey.pos
+	𝛘    float64 //	colour sorting value - colour distance/difference between vp.imprimt and cpPrey.colouration
 	comp func(float64) float64
 	rat  float64 //	value to rationalise the return from comp with
 	*ColourPolymorphicPrey

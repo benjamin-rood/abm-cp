@@ -26,7 +26,7 @@ func newTestModel() *Model {
 	tm.running = false
 	tm.Timeframe = Timeframe{}
 	tm.Environment = DefaultEnvironment
-	tm.Context = TestContext
+	tm.Condition = TestCondition
 	tm.timestamp = testStamp
 	tm.recordCPP = make(map[string]ColourPolymorphicPrey)
 	tm.recordVP = make(map[string]VisualPredator)
@@ -47,9 +47,9 @@ func newTestModel() *Model {
 // 	}
 // 	tm.running = true
 // 	rand.Seed(0)
-// 	tm.PopCPP = GeneratePopulationCPP(tm.CppPopulationStart, tm.numCppCreated, tm.Turn, tm.Context, tm.timestamp)
+// 	tm.PopCPP = GeneratePopulationCPP(tm.CppPopulationStart, tm.numCppCreated, tm.Turn, tm.Condition, tm.timestamp)
 // 	tm.numCppCreated += tm.CppPopulationStart
-// 	tm.PopVP = GeneratePopulationVP(tm.VpPopulationStart, tm.numVpCreated, tm.Turn, tm.Context, tm.timestamp)
+// 	tm.PopVP = GeneratePopulationVP(tm.VpPopulationStart, tm.numVpCreated, tm.Turn, tm.Condition, tm.timestamp)
 // 	tm.numVpCreated += tm.VpPopulationStart
 // 	go tm.run(tm.e)
 // 	if tm.Visualise {

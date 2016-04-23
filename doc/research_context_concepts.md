@@ -1,5 +1,5 @@
 
-## Research Context and Key Concepts ##
+## Research Condition and Key Concepts ##
 
 ####Agent-Based Model (ABM)
 
@@ -17,7 +17,7 @@ From *[The Evolution of Color Polymorphism: Crypticity, Searching Images, and Ap
 > (...)
 	> Polymorphic species can be separated into two broad categories that appear to reflect distinguishable evolutionary strategies. One grouping consists of species that occur in many disparate forms, all of which bear a general resemblance to the same background. The number of morphs can range from perhaps three or four to dozens, as in grouse locusts (*Acrydium arenosum*) (Nabours et al. 1933), land snails (*Cepaea nemoralis*) (Cain & Sheppard 1954), or underwing moths (*Catocala micronympha*) (Barnes & McDunnough 1918)... (the) second group of polymorphic species are associated with heterogeneous environments that are divided into large, disparate substrate patches (Bond & Kamil 2006, Merilaita et al. 2001). In such coarse-grained habitats (Levins 1968), an individual can occupy only one substrate type at a time and, because of the disparity in patch appearance, cannot match all substrates equally well. The result is selection for maximum crypticity on only one of the available substrates... (b)ecause each morph specializes on a particular substrate type, these species may be highly selective in choosing a resting location, actively avoiding nonmatching backgrounds (Edmunds 1976, Owen 1980, Sargent 1981).
 
-####Context: CP in *Isocladus armatus*
+####Condition: CP in *Isocladus armatus*
 The ABM of this project is designed as a companion for the research by Dr. James Dale (PhD):
 > We will use *Isocladus armatus* as a model system to evaluate... hypotheses for the evolutionary maintenance of extreme colour polymorphism.
 

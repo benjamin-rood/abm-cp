@@ -105,7 +105,7 @@ func (vp *VisualPredator) colourImprinting(target colour.RGB, 𝜎 float64) {
 }
 
 func vpTestPop(size int) []VisualPredator {
-	return GeneratePopulationVP(size, 0, 0, TestContext, testStamp)
+	return GeneratePopulationVP(size, 0, 0, TestCondition, testStamp)
 }
 
 // VSRSectorSampling checks which sectors the VP agent's

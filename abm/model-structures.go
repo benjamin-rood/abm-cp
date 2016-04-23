@@ -27,22 +27,22 @@ type Environment struct {
 	BG             colour.RGB `json:"abm-environment-background"`
 }
 
-// Context contains the local model context;
-type Context struct {
+// Condition contains the local model condition;
+type Condition struct {
 	Environment           `json:"abm-environment-bounds"` // d value for each axis
-	CppPopulationStart    int                             `json:"abm-cpp-pop-start"`                   // starting CPP agent population size
-	CppPopulationCap      int                             `json:"abm-cpp-pop-cap"`                     //
-	CppAgeing             bool                            `json:"abm-cpp-ageing"`                      //
-	CppLifespan           int                             `json:"abm-cpp-lifespan"`                    //	CPP agent lifespan
-	CppS                  float64                         `json:"abm-cpp-speed"`                       // CPP agent speed
-	CppA                  float64                         `json:"abm-cpp-acceleration"`                // CPP agent acceleration
-	CppTurn               float64                         `json:"abm-cpp-turn"`                        //	CPP agent turn rate / range (in radians)
-	CppSr                 float64                         `json:"abm-cpp-sr"`                          // CPP agent search range for mating
-	CppGestation          int                             `json:"abm-cpp-gestation"`                   //	CPP gestation period
-	CppSexualCost         int                             `json:"abm-cpp-sexual-cost"`                 //	CPP sexual rest cost
-	CppReproductionChance float64                         `json:"abm-cpp-reproduction-chance"`         //	chance of CPP copulation success.
-	CppSpawnSize          int                             `json:"abm-cpp-spawn-size"`                  // possible number of progeny = [1, max]
-	CppMutationFactor     float64                         `json:"abm-cpp-mf"`                          //	mutation factor
+	CppPopulationStart    int                             `json:"abm-cpPrey-pop-start"`                // starting CPP agent population size
+	CppPopulationCap      int                             `json:"abm-cpPrey-pop-cap"`                  //
+	CppAgeing             bool                            `json:"abm-cpPrey-ageing"`                   //
+	CppLifespan           int                             `json:"abm-cpPrey-lifespan"`                 //	CPP agent lifespan
+	CppS                  float64                         `json:"abm-cpPrey-speed"`                    // CPP agent speed
+	CppA                  float64                         `json:"abm-cpPrey-acceleration"`             // CPP agent acceleration
+	CppTurn               float64                         `json:"abm-cpPrey-turn"`                     //	CPP agent turn rate / range (in radians)
+	CppSr                 float64                         `json:"abm-cpPrey-sr"`                       // CPP agent search range for mating
+	CppGestation          int                             `json:"abm-cpPrey-gestation"`                //	CPP gestation period
+	CppSexualCost         int                             `json:"abm-cpPrey-sexual-cost"`              //	CPP sexual rest cost
+	CppReproductionChance float64                         `json:"abm-cpPrey-reproduction-chance"`      //	chance of CPP copulation success.
+	CppSpawnSize          int                             `json:"abm-cpPrey-spawn-size"`               // possible number of progeny = [1, max]
+	CppMutationFactor     float64                         `json:"abm-cpPrey-mf"`                       //	mutation factor
 	VpPopulationStart     int                             `json:"abm-vp-pop-start"`                    //	starting VP agent population size
 	VpPopulationCap       int                             `json:"abm-vp-pop-cap"`                      //
 	VpAgeing              bool                            `json:"abm-vp-ageing"`                       //
@@ -117,11 +117,20 @@ func (t *Timeframe) Reset() {
 	t.Turn, t.Phase, t.Action = 0, 0, 0
 }
 
+// Stats holds global statistics of the model instance.
 type Stats struct {
 	numCppCreated  int
 	numVpCreated   int
 	numCppEaten    int
 	numCpPreyDeath int
+}
+
+// DatBuf is a wrapper for the buffered agent data saved for logging.
+type DatBuf struct {
+	recordCPP map[string]ColourPolymorphicPrey
+	rcpPreyRW sync.RWMutex
+	recordVP  map[string]VisualPredator
+	rvpRW     sync.RWMutex
 }
 
 // Model acts as the working instance of the 'game'
@@ -131,14 +140,11 @@ type Model struct {
 	Dead      bool
 	Timeframe
 	Environment
-	Context
+	Condition
 	PopulationCPP
 	PopulationVP
 	Stats
-	recordCPP  map[string]ColourPolymorphicPrey
-	rcppRW     sync.RWMutex
-	recordVP   map[string]VisualPredator
-	rvpRW      sync.RWMutex
+	DatBuf
 	Om         chan gobr.OutMsg
 	Im         chan gobr.InMsg
 	e          chan error              //	error message channel (general)
@@ -159,13 +165,12 @@ type AgentDescription struct {
 
 // NewModel is a constructor for initialising a Model instance
 func NewModel() *Model {
-	_ = "breakpoint" // godebug
 	m := Model{}
 	m.timestamp = fmt.Sprintf("%s", time.Now())
 	m.running = false
 	m.Timeframe = Timeframe{}
 	m.Environment = DefaultEnvironment
-	m.Context = DefaultContext
+	m.Condition = DefaultCondition
 	m.LogPath = path.Join(os.Getenv("HOME")+os.Getenv("HOMEPATH"), abmlogPath, m.SessionIdentifier, m.timestamp)
 	m.recordCPP = make(map[string]ColourPolymorphicPrey)
 	m.recordVP = make(map[string]VisualPredator)
@@ -175,7 +180,6 @@ func NewModel() *Model {
 	m.Quit = make(chan struct{})
 	m.rc = make(chan struct{})
 	m.render = make(chan render.AgentRender)
-	_ = "breakpoint" // godebug
 	m.turnSignal = gobr.NewSignalHub()
 	return &m
 }
@@ -184,7 +188,7 @@ func NewModel() *Model {
 // shit version
 func (m *Model) PopLog() {
 	log.Printf("%04dT : %04dP : %04dA\n", m.Turn, m.Phase, m.Action)
-	log.Printf("cpp population size = %v\n", len(m.PopCPP))
+	log.Printf("cpPrey population size = %v\n", len(m.PopCPP))
 	log.Printf("vp population size = %v\n", len(m.PopVP))
 }
 
@@ -194,9 +198,9 @@ func uuid() string {
 	return fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:])
 }
 
-func (m *Model) cppRecordCopy() map[string]ColourPolymorphicPrey {
-	defer m.rcppRW.RUnlock()
-	m.rcppRW.RLock()
+func (m *Model) cpPreyRecordCopy() map[string]ColourPolymorphicPrey {
+	defer m.rcpPreyRW.RUnlock()
+	m.rcpPreyRW.RLock()
 	var record = make(map[string]ColourPolymorphicPrey)
 	for k, v := range m.recordCPP {
 		record[k] = v
@@ -204,9 +208,9 @@ func (m *Model) cppRecordCopy() map[string]ColourPolymorphicPrey {
 	return record
 }
 
-func (m *Model) cppRecordAssignValue(key string, value ColourPolymorphicPrey) error {
-	defer m.rcppRW.Unlock()
-	m.rcppRW.Lock()
+func (m *Model) cpPreyRecordAssignValue(key string, value ColourPolymorphicPrey) error {
+	defer m.rcpPreyRW.Unlock()
+	m.rcpPreyRW.Lock()
 	m.recordCPP[key] = value
 	return nil
 }

@@ -23,7 +23,7 @@ func (m *Model) Controller() {
 		select {
 		case msg := <-m.Im:
 			switch msg.Type {
-			case "context": //	if context params msg is recieved, (re)start
+			case "condition": //	if condition params msg is recieved, (re)start
 				if m.running {
 				register:
 					clash := gobr.WaitForSignalOnce(signature, m.turnSignal)
@@ -33,14 +33,14 @@ func (m *Model) Controller() {
 					} //	will block until receiving turn broadcast once.
 					m.e <- m.Stop()
 				}
-				err := json.Unmarshal(msg.Data, &m.Context)
+				err := json.Unmarshal(msg.Data, &m.Condition)
 				if err != nil {
 					errString := fmt.Sprintf("model Controller(): error: json.Unmarshal: %s", err)
 					m.e <- errors.New(errString)
 					break
 				}
 				m.Timeframe.Reset()
-				spew.Dump(m.Context)
+				spew.Dump(m.Condition)
 				m.e <- m.Start()
 			case "pause":
 				m.e <- m.Suspend()
@@ -65,9 +65,9 @@ func (m *Model) Start() error {
 		rand.Seed(m.RNGSeedVal)
 	}
 	timestamp := fmt.Sprintf("%s", time.Now())
-	m.PopCPP = GeneratePopulationCPP(m.CppPopulationStart, m.numCppCreated, m.Turn, m.Context, timestamp)
+	m.PopCPP = GeneratePopulationCPP(m.CppPopulationStart, m.numCppCreated, m.Turn, m.Condition, timestamp)
 	m.numCppCreated += m.CppPopulationStart
-	m.PopVP = GeneratePopulationVP(m.VpPopulationStart, m.numVpCreated, m.Turn, m.Context, timestamp)
+	m.PopVP = GeneratePopulationVP(m.VpPopulationStart, m.numVpCreated, m.Turn, m.Condition, timestamp)
 	m.numVpCreated += m.VpPopulationStart
 	if m.Logging {
 		go m.log(m.e)

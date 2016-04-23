@@ -35,13 +35,13 @@ func (m *Model) vis(ec chan<- error) {
 			// fmt.Println("VIS_ received on render channel:")
 			// spew.Dump(job)
 			switch job.Type {
-			case "cpp":
+			case "cpPrey":
 				dl.CPP = append(dl.CPP, job)
 			case "vp":
 				dl.VP = append(dl.VP, job)
 			}
 		case <-turn:
-			dl.CppPop = fmt.Sprintf("cpp %d", len(m.PopCPP))
+			dl.CppPop = fmt.Sprintf("cpPrey %d", len(m.PopCPP))
 			dl.VpPop = fmt.Sprintf("vp  %d", len(m.PopVP))
 			dl.TurnCount = fmt.Sprintf("%08d", m.Turn)
 			msg.Data = dl

@@ -41,32 +41,32 @@ func (m *Model) run(ec chan<- error) {
 
 func (m *Model) turn(errCh chan<- error) {
 	var am sync.Mutex
-	var cppAgentWg sync.WaitGroup
-	var cppAgents []ColourPolymorphicPrey
+	var cpPreyAgentWg sync.WaitGroup
+	var cpPreyAgents []ColourPolymorphicPrey
 
 	for i := range m.PopCPP {
-		cppAgentWg.Add(1)
+		cpPreyAgentWg.Add(1)
 		go func(agent ColourPolymorphicPrey) {
 			defer func() {
-				cppAgentWg.Done()
+				cpPreyAgentWg.Done()
 				if m.Logging {
 					// do this copying to the record in a goroutine once proven stable and safe!
-					errCh <- m.cppRecordAssignValue(agent.UUID(), agent)
+					errCh <- m.cpPreyRecordAssignValue(agent.UUID(), agent)
 				}
 			}()
-			result := agent.RBB(m.Context, len(m.PopCPP))
+			result := agent.RBB(m.Condition, len(m.PopCPP))
 			if m.Visualise {
 				m.render <- agent.GetDrawInfo()
 			}
 			am.Lock()
-			cppAgents = append(cppAgents, result...)
+			cpPreyAgents = append(cpPreyAgents, result...)
 			am.Unlock()
 			m.Action++
 		}(m.PopCPP[i])
 	}
 
-	cppAgentWg.Wait()
-	m.PopCPP = cppAgents //	update the population based on the results from each agent's rule-based behaviour of the turn.
+	cpPreyAgentWg.Wait()
+	m.PopCPP = cpPreyAgents //	update the population based on the results from each agent's rule-based behaviour of the turn.
 	m.Phase++
 	m.Action = 0 // reset at phase end
 	time.Sleep(time.Millisecond * 20)
@@ -85,7 +85,7 @@ func (m *Model) turn(errCh chan<- error) {
 					errCh <- m.vpRecordAssignValue(agent.UUID(), agent)
 				}
 			}()
-			result := agent.RBB(errCh, m.Context, m.numVpCreated, m.Turn, m.PopCPP, m.PopVP, i)
+			result := agent.RBB(errCh, m.Condition, m.numVpCreated, m.Turn, m.PopCPP, m.PopVP, i)
 			if m.Visualise {
 				m.render <- agent.GetDrawInfo()
 			}

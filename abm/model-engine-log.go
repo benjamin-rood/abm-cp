@@ -16,7 +16,6 @@ import (
 func (m *Model) log(ec chan<- error) {
 	fmt.Println("starting logging...")
 	time.Sleep(pause)
-	_ = "breakpoint" // godebug
 
 	signature := "LOG_" + m.SessionIdentifier
 	turn, clash := m.turnSignal.Register(signature)
@@ -45,15 +44,15 @@ func (m *Model) log(ec chan<- error) {
 			return
 		case <-turn:
 			func() {
-				reccpp := m.cppRecordCopy()
-				recvp := m.vpRecordCopy()
-				go func(rc map[string]ColourPolymorphicPrey, errCh chan<- error) {
+				cpr := m.cpPreyRecordCopy()
+				vpr := m.vpRecordCopy()
+				go func(record map[string]ColourPolymorphicPrey, errCh chan<- error) {
 					// write map as json to file.
 					tc := fmt.Sprintf("%08v", m.Turn)
 					dir := m.LogPath
-					path := dir + string(filepath.Separator) + tc + "_cpp_pop_record.dat"
+					path := dir + string(filepath.Separator) + tc + "_cpPrey_pop_record.dat"
 
-					msg, err := json.MarshalIndent(rc, "", "  ")
+					msg, err := json.MarshalIndent(record, "", "  ")
 					if err != nil {
 						log.Printf("model: logging: json.Marshal failed, error: %v\n source: %s : %s : %v\n", err, m.SessionIdentifier, m.timestamp, m.Turn)
 						errCh <- err
@@ -70,10 +69,10 @@ func (m *Model) log(ec chan<- error) {
 						errCh <- err
 						return
 					}
-				}(reccpp, ec)
-				go func(rv map[string]VisualPredator, errCh chan<- error) {
+				}(cpr, ec)
+				go func(record map[string]VisualPredator, errCh chan<- error) {
 					// write map as json to file.
-				}(recvp, ec)
+				}(vpr, ec)
 			}()
 		}
 	}

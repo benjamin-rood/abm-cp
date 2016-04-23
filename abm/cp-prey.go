@@ -55,7 +55,7 @@ func (c ColourPolymorphicPrey) MarshalJSON() ([]byte, error) {
 
 // GetDrawInfo exports the data set needed for agent visualisation.
 func (c ColourPolymorphicPrey) GetDrawInfo() (ar render.AgentRender) {
-	ar.Type = "cpp"
+	ar.Type = "cpPrey"
 	ar.X = c.pos[x]
 	ar.Y = c.pos[y]
 	ar.Colour = c.colouration.To256()
@@ -63,28 +63,28 @@ func (c ColourPolymorphicPrey) GetDrawInfo() (ar render.AgentRender) {
 }
 
 // GeneratePopulationCPP will create `size` number of Colour Polymorphic Prey agents
-func GeneratePopulationCPP(size int, start int, mt int, context Context, timestamp string) []ColourPolymorphicPrey {
+func GeneratePopulationCPP(size int, start int, mt int, condition Condition, timestamp string) []ColourPolymorphicPrey {
 	pop := []ColourPolymorphicPrey{}
 	for i := 0; i < size; i++ {
 		agent := ColourPolymorphicPrey{}
 		agent.uuid = uuid()
-		agent.description = AgentDescription{AgentType: "cpp", AgentNum: start + i, ParentUUID: "", CreatedMT: mt, CreatedAT: timestamp}
-		agent.pos = geometry.RandVector(context.Bounds)
-		if context.CppAgeing {
-			if context.RandomAges {
-				agent.lifespan = calc.RandIntIn(int(float64(context.CppLifespan)*0.7), int(float64(context.CppLifespan)*1.3))
+		agent.description = AgentDescription{AgentType: "cpPrey", AgentNum: start + i, ParentUUID: "", CreatedMT: mt, CreatedAT: timestamp}
+		agent.pos = geometry.RandVector(condition.Bounds)
+		if condition.CppAgeing {
+			if condition.RandomAges {
+				agent.lifespan = calc.RandIntIn(int(float64(condition.CppLifespan)*0.7), int(float64(condition.CppLifespan)*1.3))
 			} else {
-				agent.lifespan = context.CppLifespan
+				agent.lifespan = condition.CppLifespan
 			}
 		} else {
 			agent.lifespan = 99999
 		}
-		agent.movS = context.CppS
-		agent.movA = context.CppA
+		agent.movS = condition.CppS
+		agent.movA = condition.CppA
 		agent.𝚯 = rand.Float64() * (2 * math.Pi)
 		agent.dir = geometry.UnitVector(agent.𝚯)
-		agent.tr = context.CppTurn
-		agent.sr = context.CppSr
+		agent.tr = condition.CppTurn
+		agent.sr = condition.CppSr
 		agent.hunger = 0
 		agent.fertility = 1
 		agent.gravid = false
@@ -94,17 +94,17 @@ func GeneratePopulationCPP(size int, start int, mt int, context Context, timesta
 	return pop
 }
 
-func cppSpawn(size int, parent ColourPolymorphicPrey, context Context, timestamp string) []ColourPolymorphicPrey {
+func cpPreySpawn(size int, parent ColourPolymorphicPrey, condition Condition, timestamp string) []ColourPolymorphicPrey {
 	pop := []ColourPolymorphicPrey{}
 	for i := 0; i < size; i++ {
 		agent := parent
 		agent.uuid = uuid()
 		agent.pos = parent.pos
-		if context.CppAgeing {
-			if context.RandomAges {
-				agent.lifespan = calc.RandIntIn(int(float64(context.CppLifespan)*0.7), int(float64(context.CppLifespan)*1.3))
+		if condition.CppAgeing {
+			if condition.RandomAges {
+				agent.lifespan = calc.RandIntIn(int(float64(condition.CppLifespan)*0.7), int(float64(condition.CppLifespan)*1.3))
 			} else {
-				agent.lifespan = context.CppLifespan
+				agent.lifespan = condition.CppLifespan
 			}
 		} else {
 			agent.lifespan = 99999 //	i.e. Undead!
@@ -123,15 +123,6 @@ func cppSpawn(size int, parent ColourPolymorphicPrey, context Context, timestamp
 	}
 	return pop
 }
-
-/*
-The Colour Polymorphic Prey agent is currently defined by the following animalistic interfaces:
-Mover
-Breeder
-Mortal
-*/
-
-// Mover interface:
 
 // Turn implements agent Mover interface method for ColourPolymorphicPrey:
 // updates 𝚯 and dir vector to the new heading offset by 𝚯
@@ -160,8 +151,6 @@ func (c *ColourPolymorphicPrey) Move() error {
 	c.pos = newPos
 	return nil
 }
-
-// Breeder interface:
 
 // MateSearch implements Breeder interface method for ColourPolymorphicPrey:
 // NEEDS BETTER HANDLING THAN JUST PUSHING THE ERROR UP!
@@ -218,13 +207,13 @@ func (c *ColourPolymorphicPrey) copulation(mate *ColourPolymorphicPrey, chance f
 }
 
 // Birth implemets Breeder interface method for ColourPolymorphicPrey:
-func (c *ColourPolymorphicPrey) Birth(ctxt Context) []ColourPolymorphicPrey {
+func (c *ColourPolymorphicPrey) Birth(ctxt Condition) []ColourPolymorphicPrey {
 	n := 1
 	if ctxt.CppSpawnSize > 1 {
 		n = rand.Intn(ctxt.CppSpawnSize) + 1 //	i.e. range [1, b]
 	}
 	timestamp := fmt.Sprintf("%s", time.Now())
-	progeny := cppSpawn(n, *c, ctxt, timestamp)
+	progeny := cpPreySpawn(n, *c, ctxt, timestamp)
 	for i := 0; i < len(progeny); i++ {
 		progeny[i].mutation(ctxt.CppMutationFactor)
 		progeny[i].pos, _ = geometry.FuzzifyVector(c.pos, c.movS)
@@ -239,11 +228,9 @@ func (c *ColourPolymorphicPrey) mutation(Mf float64) {
 	c.colouration = colour.RandRGBClamped(c.colouration, Mf)
 }
 
-// set of methods implementing Mortal interface
-
 // Age decrements the lifespan of an agent,
 // and applies the effects of ageing (if any)
-func (c *ColourPolymorphicPrey) Age(ctxt Context) (jump string) {
+func (c *ColourPolymorphicPrey) Age(ctxt Condition) (jump string) {
 	c.hunger++
 	c.fertility++
 	if ctxt.CppAgeing {

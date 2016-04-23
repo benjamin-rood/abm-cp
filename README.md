@@ -4,7 +4,7 @@
 
 ![abm preview](https://giant.gfycat.com/FondPersonalAfricanparadiseflycatcher.gif)
 
-##Context
+##Condition
 Software for computing a Predator-Prey Agent Based Model of prey colour polymorphism (CP) in Go. 
 
 Written specifically to assist the research by Dr. James Dale in evaluating hypotheses for the evolutionary maintenance of extreme colour polymorphism.
@@ -13,7 +13,7 @@ Written specifically to assist the research by Dr. James Dale in evaluating hypo
 
 Server-side computation, client-side GUI controls and visualisation of the running ABM in a web browser.
 
-Generalise system so any `abm` package with local model context, agent design, etc can be hot-swapped in (linked via a command line flag) and run.
+Generalise system so any `abm` package with local model condition, agent design, etc can be hot-swapped in (linked via a command line flag) and run.
 
 ###How to use:
 
@@ -45,7 +45,7 @@ Can be left running for days:
 ### 0.1.0
 Base requirements completed.
 
-* A simple interface for the CP Prey ABM, with the visualisation on the left, with contextual parameter controls on the right. :white_check_mark:
+* A simple interface for the CP Prey ABM, with the visualisation on the left, with conditionual parameter controls on the right. :white_check_mark:
 
 * Use P5js for render viewport. :white_check_mark:
 
@@ -57,7 +57,7 @@ Base requirements completed.
 
 * Server cleans up after user disconnections. :white_check_mark:
 
-* Server receives new submitted contextual parameters as signal to start/restart ABM. :white_check_mark:
+* Server receives new submitted conditionual parameters as signal to start/restart ABM. :white_check_mark:
 
 * Serialisation of data messages using JSON (prohibatively slow for anything approaching 10,000 agents).  :white_check_mark:
 
@@ -107,7 +107,7 @@ Base requirements completed.
 
 * Use `ffjson`–generated custom Marshal/Unmarshal JSON methods for ~2X speedup when serialising render messages to client  :white_check_mark:
 
-* Import JSON-formatted text files as pre-defined modelling Context via browser upload.
+* Import JSON-formatted text files as pre-defined modelling Condition via browser upload.
 
 * Automatically gzip JSON-formatted logging files.
 
@@ -130,7 +130,7 @@ Base requirements completed.
 
 ### 1.0.0 – June 2016?
 
-* Switch all public html file to templated/generated ones based on context parameters etc.
+* Switch all public html file to templated/generated ones based on condition parameters etc.
 
 * Switch to `gopherjs` for all front-end code?
 

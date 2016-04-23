@@ -7,17 +7,16 @@ import (
 )
 
 // RBB : Rule-Based-Behaviour for Visual Predator Agent
-func (vp *VisualPredator) RBB(errCh chan<- error, ctxt Context, start int, turn int, cppPop []ColourPolymorphicPrey, neighbours []VisualPredator, me int) []VisualPredator {
+func (vp *VisualPredator) RBB(errCh chan<- error, ctxt Condition, start int, turn int, cpPreyPop []ColourPolymorphicPrey, neighbours []VisualPredator, me int) []VisualPredator {
 	var returning []VisualPredator
 	var Φ float64
 	popSize := len(neighbours)
 	jump := vp.Age(ctxt, popSize)
-	_ = "breakpoint" // godebug
 	switch jump {
 	case "DEATH":
 		goto End
 	case "PREY SEARCH":
-		success := vp.SearchAndAttack(cppPop, ctxt, errCh)
+		success := vp.SearchAndAttack(cpPreyPop, ctxt, errCh)
 		if success {
 			goto Add
 		}
@@ -32,7 +31,7 @@ func (vp *VisualPredator) RBB(errCh chan<- error, ctxt Context, start int, turn 
 			goto Patrol
 		}
 	case "SPAWN":
-		// func (vp *VisualPredator) Birth(ctxt Context, start int, mt int)
+		// func (vp *VisualPredator) Birth(ctxt Condition, start int, mt int)
 		children := vp.Birth(ctxt, start, turn)
 		returning = append(returning, children...)
 	default:
@@ -49,7 +48,7 @@ End:
 }
 
 // SearchAndAttack gathers the logic for these steps of the VP RBB
-func (vp *VisualPredator) SearchAndAttack(prey []ColourPolymorphicPrey, ctxt Context, errCh chan<- error) bool {
+func (vp *VisualPredator) SearchAndAttack(prey []ColourPolymorphicPrey, ctxt Condition, errCh chan<- error) bool {
 	var attacking bool
 	var err error
 	target, err := vp.PreySearch(prey) //	will move towards any viable prey it can see.

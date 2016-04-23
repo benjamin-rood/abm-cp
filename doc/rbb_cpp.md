@@ -34,7 +34,7 @@
 	Jump to END
 
 ####6. Death#####
-	Remove cpp object from PREY population and MICRO SECTOR location
+	Remove cpPrey object from PREY population and MICRO SECTOR location
 	Jump to END
 
 ####7. End####

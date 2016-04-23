@@ -35,51 +35,51 @@ type VisualPredator struct {
 }
 
 // GeneratePopulationVP will create `size` number of Visual Predator agents
-func GeneratePopulationVP(size int, start int, mt int, context Context, timestamp string) []VisualPredator {
+func GeneratePopulationVP(size int, start int, mt int, condition Condition, timestamp string) []VisualPredator {
 	pop := []VisualPredator{}
 	for i := 0; i < size; i++ {
 		agent := VisualPredator{}
 		agent.uuid = uuid()
 		agent.description = AgentDescription{AgentType: "vp", AgentNum: start + i, ParentUUID: "", CreatedMT: mt, CreatedAT: timestamp}
-		agent.pos = geometry.RandVector(context.Bounds)
-		if context.VpAgeing {
-			if context.RandomAges {
-				agent.lifespan = calc.RandIntIn(int(float64(context.VpLifespan)*0.7), int(float64(context.VpLifespan)*1.3))
+		agent.pos = geometry.RandVector(condition.Bounds)
+		if condition.VpAgeing {
+			if condition.RandomAges {
+				agent.lifespan = calc.RandIntIn(int(float64(condition.VpLifespan)*0.7), int(float64(condition.VpLifespan)*1.3))
 			} else {
-				agent.lifespan = context.VpLifespan
+				agent.lifespan = condition.VpLifespan
 			}
 		} else {
 			agent.lifespan = 99999
 		}
-		agent.movS = context.VpMovS
-		agent.movA = context.VpMovA
+		agent.movS = condition.VpMovS
+		agent.movA = condition.VpMovA
 		agent.𝚯 = rand.Float64() * (2 * math.Pi)
 		agent.dir = geometry.UnitVector(agent.𝚯)
-		agent.tr = context.VpTurn
-		agent.vsr = context.Vsr
-		agent.𝛄 = context.Vb𝛄 //	baseline search tolerance level
-		agent.hunger = context.VpSexualRequirement + 1
+		agent.tr = condition.VpTurn
+		agent.vsr = condition.Vsr
+		agent.𝛄 = condition.Vb𝛄 //	baseline search tolerance level
+		agent.hunger = condition.VpSexualRequirement + 1
 		agent.fertility = 1
 		agent.gravid = false
 		agent.τ = colour.RandRGB()
-		agent.ετ = context.Vbε
+		agent.ετ = condition.Vbε
 		pop = append(pop, agent)
 	}
 	return pop
 }
 
-func vpSpawn(size int, start int, mt int, parent VisualPredator, context Context, timestamp string) []VisualPredator {
+func vpSpawn(size int, start int, mt int, parent VisualPredator, condition Condition, timestamp string) []VisualPredator {
 	pop := []VisualPredator{}
 	for i := 0; i < size; i++ {
 		agent := parent
 		agent.uuid = uuid()
 		agent.description = AgentDescription{AgentType: "vp", AgentNum: start + i, ParentUUID: parent.uuid, CreatedMT: mt, CreatedAT: timestamp}
 		agent.pos = parent.pos
-		if context.VpAgeing {
-			if context.RandomAges {
-				agent.lifespan = calc.RandIntIn(int(float64(context.VpLifespan)*0.7), int(float64(context.VpLifespan)*1.3))
+		if condition.VpAgeing {
+			if condition.RandomAges {
+				agent.lifespan = calc.RandIntIn(int(float64(condition.VpLifespan)*0.7), int(float64(condition.VpLifespan)*1.3))
 			} else {
-				agent.lifespan = context.VpLifespan
+				agent.lifespan = condition.VpLifespan
 			}
 		} else {
 			agent.lifespan = 99999
@@ -90,11 +90,11 @@ func vpSpawn(size int, start int, mt int, parent VisualPredator, context Context
 		agent.dir = parent.dir
 		agent.tr = parent.tr
 		agent.vsr = parent.vsr
-		agent.hunger = context.VpSexualRequirement + 1
+		agent.hunger = condition.VpSexualRequirement + 1
 		agent.fertility = 1
 		agent.gravid = false
 		agent.τ = colour.RandRGBClamped(parent.τ, 0.5) //	random offset (up to 50%) deviation from parent's target colour
-		agent.ετ = context.Vbε
+		agent.ετ = condition.Vbε
 		pop = append(pop, agent)
 	}
 	return pop
@@ -128,20 +128,16 @@ func (vp *VisualPredator) Move() error {
 
 // PreySearch – uses Visual Search to try to 'recognise' a nearby prey agent within model Environment to target
 func (vp *VisualPredator) PreySearch(prey []ColourPolymorphicPrey) (*ColourPolymorphicPrey, error) {
-	_ = "breakpoint" // godebug
 	c := vp.ετ
-	// var 𝒇 = visualSignalStrength(c)
-	var 𝒇 = visualSignalStrength2(c)
-	var 𝛘 float64 // colour sorting value - colour distance/difference between vp.imprimt and cpp.colouration
-	var δ float64 // position sorting value - vector distance between vp.pos and cpp.pos
+	var 𝒇 = visualSignalStrength(c)
+	var 𝛘 float64 // colour sorting value - colour distance/difference between vp.imprimt and cpPrey.colouration
+	var δ float64 // position sorting value - vector distance between vp.pos and cpPrey.pos
 	var err error
 	var searchSet []visualRecognition
 	for i := range prey { //	exhaustive search 😱
 		δ, err = geometry.VectorDistance(vp.pos, prey[i].pos)
-		// fmt.Printf("δ=%v\t\tvsr=%v\n", δ, vp.vsr)
 		if δ <= vp.vsr { // ∴ only include the prey agent for considertion if within visual range
 			𝛘 = colour.RGBDistance(vp.τ, prey[i].colouration)
-			// fmt.Printf("𝛘=%v\t\t𝛄=%v\n", 𝛘, vp.𝛄)
 			if 𝛘 < vp.𝛄 { // i.e. if and only if colour distance falls within predator's current search tolerance
 				a := visualRecognition{δ, 𝛘, 𝒇, c, &prey[i]}
 				searchSet = append(searchSet, a)
@@ -149,15 +145,7 @@ func (vp *VisualPredator) PreySearch(prey []ColourPolymorphicPrey) (*ColourPolym
 		}
 	}
 
-	// for i := range searchSet {
-	// 	fmt.Printf("%v\tδ=%v\t𝛘=%v\tc=%v\t%p\t%v\t%v\n", i, searchSet[i].δ, searchSet[i].𝛘, c, searchSet[i].ColourPolymorphicPrey, 𝒇(searchSet[i].𝛘), 𝒇(searchSet[i].𝛘)-searchSet[i].δ)
-	// }
-
 	sort.Sort(byOptimalAttackVector(searchSet)) //	sort by 𝒇(x) - distance
-
-	// for i := range searchSet {
-	// 	fmt.Printf("%v\tδ=%v\t𝛘=%v\tc=%v\t%p\t%v\t%v\n", i, searchSet[i].δ, searchSet[i].𝛘, c, searchSet[i].ColourPolymorphicPrey, 𝒇(searchSet[i].𝛘), 𝒇(searchSet[i].𝛘)-searchSet[i].δ)
-	// }
 
 	// search within biased and reduced set
 	for i, p := range searchSet {
@@ -169,11 +157,10 @@ func (vp *VisualPredator) PreySearch(prey []ColourPolymorphicPrey) (*ColourPolym
 }
 
 // Attack VP agent attempts to attack CP prey agent
-func (vp *VisualPredator) Attack(prey *ColourPolymorphicPrey, ctxt Context) bool {
+func (vp *VisualPredator) Attack(prey *ColourPolymorphicPrey, ctxt Condition) bool {
 	if prey == nil {
 		return false
 	}
-	_ = "breakpoint" // godebug
 	α := rand.Float64()
 	if α > (1 - ctxt.VpAttackChance) {
 		vp.attackSuccess = true
@@ -191,7 +178,7 @@ func (vp *VisualPredator) Attack(prey *ColourPolymorphicPrey, ctxt Context) bool
 			vp.ετ++
 		}
 		if vp.𝛄 > ctxt.Vb𝛄 {
-			vp.𝛄 *= (1 - ctxt.V𝛄Bump) //	returning towards context-defined value
+			vp.𝛄 *= (1 - ctxt.V𝛄Bump) //	returning towards condition-defined value
 		}
 		return vp.attackSuccess
 	}
@@ -245,36 +232,21 @@ func (vp *VisualPredator) MateSearch(neighbours []VisualPredator, me int, errCh 
 		return nil
 	}
 
-	// fmt.Println()
-	// for i := range searchSet {
-	// 	fmt.Printf("%v\tδ=%v\t%v\t%p\n", i, searchSet[i].comp(searchSet[i].pos), searchSet[i].pos, searchSet[i].VisualPredator)
-	// }
-
 	sort.Sort(byProximityVp(searchSet))
 
-	// fmt.Println()
-	// for i := range searchSet {
-	// 	fmt.Printf("%v\tδ=%v\t%v\t%p\n", i, searchSet[i].comp(searchSet[i].pos), searchSet[i].pos, searchSet[i].VisualPredator)
-	// }
 	target := searchSet[0].pos // guaranteed to exist by test on test of searchSet length above
-
-	// fmt.Printf("Before Intercept:\n%v\t%p\n", vp.pos, vp)
 
 	inRange, err := vp.Intercept(target)
 	errCh <- err
 	if inRange {
-		// fmt.Printf("After Intercept:\n%v\t%p\n", vp.pos, vp)
 		return searchSet[0].VisualPredator
 	}
 
 	return nil
 }
 
-// animal-agent Mortal interface methods:
-
-// Age the vp agent
-func (vp *VisualPredator) Age(ctxt Context, popSize int) string {
-	_ = "breakpoint" // godebug
+// Age the vp agent by one step
+func (vp *VisualPredator) Age(ctxt Condition, popSize int) string {
 	vp.attackSuccess = false
 	vp.fertility++
 	vp.hunger++
@@ -291,12 +263,10 @@ func (vp *VisualPredator) Age(ctxt Context, popSize int) string {
 	if ctxt.VpAgeing {
 		vp.lifespan--
 	}
-
 	return vp.jump(ctxt, popSize)
 }
 
-func (vp *VisualPredator) jump(ctxt Context, popSize int) (jump string) {
-	_ = "breakpoint" // godebug
+func (vp *VisualPredator) jump(ctxt Condition, popSize int) (jump string) {
 	switch {
 	case vp.lifespan <= 0:
 		jump = "DEATH"
@@ -314,7 +284,7 @@ func (vp *VisualPredator) jump(ctxt Context, popSize int) (jump string) {
 }
 
 // Copulation for sexual reproduction between Visual Predator agents
-func (vp *VisualPredator) Copulation(mate *VisualPredator, ctxt Context) bool {
+func (vp *VisualPredator) Copulation(mate *VisualPredator, ctxt Condition) bool {
 	if mate == nil {
 		return false
 	}
@@ -333,12 +303,12 @@ func (vp *VisualPredator) Copulation(mate *VisualPredator, ctxt Context) bool {
 }
 
 // Birth spawns Visual Predator children
-func (vp *VisualPredator) Birth(ctxt Context, start int, mt int) []VisualPredator {
+func (vp *VisualPredator) Birth(ctxt Condition, start int, mt int) []VisualPredator {
 	n := 1
 	if ctxt.VpSpawnSize > 1 {
 		n = rand.Intn(ctxt.VpSpawnSize) + 1
 	}
-	// func vpSpawn(size int, start int, mt int, parent VisualPredator, context Context)
+
 	timestamp := fmt.Sprintf("%s", time.Now())
 	progeny := vpSpawn(n, start, mt, *vp, ctxt, timestamp)
 	vp.hunger++

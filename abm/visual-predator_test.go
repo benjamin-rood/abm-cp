@@ -16,7 +16,7 @@ func TestVPIntercept(t *testing.T) {
 	predator.vsr = 0.5
 	predator.movS = 0.1
 	predator.τ = colour.RGB{Red: 0.71, Green: 0.1, Blue: 0.39}
-	prey := []ColourPolymorphicPrey{cppTesterAgent(0.05, 0.05)}
+	prey := []ColourPolymorphicPrey{cpPreyTesterAgent(0.05, 0.05)}
 	prey[0].colouration = colour.RGB{Red: 0.6, Green: 0.2, Blue: 0.4} //  close enough to be recognised.
 
 	want := 0.3927
@@ -47,7 +47,7 @@ func TestSearchAndAttack(t *testing.T) {
 	rand.Seed(0)
 	predator := vpTesterAgent(0, 0)
 	// fmt.Println(predator.String())
-	prey := cppTestPop(1000)
+	prey := cpPreyTestPop(1000)
 	want := &prey[539]
 
 	// for i := range prey {
@@ -75,7 +75,7 @@ func TestSearchAndAttack(t *testing.T) {
 		t.Errorf(err.Error())
 		return
 	}
-	success := predator.Attack(target, TestContext)
+	success := predator.Attack(target, TestCondition)
 	if !success {
 		t.Errorf("Attack unsuccessful.")
 	}

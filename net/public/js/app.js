@@ -1,8 +1,8 @@
 function DrawList(obj) {
-  this.cpp = obj.data.cpp
+  this.cpPrey = obj.data.cpPrey
   this.vp = obj.data.vp
   this.bg = obj.data.bg
-  this['cpp-pop-string'] = obj.data['cpp-pop-string']
+  this['cpPrey-pop-string'] = obj.data['cpPrey-pop-string']
   this['vp-pop-string'] = obj.data['vp-pop-string']
   this['turncount-string'] = obj.data['turncount-string']
 }
@@ -10,14 +10,14 @@ function DrawList(obj) {
 var initDrawObj = {
   type: 'drawlist',
   data: {
-    cpp: [],
+    cpPrey: [],
     vp: [],
     bg: {
       red: 0,
       green: 0,
       blue: 0
     },
-    'cpp-pop-string': "",
+    'cpPrey-pop-string': "",
     'vp-pop-string': "",
     'turncount-string': "",
   }
@@ -43,11 +43,11 @@ var sketch = function(p) {
   p.draw = function() {
     p.background(25,18,18)
     //  draw colour polymorphic prey agents
-    if (drawlist.cpp) {
-      for (var i = 0; i < drawlist.cpp.length; i++) {
-        var x = absToView(drawlist.cpp[i].position.x, modelDw, p.width)
-        var y = absToView(drawlist.cpp[i].position.y, modelDh, p.height)
-        var col = p.color(drawlist.cpp[i].colour.red, drawlist.cpp[i].colour.green, drawlist.cpp[i].colour.blue)
+    if (drawlist.cpPrey) {
+      for (var i = 0; i < drawlist.cpPrey.length; i++) {
+        var x = absToView(drawlist.cpPrey[i].position.x, modelDw, p.width)
+        var y = absToView(drawlist.cpPrey[i].position.y, modelDh, p.height)
+        var col = p.color(drawlist.cpPrey[i].colour.red, drawlist.cpPrey[i].colour.green, drawlist.cpPrey[i].colour.blue)
         p.strokeWeight(cpSize)
         p.stroke(col)
         p.point(x, y)
@@ -75,10 +75,10 @@ var sketch = function(p) {
     //  write population and turn stats in viewport.
     var txsize = p.height/40
     p.textSize(txsize)
-    var vpPopString =  drawlist['cpp-pop-string']
-    var cppPopString = drawlist['vp-pop-string']
+    var vpPopString =  drawlist['cpPrey-pop-string']
+    var cpPreyPopString = drawlist['vp-pop-string']
     var turnString =   drawlist['turncount-string']
-    var bw = ((p.textWidth(vpPopString) + p.textWidth(cppPopString) + p.textWidth(turnString)) * 2.3 ) / 3
+    var bw = ((p.textWidth(vpPopString) + p.textWidth(cpPreyPopString) + p.textWidth(turnString)) * 2.3 ) / 3
     var bh = txsize * 6
     var bx = p.width*0.02
     var by = p.height - (p.height * 0.2)
@@ -88,7 +88,7 @@ var sketch = function(p) {
       p.fill(0,0,0,100)
       p.rect(0, 0, bw, bh, br)
       p.fill(255)
-      p.text(vpPopString + "\n" + cppPopString + "\n" + turnString, txsize*2, txsize*2)
+      p.text(vpPopString + "\n" + cpPreyPopString + "\n" + turnString, txsize*2, txsize*2)
     p.pop()
   }
 
@@ -122,10 +122,10 @@ vizSocket.onmessage = function(e) {
   console.dir(rawmsg)
   switch (rawmsg.type) {
     case 'render':
-      drawlist.cpp = rawmsg.data.cpp
+      drawlist.cpPrey = rawmsg.data.cpPrey
       drawlist.vp = rawmsg.data.vp
       drawlist.bg = rawmsg.data.bg
-      drawlist['cpp-pop-string'] = rawmsg.data['cpp-pop-string']
+      drawlist['cpPrey-pop-string'] = rawmsg.data['cpPrey-pop-string']
       drawlist['vp-pop-string'] = rawmsg.data['vp-pop-string']
       drawlist['turncount-string'] = rawmsg.data['turncount-string']
       viz.redraw()
@@ -148,19 +148,19 @@ vizSocket.onerror = function(e) {
 }
 
 $(function () {
-  $('#contextParamsSend').on('click', function() {
-    var context = {
-      ['abm-cpp-pop-start']: parseInt($('#abm-cpp-pop-start').val()),
-      ['abm-cpp-pop-cap']: parseInt($('#abm-cpp-pop-cap').val()),
-      ['abm-cpp-ageing']: parseBool($('#abm-cpp-ageing').is(':checked')),
-      ['abm-cpp-lifespan']: parseInt($('#abm-cpp-lifespan').val()),
-      ['abm-cpp-speed']: parseFloat($('#abm-cpp-speed').val()),
-      ['abm-cpp-turn']: parseFloat($('#abm-cpp-turn').val()),
-      ['abm-cpp-sexual-cost']: parseInt($('#abm-cpp-sexual-cost').val()),
-      ['abm-cpp-reproduction-chance']: parseFloat($('#abm-cpp-reproduction-chance').val()),
-      ['abm-cpp-gestation']: parseInt($('#abm-cpp-sexual-cost').val()),
-      ['abm-cpp-spawn-size']: parseInt($('#abm-cpp-spawn-size').val()),
-      ['abm-cpp-mf']: parseFloat($('#abm-cpp-mf').val()),
+  $('#conditionParamsSend').on('click', function() {
+    var condition = {
+      ['abm-cpPrey-pop-start']: parseInt($('#abm-cpPrey-pop-start').val()),
+      ['abm-cpPrey-pop-cap']: parseInt($('#abm-cpPrey-pop-cap').val()),
+      ['abm-cpPrey-ageing']: parseBool($('#abm-cpPrey-ageing').is(':checked')),
+      ['abm-cpPrey-lifespan']: parseInt($('#abm-cpPrey-lifespan').val()),
+      ['abm-cpPrey-speed']: parseFloat($('#abm-cpPrey-speed').val()),
+      ['abm-cpPrey-turn']: parseFloat($('#abm-cpPrey-turn').val()),
+      ['abm-cpPrey-sexual-cost']: parseInt($('#abm-cpPrey-sexual-cost').val()),
+      ['abm-cpPrey-reproduction-chance']: parseFloat($('#abm-cpPrey-reproduction-chance').val()),
+      ['abm-cpPrey-gestation']: parseInt($('#abm-cpPrey-sexual-cost').val()),
+      ['abm-cpPrey-spawn-size']: parseInt($('#abm-cpPrey-spawn-size').val()),
+      ['abm-cpPrey-mf']: parseFloat($('#abm-cpPrey-mf').val()),
       ['abm-vp-pop-start']: parseInt($('#abm-vp-pop-start').val()),
       ['abm-vp-pop-cap']: parseInt($('#abm-vp-pop-cap').val()),
       ['abm-vp-ageing']: parseBool($('#abm-vp-ageing').is(':checked')),
@@ -196,8 +196,8 @@ $(function () {
     }
 
     var OutMsg = {
-      type: "context",
-      data: context
+      type: "condition",
+      data: condition
     }
 
     var json = JSON.stringify(OutMsg, null, 2)

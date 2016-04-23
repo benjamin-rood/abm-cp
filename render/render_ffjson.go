@@ -376,7 +376,7 @@ func (mj *DrawList) MarshalJSONBuf(buf fflib.EncodingBuffer) error {
 	var obj []byte
 	_ = obj
 	_ = err
-	buf.WriteString(`{"cpp":`)
+	buf.WriteString(`{"cpPrey":`)
 	if mj.CPP != nil {
 		buf.WriteString(`[`)
 		for i, v := range mj.CPP {
@@ -424,7 +424,7 @@ func (mj *DrawList) MarshalJSONBuf(buf fflib.EncodingBuffer) error {
 	if err != nil {
 		return err
 	}
-	buf.WriteString(`,"cpp-pop-string":`)
+	buf.WriteString(`,"cpPrey-pop-string":`)
 	fflib.WriteJsonString(buf, string(mj.CppPop))
 	buf.WriteString(`,"vp-pop-string":`)
 	fflib.WriteJsonString(buf, string(mj.VpPop))
@@ -451,13 +451,13 @@ const (
 	ffj_t_DrawList_TurnCount
 )
 
-var ffj_key_DrawList_CPP = []byte("cpp")
+var ffj_key_DrawList_CPP = []byte("cpPrey")
 
 var ffj_key_DrawList_VP = []byte("vp")
 
 var ffj_key_DrawList_BG = []byte("bg")
 
-var ffj_key_DrawList_CppPop = []byte("cpp-pop-string")
+var ffj_key_DrawList_CppPop = []byte("cpPrey-pop-string")
 
 var ffj_key_DrawList_VpPop = []byte("vp-pop-string")
 

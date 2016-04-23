@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+
 	fflib "github.com/pquerna/ffjson/fflib/v1"
 )
 
@@ -399,7 +400,7 @@ done:
 	return nil
 }
 
-func (mj *Context) MarshalJSON() ([]byte, error) {
+func (mj *Condition) MarshalJSON() ([]byte, error) {
 	var buf fflib.Buffer
 	if mj == nil {
 		buf.WriteString("null")
@@ -411,7 +412,7 @@ func (mj *Context) MarshalJSON() ([]byte, error) {
 	}
 	return buf.Bytes(), nil
 }
-func (mj *Context) MarshalJSONBuf(buf fflib.EncodingBuffer) error {
+func (mj *Condition) MarshalJSONBuf(buf fflib.EncodingBuffer) error {
 	if mj == nil {
 		buf.WriteString("null")
 		return nil
@@ -430,34 +431,34 @@ func (mj *Context) MarshalJSONBuf(buf fflib.EncodingBuffer) error {
 		}
 
 	}
-	buf.WriteString(`,"abm-cpp-pop-start":`)
+	buf.WriteString(`,"abm-cpPrey-pop-start":`)
 	fflib.FormatBits2(buf, uint64(mj.CppPopulationStart), 10, mj.CppPopulationStart < 0)
-	buf.WriteString(`,"abm-cpp-pop-cap":`)
+	buf.WriteString(`,"abm-cpPrey-pop-cap":`)
 	fflib.FormatBits2(buf, uint64(mj.CppPopulationCap), 10, mj.CppPopulationCap < 0)
 	if mj.CppAgeing {
-		buf.WriteString(`,"abm-cpp-ageing":true`)
+		buf.WriteString(`,"abm-cpPrey-ageing":true`)
 	} else {
-		buf.WriteString(`,"abm-cpp-ageing":false`)
+		buf.WriteString(`,"abm-cpPrey-ageing":false`)
 	}
-	buf.WriteString(`,"abm-cpp-lifespan":`)
+	buf.WriteString(`,"abm-cpPrey-lifespan":`)
 	fflib.FormatBits2(buf, uint64(mj.CppLifespan), 10, mj.CppLifespan < 0)
-	buf.WriteString(`,"abm-cpp-speed":`)
+	buf.WriteString(`,"abm-cpPrey-speed":`)
 	fflib.AppendFloat(buf, float64(mj.CppS), 'g', -1, 64)
-	buf.WriteString(`,"abm-cpp-acceleration":`)
+	buf.WriteString(`,"abm-cpPrey-acceleration":`)
 	fflib.AppendFloat(buf, float64(mj.CppA), 'g', -1, 64)
-	buf.WriteString(`,"abm-cpp-turn":`)
+	buf.WriteString(`,"abm-cpPrey-turn":`)
 	fflib.AppendFloat(buf, float64(mj.CppTurn), 'g', -1, 64)
-	buf.WriteString(`,"abm-cpp-sr":`)
+	buf.WriteString(`,"abm-cpPrey-sr":`)
 	fflib.AppendFloat(buf, float64(mj.CppSr), 'g', -1, 64)
-	buf.WriteString(`,"abm-cpp-gestation":`)
+	buf.WriteString(`,"abm-cpPrey-gestation":`)
 	fflib.FormatBits2(buf, uint64(mj.CppGestation), 10, mj.CppGestation < 0)
-	buf.WriteString(`,"abm-cpp-sexual-cost":`)
+	buf.WriteString(`,"abm-cpPrey-sexual-cost":`)
 	fflib.FormatBits2(buf, uint64(mj.CppSexualCost), 10, mj.CppSexualCost < 0)
-	buf.WriteString(`,"abm-cpp-reproduction-chance":`)
+	buf.WriteString(`,"abm-cpPrey-reproduction-chance":`)
 	fflib.AppendFloat(buf, float64(mj.CppReproductionChance), 'g', -1, 64)
-	buf.WriteString(`,"abm-cpp-spawn-size":`)
+	buf.WriteString(`,"abm-cpPrey-spawn-size":`)
 	fflib.FormatBits2(buf, uint64(mj.CppSpawnSize), 10, mj.CppSpawnSize < 0)
-	buf.WriteString(`,"abm-cpp-mf":`)
+	buf.WriteString(`,"abm-cpPrey-mf":`)
 	fflib.AppendFloat(buf, float64(mj.CppMutationFactor), 'g', -1, 64)
 	buf.WriteString(`,"abm-vp-pop-start":`)
 	fflib.FormatBits2(buf, uint64(mj.VpPopulationStart), 10, mj.VpPopulationStart < 0)
@@ -560,218 +561,218 @@ func (mj *Context) MarshalJSONBuf(buf fflib.EncodingBuffer) error {
 }
 
 const (
-	ffj_t_Contextbase = iota
-	ffj_t_Contextno_such_key
+	ffj_t_Conditionbase = iota
+	ffj_t_Conditionno_such_key
 
-	ffj_t_Context_Environment
+	ffj_t_Condition_Environment
 
-	ffj_t_Context_CppPopulationStart
+	ffj_t_Condition_CppPopulationStart
 
-	ffj_t_Context_CppPopulationCap
+	ffj_t_Condition_CppPopulationCap
 
-	ffj_t_Context_CppAgeing
+	ffj_t_Condition_CppAgeing
 
-	ffj_t_Context_CppLifespan
+	ffj_t_Condition_CppLifespan
 
-	ffj_t_Context_CppS
+	ffj_t_Condition_CppS
 
-	ffj_t_Context_CppA
+	ffj_t_Condition_CppA
 
-	ffj_t_Context_CppTurn
+	ffj_t_Condition_CppTurn
 
-	ffj_t_Context_CppSr
+	ffj_t_Condition_CppSr
 
-	ffj_t_Context_CppGestation
+	ffj_t_Condition_CppGestation
 
-	ffj_t_Context_CppSexualCost
+	ffj_t_Condition_CppSexualCost
 
-	ffj_t_Context_CppReproductionChance
+	ffj_t_Condition_CppReproductionChance
 
-	ffj_t_Context_CppSpawnSize
+	ffj_t_Condition_CppSpawnSize
 
-	ffj_t_Context_CppMutationFactor
+	ffj_t_Condition_CppMutationFactor
 
-	ffj_t_Context_VpPopulationStart
+	ffj_t_Condition_VpPopulationStart
 
-	ffj_t_Context_VpPopulationCap
+	ffj_t_Condition_VpPopulationCap
 
-	ffj_t_Context_VpAgeing
+	ffj_t_Condition_VpAgeing
 
-	ffj_t_Context_VpLifespan
+	ffj_t_Condition_VpLifespan
 
-	ffj_t_Context_VpStarvationPoint
+	ffj_t_Condition_VpStarvationPoint
 
-	ffj_t_Context_VpPanicPoint
+	ffj_t_Condition_VpPanicPoint
 
-	ffj_t_Context_VpGestation
+	ffj_t_Condition_VpGestation
 
-	ffj_t_Context_VpSexualRequirement
+	ffj_t_Condition_VpSexualRequirement
 
-	ffj_t_Context_VpMovS
+	ffj_t_Condition_VpMovS
 
-	ffj_t_Context_VpMovA
+	ffj_t_Condition_VpMovA
 
-	ffj_t_Context_VpTurn
+	ffj_t_Condition_VpTurn
 
-	ffj_t_Context_Vsr
+	ffj_t_Condition_Vsr
 
-	ffj_t_Context_Vb𝛄
+	ffj_t_Condition_Vb𝛄
 
-	ffj_t_Context_V𝛄Bump
+	ffj_t_Condition_V𝛄Bump
 
-	ffj_t_Context_Vbε
+	ffj_t_Condition_Vbε
 
-	ffj_t_Context_Vmε
+	ffj_t_Condition_Vmε
 
-	ffj_t_Context_VpReproductionChance
+	ffj_t_Condition_VpReproductionChance
 
-	ffj_t_Context_VpSpawnSize
+	ffj_t_Condition_VpSpawnSize
 
-	ffj_t_Context_VpSearchChance
+	ffj_t_Condition_VpSearchChance
 
-	ffj_t_Context_VpAttackChance
+	ffj_t_Condition_VpAttackChance
 
-	ffj_t_Context_Vbg
+	ffj_t_Condition_Vbg
 
-	ffj_t_Context_VpCaf
+	ffj_t_Condition_VpCaf
 
-	ffj_t_Context_VpStarvation
+	ffj_t_Condition_VpStarvation
 
-	ffj_t_Context_RandomAges
+	ffj_t_Condition_RandomAges
 
-	ffj_t_Context_RNGRandomSeed
+	ffj_t_Condition_RNGRandomSeed
 
-	ffj_t_Context_RNGSeedVal
+	ffj_t_Condition_RNGSeedVal
 
-	ffj_t_Context_Fuzzy
+	ffj_t_Condition_Fuzzy
 
-	ffj_t_Context_Logging
+	ffj_t_Condition_Logging
 
-	ffj_t_Context_LogFreq
+	ffj_t_Condition_LogFreq
 
-	ffj_t_Context_UseCustomLogPath
+	ffj_t_Condition_UseCustomLogPath
 
-	ffj_t_Context_CustomLogPath
+	ffj_t_Condition_CustomLogPath
 
-	ffj_t_Context_LogPath
+	ffj_t_Condition_LogPath
 
-	ffj_t_Context_Visualise
+	ffj_t_Condition_Visualise
 
-	ffj_t_Context_LimitDuration
+	ffj_t_Condition_LimitDuration
 
-	ffj_t_Context_FixedDuration
+	ffj_t_Condition_FixedDuration
 
-	ffj_t_Context_SessionIdentifier
+	ffj_t_Condition_SessionIdentifier
 )
 
-var ffj_key_Context_Environment = []byte("abm-environment-bounds")
+var ffj_key_Condition_Environment = []byte("abm-environment-bounds")
 
-var ffj_key_Context_CppPopulationStart = []byte("abm-cpp-pop-start")
+var ffj_key_Condition_CppPopulationStart = []byte("abm-cpPrey-pop-start")
 
-var ffj_key_Context_CppPopulationCap = []byte("abm-cpp-pop-cap")
+var ffj_key_Condition_CppPopulationCap = []byte("abm-cpPrey-pop-cap")
 
-var ffj_key_Context_CppAgeing = []byte("abm-cpp-ageing")
+var ffj_key_Condition_CppAgeing = []byte("abm-cpPrey-ageing")
 
-var ffj_key_Context_CppLifespan = []byte("abm-cpp-lifespan")
+var ffj_key_Condition_CppLifespan = []byte("abm-cpPrey-lifespan")
 
-var ffj_key_Context_CppS = []byte("abm-cpp-speed")
+var ffj_key_Condition_CppS = []byte("abm-cpPrey-speed")
 
-var ffj_key_Context_CppA = []byte("abm-cpp-acceleration")
+var ffj_key_Condition_CppA = []byte("abm-cpPrey-acceleration")
 
-var ffj_key_Context_CppTurn = []byte("abm-cpp-turn")
+var ffj_key_Condition_CppTurn = []byte("abm-cpPrey-turn")
 
-var ffj_key_Context_CppSr = []byte("abm-cpp-sr")
+var ffj_key_Condition_CppSr = []byte("abm-cpPrey-sr")
 
-var ffj_key_Context_CppGestation = []byte("abm-cpp-gestation")
+var ffj_key_Condition_CppGestation = []byte("abm-cpPrey-gestation")
 
-var ffj_key_Context_CppSexualCost = []byte("abm-cpp-sexual-cost")
+var ffj_key_Condition_CppSexualCost = []byte("abm-cpPrey-sexual-cost")
 
-var ffj_key_Context_CppReproductionChance = []byte("abm-cpp-reproduction-chance")
+var ffj_key_Condition_CppReproductionChance = []byte("abm-cpPrey-reproduction-chance")
 
-var ffj_key_Context_CppSpawnSize = []byte("abm-cpp-spawn-size")
+var ffj_key_Condition_CppSpawnSize = []byte("abm-cpPrey-spawn-size")
 
-var ffj_key_Context_CppMutationFactor = []byte("abm-cpp-mf")
+var ffj_key_Condition_CppMutationFactor = []byte("abm-cpPrey-mf")
 
-var ffj_key_Context_VpPopulationStart = []byte("abm-vp-pop-start")
+var ffj_key_Condition_VpPopulationStart = []byte("abm-vp-pop-start")
 
-var ffj_key_Context_VpPopulationCap = []byte("abm-vp-pop-cap")
+var ffj_key_Condition_VpPopulationCap = []byte("abm-vp-pop-cap")
 
-var ffj_key_Context_VpAgeing = []byte("abm-vp-ageing")
+var ffj_key_Condition_VpAgeing = []byte("abm-vp-ageing")
 
-var ffj_key_Context_VpLifespan = []byte("abm-vp-lifespan")
+var ffj_key_Condition_VpLifespan = []byte("abm-vp-lifespan")
 
-var ffj_key_Context_VpStarvationPoint = []byte("abm-vp-starvation-point")
+var ffj_key_Condition_VpStarvationPoint = []byte("abm-vp-starvation-point")
 
-var ffj_key_Context_VpPanicPoint = []byte("abm-vp-panic-point")
+var ffj_key_Condition_VpPanicPoint = []byte("abm-vp-panic-point")
 
-var ffj_key_Context_VpGestation = []byte("abm-vp-gestation")
+var ffj_key_Condition_VpGestation = []byte("abm-vp-gestation")
 
-var ffj_key_Context_VpSexualRequirement = []byte("abm-vp-sex-req")
+var ffj_key_Condition_VpSexualRequirement = []byte("abm-vp-sex-req")
 
-var ffj_key_Context_VpMovS = []byte("abm-vp-speed")
+var ffj_key_Condition_VpMovS = []byte("abm-vp-speed")
 
-var ffj_key_Context_VpMovA = []byte("abm-vp-acceleration")
+var ffj_key_Condition_VpMovA = []byte("abm-vp-acceleration")
 
-var ffj_key_Context_VpTurn = []byte("abm-vp-turn")
+var ffj_key_Condition_VpTurn = []byte("abm-vp-turn")
 
-var ffj_key_Context_Vsr = []byte("abm-vp-vsr")
+var ffj_key_Condition_Vsr = []byte("abm-vp-vsr")
 
-var ffj_key_Context_Vb𝛄 = []byte("abm-vp-visual-search-tolerance")
+var ffj_key_Condition_Vb𝛄 = []byte("abm-vp-visual-search-tolerance")
 
-var ffj_key_Context_V𝛄Bump = []byte("abm-vp-visual-search-tolerance-bump")
+var ffj_key_Condition_V𝛄Bump = []byte("abm-vp-visual-search-tolerance-bump")
 
-var ffj_key_Context_Vbε = []byte("abm-vp-baseline-col-sig-strength")
+var ffj_key_Condition_Vbε = []byte("abm-vp-baseline-col-sig-strength")
 
-var ffj_key_Context_Vmε = []byte("abm-vp-max-col-sig-strength")
+var ffj_key_Condition_Vmε = []byte("abm-vp-max-col-sig-strength")
 
-var ffj_key_Context_VpReproductionChance = []byte("abm-vp-reproduction-chance")
+var ffj_key_Condition_VpReproductionChance = []byte("abm-vp-reproduction-chance")
 
-var ffj_key_Context_VpSpawnSize = []byte("abm-vp-spawn-size")
+var ffj_key_Condition_VpSpawnSize = []byte("abm-vp-spawn-size")
 
-var ffj_key_Context_VpSearchChance = []byte("abm-vp-vsr-chance")
+var ffj_key_Condition_VpSearchChance = []byte("abm-vp-vsr-chance")
 
-var ffj_key_Context_VpAttackChance = []byte("abm-vp-attack-chance")
+var ffj_key_Condition_VpAttackChance = []byte("abm-vp-attack-chance")
 
-var ffj_key_Context_Vbg = []byte("abm-vp-baseline-attack-gain")
+var ffj_key_Condition_Vbg = []byte("abm-vp-baseline-attack-gain")
 
-var ffj_key_Context_VpCaf = []byte("abm-vp-col-adaptation-factor")
+var ffj_key_Condition_VpCaf = []byte("abm-vp-col-adaptation-factor")
 
-var ffj_key_Context_VpStarvation = []byte("abm-vp-starvation")
+var ffj_key_Condition_VpStarvation = []byte("abm-vp-starvation")
 
-var ffj_key_Context_RandomAges = []byte("abm-random-ages")
+var ffj_key_Condition_RandomAges = []byte("abm-random-ages")
 
-var ffj_key_Context_RNGRandomSeed = []byte("abm-rng-random-seed")
+var ffj_key_Condition_RNGRandomSeed = []byte("abm-rng-random-seed")
 
-var ffj_key_Context_RNGSeedVal = []byte("abm-rng-seedval")
+var ffj_key_Condition_RNGSeedVal = []byte("abm-rng-seedval")
 
-var ffj_key_Context_Fuzzy = []byte("abm-rng-fuzziness")
+var ffj_key_Condition_Fuzzy = []byte("abm-rng-fuzziness")
 
-var ffj_key_Context_Logging = []byte("abm-logging-flag")
+var ffj_key_Condition_Logging = []byte("abm-logging-flag")
 
-var ffj_key_Context_LogFreq = []byte("abm-log-frequency")
+var ffj_key_Condition_LogFreq = []byte("abm-log-frequency")
 
-var ffj_key_Context_UseCustomLogPath = []byte("abm-use-custom-log-filepath")
+var ffj_key_Condition_UseCustomLogPath = []byte("abm-use-custom-log-filepath")
 
-var ffj_key_Context_CustomLogPath = []byte("abm-custom-log-filepath")
+var ffj_key_Condition_CustomLogPath = []byte("abm-custom-log-filepath")
 
-var ffj_key_Context_LogPath = []byte("abm-log-filepath")
+var ffj_key_Condition_LogPath = []byte("abm-log-filepath")
 
-var ffj_key_Context_Visualise = []byte("abm-visualise-flag")
+var ffj_key_Condition_Visualise = []byte("abm-visualise-flag")
 
-var ffj_key_Context_LimitDuration = []byte("abm-limit-duration")
+var ffj_key_Condition_LimitDuration = []byte("abm-limit-duration")
 
-var ffj_key_Context_FixedDuration = []byte("abm-fixed-duration")
+var ffj_key_Condition_FixedDuration = []byte("abm-fixed-duration")
 
-var ffj_key_Context_SessionIdentifier = []byte("abm-session-identifier")
+var ffj_key_Condition_SessionIdentifier = []byte("abm-session-identifier")
 
-func (uj *Context) UnmarshalJSON(input []byte) error {
+func (uj *Condition) UnmarshalJSON(input []byte) error {
 	fs := fflib.NewFFLexer(input)
 	return uj.UnmarshalJSONFFLexer(fs, fflib.FFParse_map_start)
 }
 
-func (uj *Context) UnmarshalJSONFFLexer(fs *fflib.FFLexer, state fflib.FFParseState) error {
+func (uj *Condition) UnmarshalJSONFFLexer(fs *fflib.FFLexer, state fflib.FFParseState) error {
 	var err error = nil
-	currentKey := ffj_t_Contextbase
+	currentKey := ffj_t_Conditionbase
 	_ = currentKey
 	tok := fflib.FFTok_init
 	wantedTok := fflib.FFTok_init
@@ -817,7 +818,7 @@ mainparse:
 			kn := fs.Output.Bytes()
 			if len(kn) <= 0 {
 				// "" case. hrm.
-				currentKey = ffj_t_Contextno_such_key
+				currentKey = ffj_t_Conditionno_such_key
 				state = fflib.FFParse_want_colon
 				goto mainparse
 			} else {
@@ -825,560 +826,560 @@ mainparse:
 
 				case 'a':
 
-					if bytes.Equal(ffj_key_Context_Environment, kn) {
-						currentKey = ffj_t_Context_Environment
+					if bytes.Equal(ffj_key_Condition_Environment, kn) {
+						currentKey = ffj_t_Condition_Environment
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_CppPopulationStart, kn) {
-						currentKey = ffj_t_Context_CppPopulationStart
+					} else if bytes.Equal(ffj_key_Condition_CppPopulationStart, kn) {
+						currentKey = ffj_t_Condition_CppPopulationStart
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_CppPopulationCap, kn) {
-						currentKey = ffj_t_Context_CppPopulationCap
+					} else if bytes.Equal(ffj_key_Condition_CppPopulationCap, kn) {
+						currentKey = ffj_t_Condition_CppPopulationCap
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_CppAgeing, kn) {
-						currentKey = ffj_t_Context_CppAgeing
+					} else if bytes.Equal(ffj_key_Condition_CppAgeing, kn) {
+						currentKey = ffj_t_Condition_CppAgeing
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_CppLifespan, kn) {
-						currentKey = ffj_t_Context_CppLifespan
+					} else if bytes.Equal(ffj_key_Condition_CppLifespan, kn) {
+						currentKey = ffj_t_Condition_CppLifespan
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_CppS, kn) {
-						currentKey = ffj_t_Context_CppS
+					} else if bytes.Equal(ffj_key_Condition_CppS, kn) {
+						currentKey = ffj_t_Condition_CppS
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_CppA, kn) {
-						currentKey = ffj_t_Context_CppA
+					} else if bytes.Equal(ffj_key_Condition_CppA, kn) {
+						currentKey = ffj_t_Condition_CppA
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_CppTurn, kn) {
-						currentKey = ffj_t_Context_CppTurn
+					} else if bytes.Equal(ffj_key_Condition_CppTurn, kn) {
+						currentKey = ffj_t_Condition_CppTurn
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_CppSr, kn) {
-						currentKey = ffj_t_Context_CppSr
+					} else if bytes.Equal(ffj_key_Condition_CppSr, kn) {
+						currentKey = ffj_t_Condition_CppSr
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_CppGestation, kn) {
-						currentKey = ffj_t_Context_CppGestation
+					} else if bytes.Equal(ffj_key_Condition_CppGestation, kn) {
+						currentKey = ffj_t_Condition_CppGestation
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_CppSexualCost, kn) {
-						currentKey = ffj_t_Context_CppSexualCost
+					} else if bytes.Equal(ffj_key_Condition_CppSexualCost, kn) {
+						currentKey = ffj_t_Condition_CppSexualCost
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_CppReproductionChance, kn) {
-						currentKey = ffj_t_Context_CppReproductionChance
+					} else if bytes.Equal(ffj_key_Condition_CppReproductionChance, kn) {
+						currentKey = ffj_t_Condition_CppReproductionChance
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_CppSpawnSize, kn) {
-						currentKey = ffj_t_Context_CppSpawnSize
+					} else if bytes.Equal(ffj_key_Condition_CppSpawnSize, kn) {
+						currentKey = ffj_t_Condition_CppSpawnSize
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_CppMutationFactor, kn) {
-						currentKey = ffj_t_Context_CppMutationFactor
+					} else if bytes.Equal(ffj_key_Condition_CppMutationFactor, kn) {
+						currentKey = ffj_t_Condition_CppMutationFactor
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_VpPopulationStart, kn) {
-						currentKey = ffj_t_Context_VpPopulationStart
+					} else if bytes.Equal(ffj_key_Condition_VpPopulationStart, kn) {
+						currentKey = ffj_t_Condition_VpPopulationStart
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_VpPopulationCap, kn) {
-						currentKey = ffj_t_Context_VpPopulationCap
+					} else if bytes.Equal(ffj_key_Condition_VpPopulationCap, kn) {
+						currentKey = ffj_t_Condition_VpPopulationCap
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_VpAgeing, kn) {
-						currentKey = ffj_t_Context_VpAgeing
+					} else if bytes.Equal(ffj_key_Condition_VpAgeing, kn) {
+						currentKey = ffj_t_Condition_VpAgeing
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_VpLifespan, kn) {
-						currentKey = ffj_t_Context_VpLifespan
+					} else if bytes.Equal(ffj_key_Condition_VpLifespan, kn) {
+						currentKey = ffj_t_Condition_VpLifespan
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_VpStarvationPoint, kn) {
-						currentKey = ffj_t_Context_VpStarvationPoint
+					} else if bytes.Equal(ffj_key_Condition_VpStarvationPoint, kn) {
+						currentKey = ffj_t_Condition_VpStarvationPoint
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_VpPanicPoint, kn) {
-						currentKey = ffj_t_Context_VpPanicPoint
+					} else if bytes.Equal(ffj_key_Condition_VpPanicPoint, kn) {
+						currentKey = ffj_t_Condition_VpPanicPoint
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_VpGestation, kn) {
-						currentKey = ffj_t_Context_VpGestation
+					} else if bytes.Equal(ffj_key_Condition_VpGestation, kn) {
+						currentKey = ffj_t_Condition_VpGestation
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_VpSexualRequirement, kn) {
-						currentKey = ffj_t_Context_VpSexualRequirement
+					} else if bytes.Equal(ffj_key_Condition_VpSexualRequirement, kn) {
+						currentKey = ffj_t_Condition_VpSexualRequirement
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_VpMovS, kn) {
-						currentKey = ffj_t_Context_VpMovS
+					} else if bytes.Equal(ffj_key_Condition_VpMovS, kn) {
+						currentKey = ffj_t_Condition_VpMovS
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_VpMovA, kn) {
-						currentKey = ffj_t_Context_VpMovA
+					} else if bytes.Equal(ffj_key_Condition_VpMovA, kn) {
+						currentKey = ffj_t_Condition_VpMovA
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_VpTurn, kn) {
-						currentKey = ffj_t_Context_VpTurn
+					} else if bytes.Equal(ffj_key_Condition_VpTurn, kn) {
+						currentKey = ffj_t_Condition_VpTurn
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_Vsr, kn) {
-						currentKey = ffj_t_Context_Vsr
+					} else if bytes.Equal(ffj_key_Condition_Vsr, kn) {
+						currentKey = ffj_t_Condition_Vsr
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_Vb𝛄, kn) {
-						currentKey = ffj_t_Context_Vb𝛄
+					} else if bytes.Equal(ffj_key_Condition_Vb𝛄, kn) {
+						currentKey = ffj_t_Condition_Vb𝛄
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_V𝛄Bump, kn) {
-						currentKey = ffj_t_Context_V𝛄Bump
+					} else if bytes.Equal(ffj_key_Condition_V𝛄Bump, kn) {
+						currentKey = ffj_t_Condition_V𝛄Bump
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_Vbε, kn) {
-						currentKey = ffj_t_Context_Vbε
+					} else if bytes.Equal(ffj_key_Condition_Vbε, kn) {
+						currentKey = ffj_t_Condition_Vbε
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_Vmε, kn) {
-						currentKey = ffj_t_Context_Vmε
+					} else if bytes.Equal(ffj_key_Condition_Vmε, kn) {
+						currentKey = ffj_t_Condition_Vmε
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_VpReproductionChance, kn) {
-						currentKey = ffj_t_Context_VpReproductionChance
+					} else if bytes.Equal(ffj_key_Condition_VpReproductionChance, kn) {
+						currentKey = ffj_t_Condition_VpReproductionChance
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_VpSpawnSize, kn) {
-						currentKey = ffj_t_Context_VpSpawnSize
+					} else if bytes.Equal(ffj_key_Condition_VpSpawnSize, kn) {
+						currentKey = ffj_t_Condition_VpSpawnSize
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_VpSearchChance, kn) {
-						currentKey = ffj_t_Context_VpSearchChance
+					} else if bytes.Equal(ffj_key_Condition_VpSearchChance, kn) {
+						currentKey = ffj_t_Condition_VpSearchChance
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_VpAttackChance, kn) {
-						currentKey = ffj_t_Context_VpAttackChance
+					} else if bytes.Equal(ffj_key_Condition_VpAttackChance, kn) {
+						currentKey = ffj_t_Condition_VpAttackChance
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_Vbg, kn) {
-						currentKey = ffj_t_Context_Vbg
+					} else if bytes.Equal(ffj_key_Condition_Vbg, kn) {
+						currentKey = ffj_t_Condition_Vbg
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_VpCaf, kn) {
-						currentKey = ffj_t_Context_VpCaf
+					} else if bytes.Equal(ffj_key_Condition_VpCaf, kn) {
+						currentKey = ffj_t_Condition_VpCaf
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_VpStarvation, kn) {
-						currentKey = ffj_t_Context_VpStarvation
+					} else if bytes.Equal(ffj_key_Condition_VpStarvation, kn) {
+						currentKey = ffj_t_Condition_VpStarvation
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_RandomAges, kn) {
-						currentKey = ffj_t_Context_RandomAges
+					} else if bytes.Equal(ffj_key_Condition_RandomAges, kn) {
+						currentKey = ffj_t_Condition_RandomAges
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_RNGRandomSeed, kn) {
-						currentKey = ffj_t_Context_RNGRandomSeed
+					} else if bytes.Equal(ffj_key_Condition_RNGRandomSeed, kn) {
+						currentKey = ffj_t_Condition_RNGRandomSeed
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_RNGSeedVal, kn) {
-						currentKey = ffj_t_Context_RNGSeedVal
+					} else if bytes.Equal(ffj_key_Condition_RNGSeedVal, kn) {
+						currentKey = ffj_t_Condition_RNGSeedVal
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_Fuzzy, kn) {
-						currentKey = ffj_t_Context_Fuzzy
+					} else if bytes.Equal(ffj_key_Condition_Fuzzy, kn) {
+						currentKey = ffj_t_Condition_Fuzzy
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_Logging, kn) {
-						currentKey = ffj_t_Context_Logging
+					} else if bytes.Equal(ffj_key_Condition_Logging, kn) {
+						currentKey = ffj_t_Condition_Logging
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_LogFreq, kn) {
-						currentKey = ffj_t_Context_LogFreq
+					} else if bytes.Equal(ffj_key_Condition_LogFreq, kn) {
+						currentKey = ffj_t_Condition_LogFreq
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_UseCustomLogPath, kn) {
-						currentKey = ffj_t_Context_UseCustomLogPath
+					} else if bytes.Equal(ffj_key_Condition_UseCustomLogPath, kn) {
+						currentKey = ffj_t_Condition_UseCustomLogPath
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_CustomLogPath, kn) {
-						currentKey = ffj_t_Context_CustomLogPath
+					} else if bytes.Equal(ffj_key_Condition_CustomLogPath, kn) {
+						currentKey = ffj_t_Condition_CustomLogPath
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_LogPath, kn) {
-						currentKey = ffj_t_Context_LogPath
+					} else if bytes.Equal(ffj_key_Condition_LogPath, kn) {
+						currentKey = ffj_t_Condition_LogPath
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_Visualise, kn) {
-						currentKey = ffj_t_Context_Visualise
+					} else if bytes.Equal(ffj_key_Condition_Visualise, kn) {
+						currentKey = ffj_t_Condition_Visualise
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_LimitDuration, kn) {
-						currentKey = ffj_t_Context_LimitDuration
+					} else if bytes.Equal(ffj_key_Condition_LimitDuration, kn) {
+						currentKey = ffj_t_Condition_LimitDuration
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_FixedDuration, kn) {
-						currentKey = ffj_t_Context_FixedDuration
+					} else if bytes.Equal(ffj_key_Condition_FixedDuration, kn) {
+						currentKey = ffj_t_Condition_FixedDuration
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_Context_SessionIdentifier, kn) {
-						currentKey = ffj_t_Context_SessionIdentifier
+					} else if bytes.Equal(ffj_key_Condition_SessionIdentifier, kn) {
+						currentKey = ffj_t_Condition_SessionIdentifier
 						state = fflib.FFParse_want_colon
 						goto mainparse
 					}
 
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Context_SessionIdentifier, kn) {
-					currentKey = ffj_t_Context_SessionIdentifier
+				if fflib.EqualFoldRight(ffj_key_Condition_SessionIdentifier, kn) {
+					currentKey = ffj_t_Condition_SessionIdentifier
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.AsciiEqualFold(ffj_key_Context_FixedDuration, kn) {
-					currentKey = ffj_t_Context_FixedDuration
+				if fflib.AsciiEqualFold(ffj_key_Condition_FixedDuration, kn) {
+					currentKey = ffj_t_Condition_FixedDuration
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.AsciiEqualFold(ffj_key_Context_LimitDuration, kn) {
-					currentKey = ffj_t_Context_LimitDuration
+				if fflib.AsciiEqualFold(ffj_key_Condition_LimitDuration, kn) {
+					currentKey = ffj_t_Condition_LimitDuration
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Context_Visualise, kn) {
-					currentKey = ffj_t_Context_Visualise
+				if fflib.EqualFoldRight(ffj_key_Condition_Visualise, kn) {
+					currentKey = ffj_t_Condition_Visualise
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.AsciiEqualFold(ffj_key_Context_LogPath, kn) {
-					currentKey = ffj_t_Context_LogPath
+				if fflib.AsciiEqualFold(ffj_key_Condition_LogPath, kn) {
+					currentKey = ffj_t_Condition_LogPath
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Context_CustomLogPath, kn) {
-					currentKey = ffj_t_Context_CustomLogPath
+				if fflib.EqualFoldRight(ffj_key_Condition_CustomLogPath, kn) {
+					currentKey = ffj_t_Condition_CustomLogPath
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Context_UseCustomLogPath, kn) {
-					currentKey = ffj_t_Context_UseCustomLogPath
+				if fflib.EqualFoldRight(ffj_key_Condition_UseCustomLogPath, kn) {
+					currentKey = ffj_t_Condition_UseCustomLogPath
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.AsciiEqualFold(ffj_key_Context_LogFreq, kn) {
-					currentKey = ffj_t_Context_LogFreq
+				if fflib.AsciiEqualFold(ffj_key_Condition_LogFreq, kn) {
+					currentKey = ffj_t_Condition_LogFreq
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.AsciiEqualFold(ffj_key_Context_Logging, kn) {
-					currentKey = ffj_t_Context_Logging
+				if fflib.AsciiEqualFold(ffj_key_Condition_Logging, kn) {
+					currentKey = ffj_t_Condition_Logging
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Context_Fuzzy, kn) {
-					currentKey = ffj_t_Context_Fuzzy
+				if fflib.EqualFoldRight(ffj_key_Condition_Fuzzy, kn) {
+					currentKey = ffj_t_Condition_Fuzzy
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Context_RNGSeedVal, kn) {
-					currentKey = ffj_t_Context_RNGSeedVal
+				if fflib.EqualFoldRight(ffj_key_Condition_RNGSeedVal, kn) {
+					currentKey = ffj_t_Condition_RNGSeedVal
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Context_RNGRandomSeed, kn) {
-					currentKey = ffj_t_Context_RNGRandomSeed
+				if fflib.EqualFoldRight(ffj_key_Condition_RNGRandomSeed, kn) {
+					currentKey = ffj_t_Condition_RNGRandomSeed
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Context_RandomAges, kn) {
-					currentKey = ffj_t_Context_RandomAges
+				if fflib.EqualFoldRight(ffj_key_Condition_RandomAges, kn) {
+					currentKey = ffj_t_Condition_RandomAges
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Context_VpStarvation, kn) {
-					currentKey = ffj_t_Context_VpStarvation
+				if fflib.EqualFoldRight(ffj_key_Condition_VpStarvation, kn) {
+					currentKey = ffj_t_Condition_VpStarvation
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.AsciiEqualFold(ffj_key_Context_VpCaf, kn) {
-					currentKey = ffj_t_Context_VpCaf
+				if fflib.AsciiEqualFold(ffj_key_Condition_VpCaf, kn) {
+					currentKey = ffj_t_Condition_VpCaf
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Context_Vbg, kn) {
-					currentKey = ffj_t_Context_Vbg
+				if fflib.EqualFoldRight(ffj_key_Condition_Vbg, kn) {
+					currentKey = ffj_t_Condition_Vbg
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Context_VpAttackChance, kn) {
-					currentKey = ffj_t_Context_VpAttackChance
+				if fflib.EqualFoldRight(ffj_key_Condition_VpAttackChance, kn) {
+					currentKey = ffj_t_Condition_VpAttackChance
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Context_VpSearchChance, kn) {
-					currentKey = ffj_t_Context_VpSearchChance
+				if fflib.EqualFoldRight(ffj_key_Condition_VpSearchChance, kn) {
+					currentKey = ffj_t_Condition_VpSearchChance
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Context_VpSpawnSize, kn) {
-					currentKey = ffj_t_Context_VpSpawnSize
+				if fflib.EqualFoldRight(ffj_key_Condition_VpSpawnSize, kn) {
+					currentKey = ffj_t_Condition_VpSpawnSize
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.AsciiEqualFold(ffj_key_Context_VpReproductionChance, kn) {
-					currentKey = ffj_t_Context_VpReproductionChance
+				if fflib.AsciiEqualFold(ffj_key_Condition_VpReproductionChance, kn) {
+					currentKey = ffj_t_Condition_VpReproductionChance
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Context_Vmε, kn) {
-					currentKey = ffj_t_Context_Vmε
+				if fflib.EqualFoldRight(ffj_key_Condition_Vmε, kn) {
+					currentKey = ffj_t_Condition_Vmε
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Context_Vbε, kn) {
-					currentKey = ffj_t_Context_Vbε
+				if fflib.EqualFoldRight(ffj_key_Condition_Vbε, kn) {
+					currentKey = ffj_t_Condition_Vbε
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Context_V𝛄Bump, kn) {
-					currentKey = ffj_t_Context_V𝛄Bump
+				if fflib.EqualFoldRight(ffj_key_Condition_V𝛄Bump, kn) {
+					currentKey = ffj_t_Condition_V𝛄Bump
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Context_Vb𝛄, kn) {
-					currentKey = ffj_t_Context_Vb𝛄
+				if fflib.EqualFoldRight(ffj_key_Condition_Vb𝛄, kn) {
+					currentKey = ffj_t_Condition_Vb𝛄
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Context_Vsr, kn) {
-					currentKey = ffj_t_Context_Vsr
+				if fflib.EqualFoldRight(ffj_key_Condition_Vsr, kn) {
+					currentKey = ffj_t_Condition_Vsr
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.AsciiEqualFold(ffj_key_Context_VpTurn, kn) {
-					currentKey = ffj_t_Context_VpTurn
+				if fflib.AsciiEqualFold(ffj_key_Condition_VpTurn, kn) {
+					currentKey = ffj_t_Condition_VpTurn
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.AsciiEqualFold(ffj_key_Context_VpMovA, kn) {
-					currentKey = ffj_t_Context_VpMovA
+				if fflib.AsciiEqualFold(ffj_key_Condition_VpMovA, kn) {
+					currentKey = ffj_t_Condition_VpMovA
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Context_VpMovS, kn) {
-					currentKey = ffj_t_Context_VpMovS
+				if fflib.EqualFoldRight(ffj_key_Condition_VpMovS, kn) {
+					currentKey = ffj_t_Condition_VpMovS
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Context_VpSexualRequirement, kn) {
-					currentKey = ffj_t_Context_VpSexualRequirement
+				if fflib.EqualFoldRight(ffj_key_Condition_VpSexualRequirement, kn) {
+					currentKey = ffj_t_Condition_VpSexualRequirement
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Context_VpGestation, kn) {
-					currentKey = ffj_t_Context_VpGestation
+				if fflib.EqualFoldRight(ffj_key_Condition_VpGestation, kn) {
+					currentKey = ffj_t_Condition_VpGestation
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.AsciiEqualFold(ffj_key_Context_VpPanicPoint, kn) {
-					currentKey = ffj_t_Context_VpPanicPoint
+				if fflib.AsciiEqualFold(ffj_key_Condition_VpPanicPoint, kn) {
+					currentKey = ffj_t_Condition_VpPanicPoint
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Context_VpStarvationPoint, kn) {
-					currentKey = ffj_t_Context_VpStarvationPoint
+				if fflib.EqualFoldRight(ffj_key_Condition_VpStarvationPoint, kn) {
+					currentKey = ffj_t_Condition_VpStarvationPoint
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Context_VpLifespan, kn) {
-					currentKey = ffj_t_Context_VpLifespan
+				if fflib.EqualFoldRight(ffj_key_Condition_VpLifespan, kn) {
+					currentKey = ffj_t_Condition_VpLifespan
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.AsciiEqualFold(ffj_key_Context_VpAgeing, kn) {
-					currentKey = ffj_t_Context_VpAgeing
+				if fflib.AsciiEqualFold(ffj_key_Condition_VpAgeing, kn) {
+					currentKey = ffj_t_Condition_VpAgeing
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.AsciiEqualFold(ffj_key_Context_VpPopulationCap, kn) {
-					currentKey = ffj_t_Context_VpPopulationCap
+				if fflib.AsciiEqualFold(ffj_key_Condition_VpPopulationCap, kn) {
+					currentKey = ffj_t_Condition_VpPopulationCap
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Context_VpPopulationStart, kn) {
-					currentKey = ffj_t_Context_VpPopulationStart
+				if fflib.EqualFoldRight(ffj_key_Condition_VpPopulationStart, kn) {
+					currentKey = ffj_t_Condition_VpPopulationStart
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.AsciiEqualFold(ffj_key_Context_CppMutationFactor, kn) {
-					currentKey = ffj_t_Context_CppMutationFactor
+				if fflib.AsciiEqualFold(ffj_key_Condition_CppMutationFactor, kn) {
+					currentKey = ffj_t_Condition_CppMutationFactor
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Context_CppSpawnSize, kn) {
-					currentKey = ffj_t_Context_CppSpawnSize
+				if fflib.EqualFoldRight(ffj_key_Condition_CppSpawnSize, kn) {
+					currentKey = ffj_t_Condition_CppSpawnSize
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.AsciiEqualFold(ffj_key_Context_CppReproductionChance, kn) {
-					currentKey = ffj_t_Context_CppReproductionChance
+				if fflib.AsciiEqualFold(ffj_key_Condition_CppReproductionChance, kn) {
+					currentKey = ffj_t_Condition_CppReproductionChance
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Context_CppSexualCost, kn) {
-					currentKey = ffj_t_Context_CppSexualCost
+				if fflib.EqualFoldRight(ffj_key_Condition_CppSexualCost, kn) {
+					currentKey = ffj_t_Condition_CppSexualCost
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Context_CppGestation, kn) {
-					currentKey = ffj_t_Context_CppGestation
+				if fflib.EqualFoldRight(ffj_key_Condition_CppGestation, kn) {
+					currentKey = ffj_t_Condition_CppGestation
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Context_CppSr, kn) {
-					currentKey = ffj_t_Context_CppSr
+				if fflib.EqualFoldRight(ffj_key_Condition_CppSr, kn) {
+					currentKey = ffj_t_Condition_CppSr
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.AsciiEqualFold(ffj_key_Context_CppTurn, kn) {
-					currentKey = ffj_t_Context_CppTurn
+				if fflib.AsciiEqualFold(ffj_key_Condition_CppTurn, kn) {
+					currentKey = ffj_t_Condition_CppTurn
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.AsciiEqualFold(ffj_key_Context_CppA, kn) {
-					currentKey = ffj_t_Context_CppA
+				if fflib.AsciiEqualFold(ffj_key_Condition_CppA, kn) {
+					currentKey = ffj_t_Condition_CppA
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Context_CppS, kn) {
-					currentKey = ffj_t_Context_CppS
+				if fflib.EqualFoldRight(ffj_key_Condition_CppS, kn) {
+					currentKey = ffj_t_Condition_CppS
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Context_CppLifespan, kn) {
-					currentKey = ffj_t_Context_CppLifespan
+				if fflib.EqualFoldRight(ffj_key_Condition_CppLifespan, kn) {
+					currentKey = ffj_t_Condition_CppLifespan
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.AsciiEqualFold(ffj_key_Context_CppAgeing, kn) {
-					currentKey = ffj_t_Context_CppAgeing
+				if fflib.AsciiEqualFold(ffj_key_Condition_CppAgeing, kn) {
+					currentKey = ffj_t_Condition_CppAgeing
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.AsciiEqualFold(ffj_key_Context_CppPopulationCap, kn) {
-					currentKey = ffj_t_Context_CppPopulationCap
+				if fflib.AsciiEqualFold(ffj_key_Condition_CppPopulationCap, kn) {
+					currentKey = ffj_t_Condition_CppPopulationCap
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Context_CppPopulationStart, kn) {
-					currentKey = ffj_t_Context_CppPopulationStart
+				if fflib.EqualFoldRight(ffj_key_Condition_CppPopulationStart, kn) {
+					currentKey = ffj_t_Condition_CppPopulationStart
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_Context_Environment, kn) {
-					currentKey = ffj_t_Context_Environment
+				if fflib.EqualFoldRight(ffj_key_Condition_Environment, kn) {
+					currentKey = ffj_t_Condition_Environment
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
 
-				currentKey = ffj_t_Contextno_such_key
+				currentKey = ffj_t_Conditionno_such_key
 				state = fflib.FFParse_want_colon
 				goto mainparse
 			}
@@ -1395,157 +1396,157 @@ mainparse:
 			if tok == fflib.FFTok_left_brace || tok == fflib.FFTok_left_bracket || tok == fflib.FFTok_integer || tok == fflib.FFTok_double || tok == fflib.FFTok_string || tok == fflib.FFTok_bool || tok == fflib.FFTok_null {
 				switch currentKey {
 
-				case ffj_t_Context_Environment:
+				case ffj_t_Condition_Environment:
 					goto handle_Environment
 
-				case ffj_t_Context_CppPopulationStart:
+				case ffj_t_Condition_CppPopulationStart:
 					goto handle_CppPopulationStart
 
-				case ffj_t_Context_CppPopulationCap:
+				case ffj_t_Condition_CppPopulationCap:
 					goto handle_CppPopulationCap
 
-				case ffj_t_Context_CppAgeing:
+				case ffj_t_Condition_CppAgeing:
 					goto handle_CppAgeing
 
-				case ffj_t_Context_CppLifespan:
+				case ffj_t_Condition_CppLifespan:
 					goto handle_CppLifespan
 
-				case ffj_t_Context_CppS:
+				case ffj_t_Condition_CppS:
 					goto handle_CppS
 
-				case ffj_t_Context_CppA:
+				case ffj_t_Condition_CppA:
 					goto handle_CppA
 
-				case ffj_t_Context_CppTurn:
+				case ffj_t_Condition_CppTurn:
 					goto handle_CppTurn
 
-				case ffj_t_Context_CppSr:
+				case ffj_t_Condition_CppSr:
 					goto handle_CppSr
 
-				case ffj_t_Context_CppGestation:
+				case ffj_t_Condition_CppGestation:
 					goto handle_CppGestation
 
-				case ffj_t_Context_CppSexualCost:
+				case ffj_t_Condition_CppSexualCost:
 					goto handle_CppSexualCost
 
-				case ffj_t_Context_CppReproductionChance:
+				case ffj_t_Condition_CppReproductionChance:
 					goto handle_CppReproductionChance
 
-				case ffj_t_Context_CppSpawnSize:
+				case ffj_t_Condition_CppSpawnSize:
 					goto handle_CppSpawnSize
 
-				case ffj_t_Context_CppMutationFactor:
+				case ffj_t_Condition_CppMutationFactor:
 					goto handle_CppMutationFactor
 
-				case ffj_t_Context_VpPopulationStart:
+				case ffj_t_Condition_VpPopulationStart:
 					goto handle_VpPopulationStart
 
-				case ffj_t_Context_VpPopulationCap:
+				case ffj_t_Condition_VpPopulationCap:
 					goto handle_VpPopulationCap
 
-				case ffj_t_Context_VpAgeing:
+				case ffj_t_Condition_VpAgeing:
 					goto handle_VpAgeing
 
-				case ffj_t_Context_VpLifespan:
+				case ffj_t_Condition_VpLifespan:
 					goto handle_VpLifespan
 
-				case ffj_t_Context_VpStarvationPoint:
+				case ffj_t_Condition_VpStarvationPoint:
 					goto handle_VpStarvationPoint
 
-				case ffj_t_Context_VpPanicPoint:
+				case ffj_t_Condition_VpPanicPoint:
 					goto handle_VpPanicPoint
 
-				case ffj_t_Context_VpGestation:
+				case ffj_t_Condition_VpGestation:
 					goto handle_VpGestation
 
-				case ffj_t_Context_VpSexualRequirement:
+				case ffj_t_Condition_VpSexualRequirement:
 					goto handle_VpSexualRequirement
 
-				case ffj_t_Context_VpMovS:
+				case ffj_t_Condition_VpMovS:
 					goto handle_VpMovS
 
-				case ffj_t_Context_VpMovA:
+				case ffj_t_Condition_VpMovA:
 					goto handle_VpMovA
 
-				case ffj_t_Context_VpTurn:
+				case ffj_t_Condition_VpTurn:
 					goto handle_VpTurn
 
-				case ffj_t_Context_Vsr:
+				case ffj_t_Condition_Vsr:
 					goto handle_Vsr
 
-				case ffj_t_Context_Vb𝛄:
+				case ffj_t_Condition_Vb𝛄:
 					goto handle_Vb𝛄
 
-				case ffj_t_Context_V𝛄Bump:
+				case ffj_t_Condition_V𝛄Bump:
 					goto handle_V𝛄Bump
 
-				case ffj_t_Context_Vbε:
+				case ffj_t_Condition_Vbε:
 					goto handle_Vbε
 
-				case ffj_t_Context_Vmε:
+				case ffj_t_Condition_Vmε:
 					goto handle_Vmε
 
-				case ffj_t_Context_VpReproductionChance:
+				case ffj_t_Condition_VpReproductionChance:
 					goto handle_VpReproductionChance
 
-				case ffj_t_Context_VpSpawnSize:
+				case ffj_t_Condition_VpSpawnSize:
 					goto handle_VpSpawnSize
 
-				case ffj_t_Context_VpSearchChance:
+				case ffj_t_Condition_VpSearchChance:
 					goto handle_VpSearchChance
 
-				case ffj_t_Context_VpAttackChance:
+				case ffj_t_Condition_VpAttackChance:
 					goto handle_VpAttackChance
 
-				case ffj_t_Context_Vbg:
+				case ffj_t_Condition_Vbg:
 					goto handle_Vbg
 
-				case ffj_t_Context_VpCaf:
+				case ffj_t_Condition_VpCaf:
 					goto handle_VpCaf
 
-				case ffj_t_Context_VpStarvation:
+				case ffj_t_Condition_VpStarvation:
 					goto handle_VpStarvation
 
-				case ffj_t_Context_RandomAges:
+				case ffj_t_Condition_RandomAges:
 					goto handle_RandomAges
 
-				case ffj_t_Context_RNGRandomSeed:
+				case ffj_t_Condition_RNGRandomSeed:
 					goto handle_RNGRandomSeed
 
-				case ffj_t_Context_RNGSeedVal:
+				case ffj_t_Condition_RNGSeedVal:
 					goto handle_RNGSeedVal
 
-				case ffj_t_Context_Fuzzy:
+				case ffj_t_Condition_Fuzzy:
 					goto handle_Fuzzy
 
-				case ffj_t_Context_Logging:
+				case ffj_t_Condition_Logging:
 					goto handle_Logging
 
-				case ffj_t_Context_LogFreq:
+				case ffj_t_Condition_LogFreq:
 					goto handle_LogFreq
 
-				case ffj_t_Context_UseCustomLogPath:
+				case ffj_t_Condition_UseCustomLogPath:
 					goto handle_UseCustomLogPath
 
-				case ffj_t_Context_CustomLogPath:
+				case ffj_t_Condition_CustomLogPath:
 					goto handle_CustomLogPath
 
-				case ffj_t_Context_LogPath:
+				case ffj_t_Condition_LogPath:
 					goto handle_LogPath
 
-				case ffj_t_Context_Visualise:
+				case ffj_t_Condition_Visualise:
 					goto handle_Visualise
 
-				case ffj_t_Context_LimitDuration:
+				case ffj_t_Condition_LimitDuration:
 					goto handle_LimitDuration
 
-				case ffj_t_Context_FixedDuration:
+				case ffj_t_Condition_FixedDuration:
 					goto handle_FixedDuration
 
-				case ffj_t_Context_SessionIdentifier:
+				case ffj_t_Condition_SessionIdentifier:
 					goto handle_SessionIdentifier
 
-				case ffj_t_Contextno_such_key:
+				case ffj_t_Conditionno_such_key:
 					err = fs.SkipField(tok)
 					if err != nil {
 						return fs.WrapErr(err)
@@ -3534,34 +3535,34 @@ func (mj *Model) MarshalJSONBuf(buf fflib.EncodingBuffer) error {
 		}
 
 	}
-	buf.WriteString(`,"abm-cpp-pop-start":`)
+	buf.WriteString(`,"abm-cpPrey-pop-start":`)
 	fflib.FormatBits2(buf, uint64(mj.CppPopulationStart), 10, mj.CppPopulationStart < 0)
-	buf.WriteString(`,"abm-cpp-pop-cap":`)
+	buf.WriteString(`,"abm-cpPrey-pop-cap":`)
 	fflib.FormatBits2(buf, uint64(mj.CppPopulationCap), 10, mj.CppPopulationCap < 0)
 	if mj.CppAgeing {
-		buf.WriteString(`,"abm-cpp-ageing":true`)
+		buf.WriteString(`,"abm-cpPrey-ageing":true`)
 	} else {
-		buf.WriteString(`,"abm-cpp-ageing":false`)
+		buf.WriteString(`,"abm-cpPrey-ageing":false`)
 	}
-	buf.WriteString(`,"abm-cpp-lifespan":`)
+	buf.WriteString(`,"abm-cpPrey-lifespan":`)
 	fflib.FormatBits2(buf, uint64(mj.CppLifespan), 10, mj.CppLifespan < 0)
-	buf.WriteString(`,"abm-cpp-speed":`)
+	buf.WriteString(`,"abm-cpPrey-speed":`)
 	fflib.AppendFloat(buf, float64(mj.CppS), 'g', -1, 64)
-	buf.WriteString(`,"abm-cpp-acceleration":`)
+	buf.WriteString(`,"abm-cpPrey-acceleration":`)
 	fflib.AppendFloat(buf, float64(mj.CppA), 'g', -1, 64)
-	buf.WriteString(`,"abm-cpp-turn":`)
+	buf.WriteString(`,"abm-cpPrey-turn":`)
 	fflib.AppendFloat(buf, float64(mj.CppTurn), 'g', -1, 64)
-	buf.WriteString(`,"abm-cpp-sr":`)
+	buf.WriteString(`,"abm-cpPrey-sr":`)
 	fflib.AppendFloat(buf, float64(mj.CppSr), 'g', -1, 64)
-	buf.WriteString(`,"abm-cpp-gestation":`)
+	buf.WriteString(`,"abm-cpPrey-gestation":`)
 	fflib.FormatBits2(buf, uint64(mj.CppGestation), 10, mj.CppGestation < 0)
-	buf.WriteString(`,"abm-cpp-sexual-cost":`)
+	buf.WriteString(`,"abm-cpPrey-sexual-cost":`)
 	fflib.FormatBits2(buf, uint64(mj.CppSexualCost), 10, mj.CppSexualCost < 0)
-	buf.WriteString(`,"abm-cpp-reproduction-chance":`)
+	buf.WriteString(`,"abm-cpPrey-reproduction-chance":`)
 	fflib.AppendFloat(buf, float64(mj.CppReproductionChance), 'g', -1, 64)
-	buf.WriteString(`,"abm-cpp-spawn-size":`)
+	buf.WriteString(`,"abm-cpPrey-spawn-size":`)
 	fflib.FormatBits2(buf, uint64(mj.CppSpawnSize), 10, mj.CppSpawnSize < 0)
-	buf.WriteString(`,"abm-cpp-mf":`)
+	buf.WriteString(`,"abm-cpPrey-mf":`)
 	fflib.AppendFloat(buf, float64(mj.CppMutationFactor), 'g', -1, 64)
 	buf.WriteString(`,"abm-vp-pop-start":`)
 	fflib.FormatBits2(buf, uint64(mj.VpPopulationStart), 10, mj.VpPopulationStart < 0)
@@ -3888,31 +3889,31 @@ var ffj_key_Model_BG = []byte("abm-environment-background")
 
 var ffj_key_Model_Environment = []byte("abm-environment-bounds")
 
-var ffj_key_Model_CppPopulationStart = []byte("abm-cpp-pop-start")
+var ffj_key_Model_CppPopulationStart = []byte("abm-cpPrey-pop-start")
 
-var ffj_key_Model_CppPopulationCap = []byte("abm-cpp-pop-cap")
+var ffj_key_Model_CppPopulationCap = []byte("abm-cpPrey-pop-cap")
 
-var ffj_key_Model_CppAgeing = []byte("abm-cpp-ageing")
+var ffj_key_Model_CppAgeing = []byte("abm-cpPrey-ageing")
 
-var ffj_key_Model_CppLifespan = []byte("abm-cpp-lifespan")
+var ffj_key_Model_CppLifespan = []byte("abm-cpPrey-lifespan")
 
-var ffj_key_Model_CppS = []byte("abm-cpp-speed")
+var ffj_key_Model_CppS = []byte("abm-cpPrey-speed")
 
-var ffj_key_Model_CppA = []byte("abm-cpp-acceleration")
+var ffj_key_Model_CppA = []byte("abm-cpPrey-acceleration")
 
-var ffj_key_Model_CppTurn = []byte("abm-cpp-turn")
+var ffj_key_Model_CppTurn = []byte("abm-cpPrey-turn")
 
-var ffj_key_Model_CppSr = []byte("abm-cpp-sr")
+var ffj_key_Model_CppSr = []byte("abm-cpPrey-sr")
 
-var ffj_key_Model_CppGestation = []byte("abm-cpp-gestation")
+var ffj_key_Model_CppGestation = []byte("abm-cpPrey-gestation")
 
-var ffj_key_Model_CppSexualCost = []byte("abm-cpp-sexual-cost")
+var ffj_key_Model_CppSexualCost = []byte("abm-cpPrey-sexual-cost")
 
-var ffj_key_Model_CppReproductionChance = []byte("abm-cpp-reproduction-chance")
+var ffj_key_Model_CppReproductionChance = []byte("abm-cpPrey-reproduction-chance")
 
-var ffj_key_Model_CppSpawnSize = []byte("abm-cpp-spawn-size")
+var ffj_key_Model_CppSpawnSize = []byte("abm-cpPrey-spawn-size")
 
-var ffj_key_Model_CppMutationFactor = []byte("abm-cpp-mf")
+var ffj_key_Model_CppMutationFactor = []byte("abm-cpPrey-mf")
 
 var ffj_key_Model_VpPopulationStart = []byte("abm-vp-pop-start")
 

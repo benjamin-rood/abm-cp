@@ -2,8 +2,8 @@ package abm
 
 import "github.com/benjamin-rood/abm-cp/calc"
 
-// RBB = Rule Based Behaviour that each cpp agent engages in once per turn, counts as the agent's action for that turn/phase.
-func (c *ColourPolymorphicPrey) RBB(ctxt Context, popSize int) (newpop []ColourPolymorphicPrey) {
+// RBB = Rule Based Behaviour that each cpPrey agent engages in once per turn, counts as the agent's action for that turn/phase.
+func (c *ColourPolymorphicPrey) RBB(ctxt Condition, popSize int) (newpop []ColourPolymorphicPrey) {
 	newkids := []ColourPolymorphicPrey{}
 	jump := ""
 	// BEGIN

@@ -1,5 +1,5 @@
 function DrawList(obj) {
-  this.cpp = obj.data.cpp
+  this.cpPrey = obj.data.cpPrey
   this.vp = obj.data.vp
   this.bg = obj.data.bg
 }
@@ -7,7 +7,7 @@ function DrawList(obj) {
 var initDrawObj = {
   type: 'drawlist',
   data: {
-    cpp: [],
+    cpPrey: [],
     vp: [],
     bg: {
       red: 0,
@@ -31,11 +31,11 @@ var sketch = function(p) {
   p.draw = function() {
     p.background(drawlist.bg.red, drawlist.bg.green, drawlist.bg.blue)
 
-    if drawlist.cpp {
-      for (var i = 0; i < drawlist.cpp.length; i++) {
-        var x = absToView(drawlist.cpp[i].position.x, modelDw, p.width)
-        var y = absToView(drawlist.cpp[i].position.y, modelDh, p.height)
-        var col = p.color(drawlist.cpp[i].colour.red, drawlist.cpp[i].colour.green, drawlist.cpp[i].colour.blue)
+    if drawlist.cpPrey {
+      for (var i = 0; i < drawlist.cpPrey.length; i++) {
+        var x = absToView(drawlist.cpPrey[i].position.x, modelDw, p.width)
+        var y = absToView(drawlist.cpPrey[i].position.y, modelDh, p.height)
+        var col = p.color(drawlist.cpPrey[i].colour.red, drawlist.cpPrey[i].colour.green, drawlist.cpPrey[i].colour.blue)
         p.strokeWeight(8)
         p.stroke(col)
         p.point(x, y)

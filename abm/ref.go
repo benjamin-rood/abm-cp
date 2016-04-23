@@ -57,7 +57,7 @@ const (
 	dLogging               = false
 	dVisualise             = true
 	dLimitDuration         = false
-	dSessionIdentifier     = "DefaultContextSession"
+	dSessionIdentifier     = "DefaultConditionSession"
 
 	testStamp = "TESTING ONLY"
 
@@ -100,7 +100,7 @@ const (
 	tCustomLogPath         = ""
 	tLimitDuration         = true
 	tFixedDuration         = 10 // two turns only
-	tSessionIdentifier     = "TestContextSession"
+	tSessionIdentifier     = "TestConditionSession"
 	tVbg                   = 20
 	tVbε                   = 3
 )
@@ -116,8 +116,8 @@ var (
 		BG:             DefaultBG,
 	}
 
-	// DefaultContext to be used as a baseline example
-	DefaultContext = Context{
+	// DefaultCondition to be used as a baseline example
+	DefaultCondition = Condition{
 		Environment:           DefaultEnvironment,
 		CppPopulationStart:    dCppPopStart,
 		CppPopulationCap:      dCppPopCap,
@@ -156,8 +156,8 @@ var (
 		Fuzzy:                 dFuzzy,
 	}
 
-	// TestContext to be used for unit testing.
-	TestContext = Context{
+	// TestCondition to be used for unit testing.
+	TestCondition = Condition{
 		Environment:           DefaultEnvironment,
 		CppPopulationStart:    tCppPopStart,
 		CppPopulationCap:      tCppPopCap,

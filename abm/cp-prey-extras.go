@@ -25,20 +25,20 @@ func (c *ColourPolymorphicPrey) String() string {
 
 // extra CPP functions for testing/benchmarking:
 
-func cppTesterAgent(xPos float64, yPos float64) (tester ColourPolymorphicPrey) {
-	tester = cppTestPop(1)[0]
+func cpPreyTesterAgent(xPos float64, yPos float64) (tester ColourPolymorphicPrey) {
+	tester = cpPreyTestPop(1)[0]
 	tester.pos[x] = xPos
 	tester.pos[y] = yPos
 	return
 }
 
 func newCppTesterAgent(xPos float64, yPos float64) *ColourPolymorphicPrey {
-	tester := cppTestPop(1)[0]
+	tester := cpPreyTestPop(1)[0]
 	tester.pos[x] = xPos
 	tester.pos[y] = yPos
 	return &tester
 }
 
-func cppTestPop(size int) []ColourPolymorphicPrey {
-	return GeneratePopulationCPP(size, 0, 0, TestContext, testStamp)
+func cpPreyTestPop(size int) []ColourPolymorphicPrey {
+	return GeneratePopulationCPP(size, 0, 0, TestCondition, testStamp)
 }

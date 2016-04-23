@@ -21,8 +21,8 @@ func TestCPPComparitorSort(t *testing.T) {
 	prey := []ColourPolymorphicPrey{}
 
 	for i := 1; i <= 10; i++ {
-		agentA := cppTesterAgent(calc.RandFloatIn(-1, 1), calc.RandFloatIn(-1, 1))
-		agentB := cppTesterAgent(calc.RandFloatIn(-1, 1), calc.RandFloatIn(-1, 1))
+		agentA := cpPreyTesterAgent(calc.RandFloatIn(-1, 1), calc.RandFloatIn(-1, 1))
+		agentB := cpPreyTesterAgent(calc.RandFloatIn(-1, 1), calc.RandFloatIn(-1, 1))
 		agentA.colouration = colour.RGB{Red: rand.Float64(), Green: rand.Float64(), Blue: rand.Float64()}
 		agentB.colouration = colour.RGB{Red: rand.Float64(), Green: rand.Float64(), Blue: rand.Float64()}
 		prey = append(prey, agentA)
@@ -67,8 +67,8 @@ func TestOptimalAttackVectorSort(t *testing.T) {
 	prey := []ColourPolymorphicPrey{}
 
 	for i := 1; i <= 10; i++ {
-		agentA := cppTesterAgent(calc.RandFloatIn(-1, 1), calc.RandFloatIn(-1, 1))
-		agentB := cppTesterAgent(calc.RandFloatIn(-1, 1), calc.RandFloatIn(-1, 1))
+		agentA := cpPreyTesterAgent(calc.RandFloatIn(-1, 1), calc.RandFloatIn(-1, 1))
+		agentB := cpPreyTesterAgent(calc.RandFloatIn(-1, 1), calc.RandFloatIn(-1, 1))
 		agentA.colouration = colour.RGB{Red: rand.Float64(), Green: rand.Float64(), Blue: rand.Float64()}
 		agentB.colouration = colour.RGB{Red: rand.Float64(), Green: rand.Float64(), Blue: rand.Float64()}
 		prey = append(prey, agentA)
