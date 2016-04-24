@@ -116,11 +116,11 @@ package abm
 //
 // func TestProximitySort(t *testing.T) {
 // 	prey := []*ColourPolymorphicPrey{
-// 		newCppTesterAgent(0.0, 0.40),
-// 		newCppTesterAgent(0.35, 0.0),
-// 		newCppTesterAgent(0.0, -0.3),
-// 		newCppTesterAgent(-0.25, 0.0),
-// 		newCppTesterAgent(0.1, 0.1),
+// 		newCpPreyTesterAgent(0.0, 0.40),
+// 		newCpPreyTesterAgent(0.35, 0.0),
+// 		newCpPreyTesterAgent(0.0, -0.3),
+// 		newCpPreyTesterAgent(-0.25, 0.0),
+// 		newCpPreyTesterAgent(0.1, 0.1),
 // 	}
 //
 // 	predator := vpTesterAgent(0.0, 0.0)

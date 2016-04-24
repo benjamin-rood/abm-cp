@@ -14,6 +14,29 @@ import (
 	"github.com/benjamin-rood/gobr"
 )
 
+// Model acts as the working instance of the modelling session / 'game'
+type Model struct {
+	timestamp       string // instance inception time
+	running         bool
+	Timeframe       //  embedded Model clock
+	Environment     //  embedded environment attributes
+	ConditionParams //	embedded local model conditions and constraints
+
+	popCpPrey         []ColourPolymorphicPrey // current prey agent population
+	popVisualPredator []VisualPredator        // current predator agent population
+
+	Om         chan gobr.OutMsg        // Outgoing WebSckt channel
+	Im         chan gobr.InMsg         // Incoming WebSckt channel
+	e          chan error              // error message channel
+	Quit       chan struct{}           // WebSckt monitor signal
+	rc         chan struct{}           // run signal
+	render     chan render.AgentRender // vis message channel
+	turnSignal *gobr.SignalHub         // synchronisation
+
+	Stats  //	embedded global agent population statistics
+	DatBuf //	embedded buffer of last turn agent pop record for log
+}
+
 /*
 Environment specifies the boundary / dimensions of the working model. They
 extend in both positive and negative directions, oriented at the center. Setting
@@ -27,77 +50,66 @@ type Environment struct {
 	BG             colour.RGB `json:"abm-environment-background"`
 }
 
-// Condition contains the local model condition;
-type Condition struct {
-	Environment           `json:"abm-environment-bounds"` // d value for each axis
-	CppPopulationStart    int                             `json:"abm-cpPrey-pop-start"`                // starting CPP agent population size
-	CppPopulationCap      int                             `json:"abm-cpPrey-pop-cap"`                  //
-	CppAgeing             bool                            `json:"abm-cpPrey-ageing"`                   //
-	CppLifespan           int                             `json:"abm-cpPrey-lifespan"`                 //	CPP agent lifespan
-	CppS                  float64                         `json:"abm-cpPrey-speed"`                    // CPP agent speed
-	CppA                  float64                         `json:"abm-cpPrey-acceleration"`             // CPP agent acceleration
-	CppTurn               float64                         `json:"abm-cpPrey-turn"`                     //	CPP agent turn rate / range (in radians)
-	CppSr                 float64                         `json:"abm-cpPrey-sr"`                       // CPP agent search range for mating
-	CppGestation          int                             `json:"abm-cpPrey-gestation"`                //	CPP gestation period
-	CppSexualCost         int                             `json:"abm-cpPrey-sexual-cost"`              //	CPP sexual rest cost
-	CppReproductionChance float64                         `json:"abm-cpPrey-reproduction-chance"`      //	chance of CPP copulation success.
-	CppSpawnSize          int                             `json:"abm-cpPrey-spawn-size"`               // possible number of progeny = [1, max]
-	CppMutationFactor     float64                         `json:"abm-cpPrey-mf"`                       //	mutation factor
-	VpPopulationStart     int                             `json:"abm-vp-pop-start"`                    //	starting VP agent population size
-	VpPopulationCap       int                             `json:"abm-vp-pop-cap"`                      //
-	VpAgeing              bool                            `json:"abm-vp-ageing"`                       //
-	VpLifespan            int                             `json:"abm-vp-lifespan"`                     //	Visual Predator lifespan
-	VpStarvationPoint     int                             `json:"abm-vp-starvation-point"`             //
-	VpPanicPoint          int                             `json:"abm-vp-panic-point"`                  //
-	VpGestation           int                             `json:"abm-vp-gestation"`                    //	Visual Predator gestation period
-	VpSexualRequirement   int                             `json:"abm-vp-sex-req"`                      //
-	VpMovS                float64                         `json:"abm-vp-speed"`                        // Visual Predator speed
-	VpMovA                float64                         `json:"abm-vp-acceleration"`                 // Visual Predator acceleration
-	VpTurn                float64                         `json:"abm-vp-turn"`                         //	Visual Predator turn rate / range (in radians)
-	Vsr                   float64                         `json:"abm-vp-vsr"`                          //	VP agent visual search range
-	Vb𝛄                   float64                         `json:"abm-vp-visual-search-tolerance"`      //
-	V𝛄Bump                float64                         `json:"abm-vp-visual-search-tolerance-bump"` //
-	Vbε                   float64                         `json:"abm-vp-baseline-col-sig-strength"`    // 	baseline colour signal strength factor
-	Vmε                   float64                         `json:"abm-vp-max-col-sig-strength"`         // 	max limit colour signal strength factor
-	VpReproductionChance  float64                         `json:"abm-vp-reproduction-chance"`          //	chance of VP copulation success.
-	VpSpawnSize           int                             `json:"abm-vp-spawn-size"`                   //
-	VpSearchChance        float64                         `json:"abm-vp-vsr-chance"`                   //
-	VpAttackChance        float64                         `json:"abm-vp-attack-chance"`                //
-	Vbg                   float64                         `json:"abm-vp-baseline-attack-gain"`         //
-	VpCaf                 float64                         `json:"abm-vp-col-adaptation-factor"`        //
-	VpStarvation          bool                            `json:"abm-vp-starvation"`                   //
-	RandomAges            bool                            `json:"abm-random-ages"`                     //
-	RNGRandomSeed         bool                            `json:"abm-rng-random-seed"`                 //	flag for using server-set random seed val.
-	RNGSeedVal            int64                           `json:"abm-rng-seedval"`                     //	RNG seed value
-	Fuzzy                 float64                         `json:"abm-rng-fuzziness"`                   //
-	Logging               bool                            `json:"abm-logging-flag"`                    //	log abm on/off
-	LogFreq               int                             `json:"abm-log-frequency"`                   // how many turns between writing log files.
-	UseCustomLogPath      bool                            `json:"abm-use-custom-log-filepath"`         //
-	CustomLogPath         string                          `json:"abm-custom-log-filepath"`             //
-	LogPath               string                          `json:"abm-log-filepath"`                    //
-	Visualise             bool                            `json:"abm-visualise-flag"`                  //	Visualise on/off
-	LimitDuration         bool                            `json:"abm-limit-duration"`                  //
-	FixedDuration         int                             `json:"abm-fixed-duration"`                  // fixed abm running length.
-	SessionIdentifier     string                          `json:"abm-session-identifier"`              //	user-friendly string (from client) to identify session
-}
-
-// PopulationCPP holds the agent population
-type PopulationCPP struct {
-	PopCPP        []ColourPolymorphicPrey
-	DefinitionCPP []string //	lists agent interfaces which define the behaviour of this type
-}
-
-// PopulationVP holds the agent population
-type PopulationVP struct {
-	PopVP        []VisualPredator
-	DefinitionVP []string //	lists agent interfaces which define the behaviour of this type
+// ConditionParams groups the CONSTANT LOCAL model conditions and constraints into a single set
+type ConditionParams struct {
+	Environment              `json:"abm-environment"` //	embedded model environment
+	CpPreyPopulationStart    int                      `json:"abm-cp-prey-pop-start"`               // starting Prey agent population size
+	CpPreyPopulationCap      int                      `json:"abm-cp-prey-pop-cap"`                 //
+	CpPreyAgeing             bool                     `json:"abm-cp-prey-ageing"`                  //
+	CpPreyLifespan           int                      `json:"abm-cp-prey-lifespan"`                // Prey agent lifespan
+	CpPreyS                  float64                  `json:"abm-cp-prey-speed"`                   // Prey agent speed
+	CpPreyA                  float64                  `json:"abm-cp-prey-acceleration"`            // Prey agent acceleration
+	CpPreyTurn               float64                  `json:"abm-cp-prey-turn"`                    // Prey agent turn rate / range (in radians)
+	CpPreySr                 float64                  `json:"abm-cp-prey-sr"`                      // Prey agent search range for mating
+	CpPreyGestation          int                      `json:"abm-cp-prey-gestation"`               // Prey gestation period
+	CpPreySexualCost         int                      `json:"abm-cp-prey-sexual-cost"`             // Prey sexual rest cost
+	CpPreyReproductionChance float64                  `json:"abm-cp-prey-reproduction-chance"`     // chance of CP Prey  copulation success.
+	CpPreySpawnSize          int                      `json:"abm-cp-prey-spawn-size"`              // possible number of progeny = [1, max]
+	CpPreyMutationFactor     float64                  `json:"abm-cp-prey-mf"`                      // mutation factor
+	VpPopulationStart        int                      `json:"abm-vp-pop-start"`                    // starting Predator agent population size
+	VpPopulationCap          int                      `json:"abm-vp-pop-cap"`                      //
+	VpAgeing                 bool                     `json:"abm-vp-ageing"`                       //
+	VpLifespan               int                      `json:"abm-vp-lifespan"`                     // Visual Predator lifespan
+	VpStarvationPoint        int                      `json:"abm-vp-starvation-point"`             //
+	VpPanicPoint             int                      `json:"abm-vp-panic-point"`                  //
+	VpGestation              int                      `json:"abm-vp-gestation"`                    // Visual Predator gestation period
+	VpSexualRequirement      int                      `json:"abm-vp-sex-req"`                      //
+	VpMovS                   float64                  `json:"abm-vp-speed"`                        // Visual Predator speed
+	VpMovA                   float64                  `json:"abm-vp-acceleration"`                 // Visual Predator acceleration
+	VpTurn                   float64                  `json:"abm-vp-turn"`                         // Visual Predator turn rate / range (in radians)
+	VpVsr                    float64                  `json:"abm-vp-vsr"`                          // Visual Predator visual search range
+	VpVb𝛄                    float64                  `json:"abm-vp-visual-search-tolerance"`      //
+	VpV𝛄Bump                 float64                  `json:"abm-vp-visual-search-tolerance-bump"` //
+	VpVbε                    float64                  `json:"abm-vp-baseline-col-sig-strength"`    // baseline colour signal strength factor
+	VpVmε                    float64                  `json:"abm-vp-max-col-sig-strength"`         // max limit colour signal strength factor
+	VpReproductionChance     float64                  `json:"abm-vp-reproduction-chance"`          // chance of VP copulation success.
+	VpSpawnSize              int                      `json:"abm-vp-spawn-size"`                   //
+	VpSearchChance           float64                  `json:"abm-vp-vsr-chance"`                   //
+	VpAttackChance           float64                  `json:"abm-vp-attack-chance"`                //
+	VpBaseAttackGain         float64                  `json:"abm-vp-baseline-attack-gain"`         //
+	VpCaf                    float64                  `json:"abm-vp-col-adaptation-factor"`        //
+	VpStarvation             bool                     `json:"abm-vp-starvation"`                   //
+	RandomAges               bool                     `json:"abm-random-ages"`                     //	flag determining if agent ages are randomised
+	RNGRandomSeed            bool                     `json:"abm-rng-random-seed"`                 // flag for using server-set random seed val.
+	RNGSeedVal               int64                    `json:"abm-rng-seedval"`                     // RNG seed value
+	Fuzzy                    float64                  `json:"abm-rng-fuzziness"`                   //	random 'fuzziness' offset
+	Logging                  bool                     `json:"abm-logging-flag"`                    // log abm on/off
+	LogFreq                  int                      `json:"abm-log-frequency"`                   // # of turns between writing log files. Default = 0
+	UseCustomLogPath         bool                     `json:"abm-use-custom-log-filepath"`         //
+	CustomLogPath            string                   `json:"abm-custom-log-filepath"`             //
+	LogPath                  string                   `json:"abm-log-filepath"`                    //	Default logging filepath unless UseCustomLogPath is ON
+	Visualise                bool                     `json:"abm-visualise-flag"`                  // Visualisation on/off
+	VisFreq                  int                      `json:"abm-visualise-freq"`                  //	# of turns between sending draw instructions to web client. Default = 0
+	LimitDuration            bool                     `json:"abm-limit-duration"`                  //
+	FixedDuration            int                      `json:"abm-fixed-duration"`                  // fixed abm running length.
+	SessionIdentifier        string                   `json:"abm-session-identifier"`              // user-friendly string (from client) to identify session
 }
 
 /*
 Timeframe holds the model's representation of the time metrics.
 Turn – The cycle length for all agents ∈ 𝐄 to perform 1 (and only 1) Action.
 Phase – Division of a Turn, between agent sets, environmental effects/factors,
-				and updates to populations and model conditions (via external).
+				and updates to populations and model conditionss (via external).
 				One Phase is complete when all members of a set have performed an Action
 				or all requirements for the model's continuation have been fulfilled.
 Action – An individual 'step' in the model. All Actions have a cost:
@@ -119,10 +131,11 @@ func (t *Timeframe) Reset() {
 
 // Stats holds global statistics of the model instance.
 type Stats struct {
-	numCppCreated  int
-	numVpCreated   int
-	numCppEaten    int
-	numCpPreyDeath int
+	numCpPreyCreated int
+	numCpPreyEaten   int
+	numCpPreyDeath   int
+	numVpCreated     int
+	numVpDeath       int
 }
 
 // DatBuf is a wrapper for the buffered agent data saved for logging.
@@ -131,27 +144,6 @@ type DatBuf struct {
 	rcpPreyRW sync.RWMutex
 	recordVP  map[string]VisualPredator
 	rvpRW     sync.RWMutex
-}
-
-// Model acts as the working instance of the 'game'
-type Model struct {
-	timestamp string //	instance creation time
-	running   bool
-	Dead      bool
-	Timeframe
-	Environment
-	Condition
-	PopulationCPP
-	PopulationVP
-	Stats
-	DatBuf
-	Om         chan gobr.OutMsg
-	Im         chan gobr.InMsg
-	e          chan error              //	error message channel (general)
-	Quit       chan struct{}           //	instance signaling
-	rc         chan struct{}           //	run signalling
-	render     chan render.AgentRender //	visualisation message channel
-	turnSignal *gobr.SignalHub         //	turn signalling and broadcasting
 }
 
 // AgentDescription used to aid for logging / debugging - used at time of agent creation
@@ -170,7 +162,7 @@ func NewModel() *Model {
 	m.running = false
 	m.Timeframe = Timeframe{}
 	m.Environment = DefaultEnvironment
-	m.Condition = DefaultCondition
+	m.ConditionParams = DefaultConditionParams
 	m.LogPath = path.Join(os.Getenv("HOME")+os.Getenv("HOMEPATH"), abmlogPath, m.SessionIdentifier, m.timestamp)
 	m.recordCPP = make(map[string]ColourPolymorphicPrey)
 	m.recordVP = make(map[string]VisualPredator)
@@ -188,8 +180,8 @@ func NewModel() *Model {
 // shit version
 func (m *Model) PopLog() {
 	log.Printf("%04dT : %04dP : %04dA\n", m.Turn, m.Phase, m.Action)
-	log.Printf("cpPrey population size = %v\n", len(m.PopCPP))
-	log.Printf("vp population size = %v\n", len(m.PopVP))
+	log.Printf("cpPrey population size = %v\n", len(m.popCpPrey))
+	log.Printf("vp population size = %v\n", len(m.popVisualPredator))
 }
 
 func uuid() string {

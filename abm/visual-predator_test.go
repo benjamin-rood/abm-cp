@@ -75,7 +75,7 @@ func TestSearchAndAttack(t *testing.T) {
 		t.Errorf(err.Error())
 		return
 	}
-	success := predator.Attack(target, TestCondition)
+	success := predator.Attack(target, TestConditionParams)
 	if !success {
 		t.Errorf("Attack unsuccessful.")
 	}

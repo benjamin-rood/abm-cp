@@ -12,29 +12,24 @@ func (m *Model) run(ec chan<- error) {
 	for {
 		select {
 		case <-m.rc:
-			_ = "breakpoint"                                // godebug
 			gobr.WaitForSignalOnce(signature, m.turnSignal) // block while waiting for turn to end.
 			time.Sleep(pause)
 			return
 		case <-m.Quit:
-			_ = "breakpoint"                                // godebug
 			gobr.WaitForSignalOnce(signature, m.turnSignal) // block while waiting for turn to end.
 			ec <- m.Stop()
 			time.Sleep(pause)
 			return
 		default:
-			_ = "breakpoint" // godebug
 			if m.LimitDuration && m.Turn >= m.FixedDuration {
 				ec <- m.Stop()
 				return
 			}
-			if (len(m.PopCPP) == 0) || (len(m.PopVP) == 0) {
+			if (len(m.popCpPrey) == 0) || (len(m.popVisualPredator) == 0) {
 				ec <- m.Stop()
 				return
 			}
 			m.turn(ec) //	PROCEED WITH TURN
-			// m.PopLog()
-			// time.Sleep(100 * time.Millisecond)
 		}
 	}
 }
@@ -44,7 +39,7 @@ func (m *Model) turn(errCh chan<- error) {
 	var cpPreyAgentWg sync.WaitGroup
 	var cpPreyAgents []ColourPolymorphicPrey
 
-	for i := range m.PopCPP {
+	for i := range m.popCpPrey {
 		cpPreyAgentWg.Add(1)
 		go func(agent ColourPolymorphicPrey) {
 			defer func() {
@@ -54,7 +49,7 @@ func (m *Model) turn(errCh chan<- error) {
 					errCh <- m.cpPreyRecordAssignValue(agent.UUID(), agent)
 				}
 			}()
-			result := agent.RBB(m.Condition, len(m.PopCPP))
+			result := agent.RBB(m.ConditionParams, len(m.popCpPrey))
 			if m.Visualise {
 				m.render <- agent.GetDrawInfo()
 			}
@@ -62,30 +57,27 @@ func (m *Model) turn(errCh chan<- error) {
 			cpPreyAgents = append(cpPreyAgents, result...)
 			am.Unlock()
 			m.Action++
-		}(m.PopCPP[i])
+		}(m.popCpPrey[i])
 	}
 
 	cpPreyAgentWg.Wait()
-	m.PopCPP = cpPreyAgents //	update the population based on the results from each agent's rule-based behaviour of the turn.
+	m.popCpPrey = cpPreyAgents //	update the population based on the results from each agent's rule-based behaviour of the turn.
 	m.Phase++
 	m.Action = 0 // reset at phase end
 	time.Sleep(time.Millisecond * 20)
 	_ = "breakpoint" // godebug
-	// var vpAgentWg sync.WaitGroup
+
 	var vpAgents []VisualPredator
 
-	for i := range m.PopVP {
-		// vpAgentWg.Add(1)
+	for i := range m.popVisualPredator {
 		func(agent VisualPredator) {
-			_ = "breakpoint" // godebug
 			defer func() {
-				// vpAgentWg.Done()
 				if m.Logging {
 					// do this copying to the record in a goroutine once proven stable and safe!
 					errCh <- m.vpRecordAssignValue(agent.UUID(), agent)
 				}
 			}()
-			result := agent.RBB(errCh, m.Condition, m.numVpCreated, m.Turn, m.PopCPP, m.PopVP, i)
+			result := agent.RBB(errCh, m.ConditionParams, m.numVpCreated, m.Turn, m.popCpPrey, m.popVisualPredator, i)
 			if m.Visualise {
 				m.render <- agent.GetDrawInfo()
 			}
@@ -94,11 +86,10 @@ func (m *Model) turn(errCh chan<- error) {
 			vpAgents = append(vpAgents, result...)
 			am.Unlock()
 			m.Action++
-		}(m.PopVP[i])
+		}(m.popVisualPredator[i])
 	}
 
-	// vpAgentWg.Wait()
-	m.PopVP = vpAgents //	update the population based on the results from each agent's rule-based behaviour of the turn.
+	m.popVisualPredator = vpAgents //	update the population based on the results from each agent's rule-based behaviour of the turn.
 	m.Phase++
 	m.Action = 0                  // reset at phase end
 	m.Phase = 0                   // reset at Turn end

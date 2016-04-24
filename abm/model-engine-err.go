@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// ErrPrinter is the most basic error channel handler – it simply prints error messages.
 func (m *Model) ErrPrinter() {
 	for {
 		select {

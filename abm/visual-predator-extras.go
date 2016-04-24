@@ -74,7 +74,7 @@ func (vp *VisualPredator) String() string {
 	buffer.WriteString(fmt.Sprintf("𝚯=%v\n", vp.𝚯))
 	buffer.WriteString(fmt.Sprintf("dir=(%v,%v)\n", vp.dir[x], vp.dir[y]))
 	buffer.WriteString(fmt.Sprintf("tr=%v\n", vp.tr))
-	buffer.WriteString(fmt.Sprintf("Vsr=%v\n", vp.vsr))
+	buffer.WriteString(fmt.Sprintf("VpVsr=%v\n", vp.vsr))
 	buffer.WriteString(fmt.Sprintf("lifespan=%v\n", vp.lifespan))
 	buffer.WriteString(fmt.Sprintf("hunger=%v\n", vp.hunger))
 	buffer.WriteString(fmt.Sprintf("fertility=%v\n", vp.fertility))
@@ -94,7 +94,7 @@ func vpTesterAgent(xPos float64, yPos float64) (tester VisualPredator) {
 
 // colourImprinting updates VP colour / visual recognition bias
 // Uses a bias / weighting value, 𝜎 (sigma) to control the degree of
-// adaptation VP will make to differences in 'eaten' CPP colours.
+// adaptation VP will make to differences in 'eaten' CP Prey  colours.
 func (vp *VisualPredator) colourImprinting(target colour.RGB, 𝜎 float64) {
 	𝚫red := (vp.τ.Red - target.Red) * 𝜎
 	𝚫green := (vp.τ.Green - target.Green) * 𝜎
@@ -105,7 +105,7 @@ func (vp *VisualPredator) colourImprinting(target colour.RGB, 𝜎 float64) {
 }
 
 func vpTestPop(size int) []VisualPredator {
-	return GeneratePopulationVP(size, 0, 0, TestCondition, testStamp)
+	return GenerateVPredatorPopulation(size, 0, 0, TestConditionParams, testStamp)
 }
 
 // VSRSectorSampling checks which sectors the VP agent's

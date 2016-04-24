@@ -15,71 +15,71 @@ import (
 
 // VisualPredator - Predator agent type for Predator-Prey ABM
 type VisualPredator struct {
-	uuid          string //	do not export this field!
-	description   AgentDescription
-	pos           geometry.Vector //	position in the environment
-	movS          float64         //	speed	/ movement range per turn
-	movA          float64         //	acceleration
-	tr            float64         // turn rate / range (in radians)
-	dir           geometry.Vector //	must be implemented as a unit vector
-	𝚯             float64         //	 heading angle
-	lifespan      int
-	hunger        int        //	counter for interval between needing food
-	attackSuccess bool       //	if during the turn, the VP agent successfully ate a CP prey agent
-	fertility     int        //	counter for interval between birth and sex
-	gravid        bool       //	i.e. pregnant
-	vsr           float64    //	visual search range
-	𝛄             float64    // search target / colour variation tolerance
-	τ             colour.RGB //	imprinted target / colour specialisation value
-	ετ            float64    //	imprinting / colour specialisation strength
+	uuid          string           // identifier for logging/debug
+	description   AgentDescription // description for logging/debug purposes
+	pos           geometry.Vector  //	position in the environment
+	movS          float64          //	speed	/ movement range per turn
+	movA          float64          //	acceleration
+	tr            float64          // turn rate / range (in radians)
+	dir           geometry.Vector  //	must be implemented as a unit vector
+	𝚯             float64          // heading angle
+	lifespan      int              //	number of turns remaining before agent death
+	hunger        int              //	counter for interval between needing food
+	attackSuccess bool             //	if during the turn, the VP agent successfully ate a CP prey agent
+	fertility     int              //	counter for interval between birth and sex
+	gravid        bool             //	i.e. pregnant
+	vsr           float64          //	visual search range
+	𝛄             float64          // search target / colour variation tolerance
+	τ             colour.RGB       //	imprinted target / colour specialisation value
+	ετ            float64          //	imprinting / colour specialisation strength
 }
 
-// GeneratePopulationVP will create `size` number of Visual Predator agents
-func GeneratePopulationVP(size int, start int, mt int, condition Condition, timestamp string) []VisualPredator {
+// GenerateVPredatorPopulation will create `size` number of Visual Predator agents
+func GenerateVPredatorPopulation(size int, start int, mt int, conditions ConditionParams, timestamp string) []VisualPredator {
 	pop := []VisualPredator{}
 	for i := 0; i < size; i++ {
 		agent := VisualPredator{}
 		agent.uuid = uuid()
 		agent.description = AgentDescription{AgentType: "vp", AgentNum: start + i, ParentUUID: "", CreatedMT: mt, CreatedAT: timestamp}
-		agent.pos = geometry.RandVector(condition.Bounds)
-		if condition.VpAgeing {
-			if condition.RandomAges {
-				agent.lifespan = calc.RandIntIn(int(float64(condition.VpLifespan)*0.7), int(float64(condition.VpLifespan)*1.3))
+		agent.pos = geometry.RandVector(conditions.Bounds)
+		if conditions.VpAgeing {
+			if conditions.RandomAges {
+				agent.lifespan = calc.RandIntIn(int(float64(conditions.VpLifespan)*0.7), int(float64(conditions.VpLifespan)*1.3))
 			} else {
-				agent.lifespan = condition.VpLifespan
+				agent.lifespan = conditions.VpLifespan
 			}
 		} else {
 			agent.lifespan = 99999
 		}
-		agent.movS = condition.VpMovS
-		agent.movA = condition.VpMovA
+		agent.movS = conditions.VpMovS
+		agent.movA = conditions.VpMovA
 		agent.𝚯 = rand.Float64() * (2 * math.Pi)
 		agent.dir = geometry.UnitVector(agent.𝚯)
-		agent.tr = condition.VpTurn
-		agent.vsr = condition.Vsr
-		agent.𝛄 = condition.Vb𝛄 //	baseline search tolerance level
-		agent.hunger = condition.VpSexualRequirement + 1
+		agent.tr = conditions.VpTurn
+		agent.vsr = conditions.VpVsr
+		agent.𝛄 = conditions.VpVb𝛄 //	baseline search tolerance level
+		agent.hunger = conditions.VpSexualRequirement + 1
 		agent.fertility = 1
 		agent.gravid = false
 		agent.τ = colour.RandRGB()
-		agent.ετ = condition.Vbε
+		agent.ετ = conditions.VpVbε
 		pop = append(pop, agent)
 	}
 	return pop
 }
 
-func vpSpawn(size int, start int, mt int, parent VisualPredator, condition Condition, timestamp string) []VisualPredator {
+func vpSpawn(size int, start int, mt int, parent VisualPredator, conditions ConditionParams, timestamp string) []VisualPredator {
 	pop := []VisualPredator{}
 	for i := 0; i < size; i++ {
 		agent := parent
 		agent.uuid = uuid()
 		agent.description = AgentDescription{AgentType: "vp", AgentNum: start + i, ParentUUID: parent.uuid, CreatedMT: mt, CreatedAT: timestamp}
 		agent.pos = parent.pos
-		if condition.VpAgeing {
-			if condition.RandomAges {
-				agent.lifespan = calc.RandIntIn(int(float64(condition.VpLifespan)*0.7), int(float64(condition.VpLifespan)*1.3))
+		if conditions.VpAgeing {
+			if conditions.RandomAges {
+				agent.lifespan = calc.RandIntIn(int(float64(conditions.VpLifespan)*0.7), int(float64(conditions.VpLifespan)*1.3))
 			} else {
-				agent.lifespan = condition.VpLifespan
+				agent.lifespan = conditions.VpLifespan
 			}
 		} else {
 			agent.lifespan = 99999
@@ -90,11 +90,11 @@ func vpSpawn(size int, start int, mt int, parent VisualPredator, condition Condi
 		agent.dir = parent.dir
 		agent.tr = parent.tr
 		agent.vsr = parent.vsr
-		agent.hunger = condition.VpSexualRequirement + 1
+		agent.hunger = conditions.VpSexualRequirement + 1
 		agent.fertility = 1
 		agent.gravid = false
 		agent.τ = colour.RandRGBClamped(parent.τ, 0.5) //	random offset (up to 50%) deviation from parent's target colour
-		agent.ετ = condition.Vbε
+		agent.ετ = conditions.VpVbε
 		pop = append(pop, agent)
 	}
 	return pop
@@ -157,35 +157,35 @@ func (vp *VisualPredator) PreySearch(prey []ColourPolymorphicPrey) (*ColourPolym
 }
 
 // Attack VP agent attempts to attack CP prey agent
-func (vp *VisualPredator) Attack(prey *ColourPolymorphicPrey, ctxt Condition) bool {
+func (vp *VisualPredator) Attack(prey *ColourPolymorphicPrey, conditions ConditionParams) bool {
 	if prey == nil {
 		return false
 	}
 	α := rand.Float64()
-	if α > (1 - ctxt.VpAttackChance) {
+	if α > (1 - conditions.VpAttackChance) {
 		vp.attackSuccess = true
-		vp.colourImprinting(prey.colouration, ctxt.VpCaf)
+		vp.colourImprinting(prey.colouration, conditions.VpCaf)
 		c := vp.ετ
 		𝒇 := visualSignalStrength(c)
 		𝛘 := colour.RGBDistance(vp.τ, prey.colouration)
-		Vg := 𝒇(𝛘) * ctxt.Vbg
+		Vg := 𝒇(𝛘) * conditions.VpBaseAttackGain
 		vp.hunger -= int(Vg)
 		if vp.hunger < 0 {
 			vp.hunger = 0
 		}
 		prey.lifespan = 0 //	i.e. prey agent is flagged for removal at the beginning of next turn and will not be drawn again.
-		if ctxt.Vmε > vp.ετ {
+		if conditions.VpVmε > vp.ετ {
 			vp.ετ++
 		}
-		if vp.𝛄 > ctxt.Vb𝛄 {
-			vp.𝛄 *= (1 - ctxt.V𝛄Bump) //	returning towards condition-defined value
+		if vp.𝛄 > conditions.VpVb𝛄 {
+			vp.𝛄 *= (1 - conditions.VpV𝛄Bump) //	returning towards conditions-defined value
 		}
 		return vp.attackSuccess
 	}
 	// FAILURE
 	vp.attackSuccess = false
 	// MAYBE THIS SHOULD BE DETERMINED IF STARVING OR NOT?
-	if vp.ετ > ctxt.Vbε {
+	if vp.ετ > conditions.VpVbε {
 		vp.ετ-- //	decrease target colour signal strength factor
 	}
 	return vp.attackSuccess
@@ -246,36 +246,36 @@ func (vp *VisualPredator) MateSearch(neighbours []VisualPredator, me int, errCh 
 }
 
 // Age the vp agent by one step
-func (vp *VisualPredator) Age(ctxt Condition, popSize int) string {
+func (vp *VisualPredator) Age(conditions ConditionParams, popSize int) string {
 	vp.attackSuccess = false
 	vp.fertility++
 	vp.hunger++
 
-	if ctxt.VpStarvation {
-		if vp.hunger > ctxt.VpPanicPoint { //	if the agent is getting desperate, it lowers its focus and has to start looking harder.
-			vp.𝛄 *= ctxt.V𝛄Bump // (default is 1.1 == a 10% bump)
-			if (vp.hunger%5 == 0) && (vp.ετ > ctxt.Vbε) {
+	if conditions.VpStarvation {
+		if vp.hunger > conditions.VpPanicPoint { //	if the agent is getting desperate, it lowers its focus and has to start looking harder.
+			vp.𝛄 *= conditions.VpV𝛄Bump // (default is 1.1 == a 10% bump)
+			if (vp.hunger%5 == 0) && (vp.ετ > conditions.VpVbε) {
 				vp.ετ-- //	the energy gain from attack success reduces because it costs more energy to look harder!
 			}
 		}
 	}
 
-	if ctxt.VpAgeing {
+	if conditions.VpAgeing {
 		vp.lifespan--
 	}
-	return vp.jump(ctxt, popSize)
+	return vp.jump(conditions, popSize)
 }
 
-func (vp *VisualPredator) jump(ctxt Condition, popSize int) (jump string) {
+func (vp *VisualPredator) jump(conditions ConditionParams, popSize int) (jump string) {
 	switch {
 	case vp.lifespan <= 0:
 		jump = "DEATH"
 	case vp.fertility == 0:
 		vp.gravid = false
 		jump = "SPAWN"
-	case ctxt.VpStarvation && (vp.hunger > ctxt.VpStarvationPoint):
+	case conditions.VpStarvation && (vp.hunger > conditions.VpStarvationPoint):
 		jump = "DEATH"
-	case (popSize < ctxt.VpPopulationCap) && (vp.fertility > ctxt.VpSexualRequirement/2) && (vp.hunger < ctxt.VpSexualRequirement):
+	case (popSize < conditions.VpPopulationCap) && (vp.fertility > conditions.VpSexualRequirement/2) && (vp.hunger < conditions.VpSexualRequirement):
 		jump = "FERTILE"
 	default:
 		jump = "PREY SEARCH"
@@ -284,18 +284,18 @@ func (vp *VisualPredator) jump(ctxt Condition, popSize int) (jump string) {
 }
 
 // Copulation for sexual reproduction between Visual Predator agents
-func (vp *VisualPredator) Copulation(mate *VisualPredator, ctxt Condition) bool {
+func (vp *VisualPredator) Copulation(mate *VisualPredator, conditions ConditionParams) bool {
 	if mate == nil {
 		return false
 	}
-	if mate.fertility < ctxt.VpSexualRequirement {
+	if mate.fertility < conditions.VpSexualRequirement {
 		return false
 	}
 	ω := rand.Float64()
 	mate.fertility = 1 // it takes two to tango, buddy!
-	if ω <= ctxt.VpReproductionChance {
+	if ω <= conditions.VpReproductionChance {
 		vp.gravid = true
-		vp.fertility = -ctxt.VpGestation
+		vp.fertility = -conditions.VpGestation
 		return true
 	}
 	vp.fertility = 1
@@ -303,14 +303,14 @@ func (vp *VisualPredator) Copulation(mate *VisualPredator, ctxt Condition) bool 
 }
 
 // Birth spawns Visual Predator children
-func (vp *VisualPredator) Birth(ctxt Condition, start int, mt int) []VisualPredator {
+func (vp *VisualPredator) Birth(conditions ConditionParams, start int, mt int) []VisualPredator {
 	n := 1
-	if ctxt.VpSpawnSize > 1 {
-		n = rand.Intn(ctxt.VpSpawnSize) + 1
+	if conditions.VpSpawnSize > 1 {
+		n = rand.Intn(conditions.VpSpawnSize) + 1
 	}
 
 	timestamp := fmt.Sprintf("%s", time.Now())
-	progeny := vpSpawn(n, start, mt, *vp, ctxt, timestamp)
+	progeny := vpSpawn(n, start, mt, *vp, conditions, timestamp)
 	vp.hunger++
 	vp.gravid = false
 	return progeny

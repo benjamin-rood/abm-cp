@@ -37,7 +37,7 @@ func (c *ColourPolymorphicPrey) UUID() string {
 	return c.uuid
 }
 
-// MarshalJSON implements json.Marshaler interface on a CPP object
+// MarshalJSON implements json.Marshaler interface on a CP Prey  object
 func (c ColourPolymorphicPrey) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"description":  c.description,
@@ -62,29 +62,29 @@ func (c ColourPolymorphicPrey) GetDrawInfo() (ar render.AgentRender) {
 	return
 }
 
-// GeneratePopulationCPP will create `size` number of Colour Polymorphic Prey agents
-func GeneratePopulationCPP(size int, start int, mt int, condition Condition, timestamp string) []ColourPolymorphicPrey {
+// GenerateCpPreyPopulation will create `size` number of Colour Polymorphic Prey agents
+func GenerateCpPreyPopulation(size int, start int, mt int, conditions ConditionParams, timestamp string) []ColourPolymorphicPrey {
 	pop := []ColourPolymorphicPrey{}
 	for i := 0; i < size; i++ {
 		agent := ColourPolymorphicPrey{}
 		agent.uuid = uuid()
 		agent.description = AgentDescription{AgentType: "cpPrey", AgentNum: start + i, ParentUUID: "", CreatedMT: mt, CreatedAT: timestamp}
-		agent.pos = geometry.RandVector(condition.Bounds)
-		if condition.CppAgeing {
-			if condition.RandomAges {
-				agent.lifespan = calc.RandIntIn(int(float64(condition.CppLifespan)*0.7), int(float64(condition.CppLifespan)*1.3))
+		agent.pos = geometry.RandVector(conditions.Bounds)
+		if conditions.CpPreyAgeing {
+			if conditions.RandomAges {
+				agent.lifespan = calc.RandIntIn(int(float64(conditions.CpPreyLifespan)*0.7), int(float64(conditions.CpPreyLifespan)*1.3))
 			} else {
-				agent.lifespan = condition.CppLifespan
+				agent.lifespan = conditions.CpPreyLifespan
 			}
 		} else {
 			agent.lifespan = 99999
 		}
-		agent.movS = condition.CppS
-		agent.movA = condition.CppA
+		agent.movS = conditions.CpPreyS
+		agent.movA = conditions.CpPreyA
 		agent.𝚯 = rand.Float64() * (2 * math.Pi)
 		agent.dir = geometry.UnitVector(agent.𝚯)
-		agent.tr = condition.CppTurn
-		agent.sr = condition.CppSr
+		agent.tr = conditions.CpPreyTurn
+		agent.sr = conditions.CpPreySr
 		agent.hunger = 0
 		agent.fertility = 1
 		agent.gravid = false
@@ -94,17 +94,17 @@ func GeneratePopulationCPP(size int, start int, mt int, condition Condition, tim
 	return pop
 }
 
-func cpPreySpawn(size int, parent ColourPolymorphicPrey, condition Condition, timestamp string) []ColourPolymorphicPrey {
+func cpPreySpawn(size int, parent ColourPolymorphicPrey, conditions ConditionParams, timestamp string) []ColourPolymorphicPrey {
 	pop := []ColourPolymorphicPrey{}
 	for i := 0; i < size; i++ {
 		agent := parent
 		agent.uuid = uuid()
 		agent.pos = parent.pos
-		if condition.CppAgeing {
-			if condition.RandomAges {
-				agent.lifespan = calc.RandIntIn(int(float64(condition.CppLifespan)*0.7), int(float64(condition.CppLifespan)*1.3))
+		if conditions.CpPreyAgeing {
+			if conditions.RandomAges {
+				agent.lifespan = calc.RandIntIn(int(float64(conditions.CpPreyLifespan)*0.7), int(float64(conditions.CpPreyLifespan)*1.3))
 			} else {
-				agent.lifespan = condition.CppLifespan
+				agent.lifespan = conditions.CpPreyLifespan
 			}
 		} else {
 			agent.lifespan = 99999 //	i.e. Undead!
@@ -207,15 +207,15 @@ func (c *ColourPolymorphicPrey) copulation(mate *ColourPolymorphicPrey, chance f
 }
 
 // Birth implemets Breeder interface method for ColourPolymorphicPrey:
-func (c *ColourPolymorphicPrey) Birth(ctxt Condition) []ColourPolymorphicPrey {
+func (c *ColourPolymorphicPrey) Birth(conditions ConditionParams) []ColourPolymorphicPrey {
 	n := 1
-	if ctxt.CppSpawnSize > 1 {
-		n = rand.Intn(ctxt.CppSpawnSize) + 1 //	i.e. range [1, b]
+	if conditions.CpPreySpawnSize > 1 {
+		n = rand.Intn(conditions.CpPreySpawnSize) + 1 //	i.e. range [1, b]
 	}
 	timestamp := fmt.Sprintf("%s", time.Now())
-	progeny := cpPreySpawn(n, *c, ctxt, timestamp)
+	progeny := cpPreySpawn(n, *c, conditions, timestamp)
 	for i := 0; i < len(progeny); i++ {
-		progeny[i].mutation(ctxt.CppMutationFactor)
+		progeny[i].mutation(conditions.CpPreyMutationFactor)
 		progeny[i].pos, _ = geometry.FuzzifyVector(c.pos, c.movS)
 	}
 	c.hunger++ //	energy cost
@@ -230,10 +230,10 @@ func (c *ColourPolymorphicPrey) mutation(Mf float64) {
 
 // Age decrements the lifespan of an agent,
 // and applies the effects of ageing (if any)
-func (c *ColourPolymorphicPrey) Age(ctxt Condition) (jump string) {
+func (c *ColourPolymorphicPrey) Age(conditions ConditionParams) (jump string) {
 	c.hunger++
 	c.fertility++
-	if ctxt.CppAgeing {
+	if conditions.CpPreyAgeing {
 		c.lifespan--
 	}
 	switch {
@@ -242,7 +242,7 @@ func (c *ColourPolymorphicPrey) Age(ctxt Condition) (jump string) {
 	case c.fertility == 0:
 		c.gravid = false
 		jump = "SPAWN"
-	case c.fertility >= ctxt.CppSexualCost: // period / sexual cost
+	case c.fertility >= conditions.CpPreySexualCost: // period / sexual cost
 		jump = "FERTILE"
 	default:
 		jump = "EXPLORE"

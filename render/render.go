@@ -24,7 +24,7 @@ type DrawList struct {
 	CPP       []AgentRender `json:"cpPrey"`
 	VP        []AgentRender `json:"vp"`
 	BG        colour.RGB256 `json:"bg"`
-	CppPop    string        `json:"cpPrey-pop-string"` // this and the next three entries to be displayed in a little box
+	CpPreyPop    string        `json:"cpPrey-pop-string"` // this and the next three entries to be displayed in a little box
 	VpPop     string        `json:"vp-pop-string"`
 	TurnCount string        `json:"turncount-string"`
 }

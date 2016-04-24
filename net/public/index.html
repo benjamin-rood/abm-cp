@@ -33,16 +33,16 @@
   <!-- /.container -->
 
   <div class="container container-parameters">
-    <h3>Condition Parameters</h3>
+    <h3>ConditionParams Parameters</h3>
     <br>
     <h4>Define the variable ABM parameters below, then press the submit button to start.</h4>
     <br>
     <div>
-      <button type="button" class="btn btn-primary btn-lg" id="conditionParamsSend" style="margin:15px">Start ABM with these settings</button>
+      <button type="button" class="btn btn-primary btn-lg" id="conditionsParamsSend" style="margin:15px">Start ABM with these settings</button>
     </div>
     <hr>
     <br>
-    <form id="condition-params">
+    <form id="conditions-params">
       <h4>Setup:</h4>
       <br>
       <div class="form-group" style="margin:15px">
@@ -59,48 +59,48 @@
       <h4>Colour Polymorphic Prey Settings:</h4>
       <br>
       <div class="form-group" style="margin:15px">
-        <input type="checkbox" checked data-toggle="toggle" id="abm-cpPrey-ageing" style="margin-right:30px">
-        <label for="abm-cpPrey-ageing"><b style="margin-left:30px">CP Prey Ageing</b></label>
+        <input type="checkbox" checked data-toggle="toggle" id="abm-cp-prey-ageing" style="margin-right:30px">
+        <label for="abm-cp-prey-ageing"><b style="margin-left:30px">CP Prey Ageing</b></label>
       </div>
       <div class="form-group" style="margin:15px">
-        <label for="abm-cpPrey-pop-start">CP Prey Starting Population </label>
-        <input type="number" class="form-control" id="abm-cpPrey-pop-start" value="25">
+        <label for="abm-cp-prey-pop-start">CP Prey Starting Population </label>
+        <input type="number" class="form-control" id="abm-cp-prey-pop-start" value="25">
       </div>
       <div class="form-group" style="margin:15px">
-        <label for="abm-cpPrey-pop-cap">CP Prey Population Cap</label>
-        <input type="number" class="form-control" id="abm-cpPrey-pop-cap" value="2000">
+        <label for="abm-cp-prey-pop-cap">CP Prey Population Cap</label>
+        <input type="number" class="form-control" id="abm-cp-prey-pop-cap" value="2000">
       </div>
       <div class="form-group" style="margin:15px">
-        <label for="abm-cpPrey-lifespan">CP Prey Lifespan</label>
-        <input type="number" class="form-control" id="abm-cpPrey-lifespan" value="40">
+        <label for="abm-cp-prey-lifespan">CP Prey Lifespan</label>
+        <input type="number" class="form-control" id="abm-cp-prey-lifespan" value="40">
       </div>
       <div class="form-group" style="margin:15px">
-        <label for="abm-cpPrey-speed">CP Prey Speed</label>
-        <input type="number" class="form-control" id="abm-cpPrey-speed" value="0.002" min="0.0" max="1.0" step="0.001">
+        <label for="abm-cp-prey-speed">CP Prey Speed</label>
+        <input type="number" class="form-control" id="abm-cp-prey-speed" value="0.002" min="0.0" max="1.0" step="0.001">
       </div>
       <div class="form-group" style="margin:15px">
-        <label for="abm-cpPrey-turn">CP Prey Turn Rate</label>
-        <input type="number" class="form-control" id="abm-cpPrey-turn" value="0.7853981633974" min="0.0" max="3.14" step="0.1">
+        <label for="abm-cp-prey-turn">CP Prey Turn Rate</label>
+        <input type="number" class="form-control" id="abm-cp-prey-turn" value="0.7853981633974" min="0.0" max="3.14" step="0.1">
       </div>
       <div class="form-group" style="margin:15px">
-        <label for="abm-cpPrey-sexual-cost">CP Prey Sexual Cost</label>
-        <input type="number" class="form-control" id="abm-cpPrey-sexual-cost" value="1" min="1">
+        <label for="abm-cp-prey-sexual-cost">CP Prey Sexual Cost</label>
+        <input type="number" class="form-control" id="abm-cp-prey-sexual-cost" value="1" min="1">
       </div>
       <div class="form-group" style="margin:15px">
-        <label for="abm-cpPrey-reproduction-chance">CP Prey Reproduction Chance</label>
-        <input type="number" class="form-control" id="abm-cpPrey-reproduction-chance" value="0.1" min="0.0" max="1.0" step="0.1">
+        <label for="abm-cp-prey-reproduction-chance">CP Prey Reproduction Chance</label>
+        <input type="number" class="form-control" id="abm-cp-prey-reproduction-chance" value="0.1" min="0.0" max="1.0" step="0.1">
       </div>
       <div class="form-group" style="margin:15px">
-        <label for="abm-cpPrey-gestation">CP Prey Gestation Period</label>
-        <input type="number" class="form-control" id="abm-cpPrey-gestation" value="1" min="1">
+        <label for="abm-cp-prey-gestation">CP Prey Gestation Period</label>
+        <input type="number" class="form-control" id="abm-cp-prey-gestation" value="1" min="1">
       </div>
       <div class="form-group" style="margin:15px">
-        <label for="abm-cpPrey-spawn-size">CP Prey Spawn Size</label>
-        <input type="number" class="form-control" id="abm-cpPrey-spawn-size" value="2" min="1">
+        <label for="abm-cp-prey-spawn-size">CP Prey Spawn Size</label>
+        <input type="number" class="form-control" id="abm-cp-prey-spawn-size" value="2" min="1">
       </div>
       <div class="form-group" style="margin:15px">
-        <label for="abm-cpPrey-mf">CP Prey Mutation Factor</label>
-        <input type="number" class="form-control" id="abm-cpPrey-mf" value="0.05" min="0.0" max="1.0" step="0.003">
+        <label for="abm-cp-prey-mf">CP Prey Mutation Factor</label>
+        <input type="number" class="form-control" id="abm-cp-prey-mf" value="0.05" min="0.0" max="1.0" step="0.003">
       </div>
       <br>
       <hr>

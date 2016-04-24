@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-// String returns a clear textual presentation the internal values of the CPP agent
+// String returns a clear textual presentation the internal values of the CP Prey agent
 func (c *ColourPolymorphicPrey) String() string {
 	var buffer bytes.Buffer
 	buffer.WriteString(fmt.Sprintf("pos=(%v,%v)\n", c.pos[x], c.pos[y]))
@@ -23,7 +23,7 @@ func (c *ColourPolymorphicPrey) String() string {
 	return buffer.String()
 }
 
-// extra CPP functions for testing/benchmarking:
+// extra CP Prey functions for testing/benchmarking:
 
 func cpPreyTesterAgent(xPos float64, yPos float64) (tester ColourPolymorphicPrey) {
 	tester = cpPreyTestPop(1)[0]
@@ -32,7 +32,7 @@ func cpPreyTesterAgent(xPos float64, yPos float64) (tester ColourPolymorphicPrey
 	return
 }
 
-func newCppTesterAgent(xPos float64, yPos float64) *ColourPolymorphicPrey {
+func newCpPreyTesterAgent(xPos float64, yPos float64) *ColourPolymorphicPrey {
 	tester := cpPreyTestPop(1)[0]
 	tester.pos[x] = xPos
 	tester.pos[y] = yPos
@@ -40,5 +40,5 @@ func newCppTesterAgent(xPos float64, yPos float64) *ColourPolymorphicPrey {
 }
 
 func cpPreyTestPop(size int) []ColourPolymorphicPrey {
-	return GeneratePopulationCPP(size, 0, 0, TestCondition, testStamp)
+	return GenerateCpPreyPopulation(size, 0, 0, TestConditionParams, testStamp)
 }

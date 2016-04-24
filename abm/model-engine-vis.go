@@ -25,7 +25,7 @@ func (m *Model) vis(ec chan<- error) {
 		CPP:       nil,
 		VP:        nil,
 		BG:        bg,
-		CppPop:    "0",
+		CpPreyPop:    "0",
 		VpPop:     "0",
 		TurnCount: "0",
 	}
@@ -41,8 +41,8 @@ func (m *Model) vis(ec chan<- error) {
 				dl.VP = append(dl.VP, job)
 			}
 		case <-turn:
-			dl.CppPop = fmt.Sprintf("cpPrey %d", len(m.PopCPP))
-			dl.VpPop = fmt.Sprintf("vp  %d", len(m.PopVP))
+			dl.CpPreyPop = fmt.Sprintf("cpPrey %d", len(m.popCpPrey))
+			dl.VpPop = fmt.Sprintf("vp  %d", len(m.popVisualPredator))
 			dl.TurnCount = fmt.Sprintf("%08d", m.Turn)
 			msg.Data = dl
 			// fmt.Println("VIS_ sending out on Om channel:")
@@ -55,7 +55,7 @@ func (m *Model) vis(ec chan<- error) {
 				CPP:       nil,
 				VP:        nil,
 				BG:        bg,
-				CppPop:    "0",
+				CpPreyPop:    "0",
 				VpPop:     "0",
 				TurnCount: "0",
 			}

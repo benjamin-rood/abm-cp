@@ -24,7 +24,7 @@ Model simplistic process of visual identification of prey agents, based on dista
 
 **Colour-Polymorphic Prey** (CPP) GENUINE POPULATION. Variation, reproduction, mutation.
 CPP 'death' from consumption by VP.
-Assume food omnipresent in E for CPP.
+Assume food omnipresent in E for CP Prey .
 Variations and Mutations reflected individual agent Colouring.
 
 

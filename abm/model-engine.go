@@ -23,7 +23,7 @@ func (m *Model) Controller() {
 		select {
 		case msg := <-m.Im:
 			switch msg.Type {
-			case "condition": //	if condition params msg is recieved, (re)start
+			case "conditions": //	if conditions params msg is recieved, (re)start
 				if m.running {
 				register:
 					clash := gobr.WaitForSignalOnce(signature, m.turnSignal)
@@ -33,14 +33,14 @@ func (m *Model) Controller() {
 					} //	will block until receiving turn broadcast once.
 					m.e <- m.Stop()
 				}
-				err := json.Unmarshal(msg.Data, &m.Condition)
+				err := json.Unmarshal(msg.Data, &m.ConditionParams)
 				if err != nil {
 					errString := fmt.Sprintf("model Controller(): error: json.Unmarshal: %s", err)
 					m.e <- errors.New(errString)
 					break
 				}
 				m.Timeframe.Reset()
-				spew.Dump(m.Condition)
+				spew.Dump(m.ConditionParams)
 				m.e <- m.Start()
 			case "pause":
 				m.e <- m.Suspend()
@@ -65,9 +65,9 @@ func (m *Model) Start() error {
 		rand.Seed(m.RNGSeedVal)
 	}
 	timestamp := fmt.Sprintf("%s", time.Now())
-	m.PopCPP = GeneratePopulationCPP(m.CppPopulationStart, m.numCppCreated, m.Turn, m.Condition, timestamp)
-	m.numCppCreated += m.CppPopulationStart
-	m.PopVP = GeneratePopulationVP(m.VpPopulationStart, m.numVpCreated, m.Turn, m.Condition, timestamp)
+	m.popCpPrey = GenerateCpPreyPopulation(m.CpPreyPopulationStart, m.numCpPreyCreated, m.Turn, m.ConditionParams, timestamp)
+	m.numCpPreyCreated += m.CpPreyPopulationStart
+	m.popVisualPredator = GenerateVPredatorPopulation(m.VpPopulationStart, m.numVpCreated, m.Turn, m.ConditionParams, timestamp)
 	m.numVpCreated += m.VpPopulationStart
 	if m.Logging {
 		go m.log(m.e)
@@ -87,14 +87,14 @@ func (m *Model) Stop() error {
 	}
 	close(m.rc)
 	m.running = false
-	m.PopCPP = nil
-	m.PopVP = nil
+	m.popCpPrey = nil
+	m.popVisualPredator = nil
 	time.Sleep(pause)
 	m.rc = make(chan struct{})
 	return nil
 }
 
-// Suspend = pause an agent-based model to be resumed later.
+// Suspend = pause a running agent-based model to be resumed later.
 func (m *Model) Suspend() error {
 	if !m.running {
 		return errors.New("Model: Suspend() failed: model not currently running!")
@@ -126,5 +126,4 @@ func (m *Model) Resume() error {
 func (m *Model) kill() {
 	m.Stop()
 	close(m.Quit)
-	m.Dead = true
 }

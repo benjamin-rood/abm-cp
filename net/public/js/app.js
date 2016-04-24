@@ -148,19 +148,19 @@ vizSocket.onerror = function(e) {
 }
 
 $(function () {
-  $('#conditionParamsSend').on('click', function() {
-    var condition = {
-      ['abm-cpPrey-pop-start']: parseInt($('#abm-cpPrey-pop-start').val()),
-      ['abm-cpPrey-pop-cap']: parseInt($('#abm-cpPrey-pop-cap').val()),
-      ['abm-cpPrey-ageing']: parseBool($('#abm-cpPrey-ageing').is(':checked')),
-      ['abm-cpPrey-lifespan']: parseInt($('#abm-cpPrey-lifespan').val()),
-      ['abm-cpPrey-speed']: parseFloat($('#abm-cpPrey-speed').val()),
-      ['abm-cpPrey-turn']: parseFloat($('#abm-cpPrey-turn').val()),
-      ['abm-cpPrey-sexual-cost']: parseInt($('#abm-cpPrey-sexual-cost').val()),
-      ['abm-cpPrey-reproduction-chance']: parseFloat($('#abm-cpPrey-reproduction-chance').val()),
-      ['abm-cpPrey-gestation']: parseInt($('#abm-cpPrey-sexual-cost').val()),
-      ['abm-cpPrey-spawn-size']: parseInt($('#abm-cpPrey-spawn-size').val()),
-      ['abm-cpPrey-mf']: parseFloat($('#abm-cpPrey-mf').val()),
+  $('#conditionsParamsSend').on('click', function() {
+    var conditions = {
+      ['abm-cp-prey-pop-start']: parseInt($('#abm-cp-prey-pop-start').val()),
+      ['abm-cp-prey-pop-cap']: parseInt($('#abm-cp-prey-pop-cap').val()),
+      ['abm-cp-prey-ageing']: parseBool($('#abm-cp-prey-ageing').is(':checked')),
+      ['abm-cp-prey-lifespan']: parseInt($('#abm-cp-prey-lifespan').val()),
+      ['abm-cp-prey-speed']: parseFloat($('#abm-cp-prey-speed').val()),
+      ['abm-cp-prey-turn']: parseFloat($('#abm-cp-prey-turn').val()),
+      ['abm-cp-prey-sexual-cost']: parseInt($('#abm-cp-prey-sexual-cost').val()),
+      ['abm-cp-prey-reproduction-chance']: parseFloat($('#abm-cp-prey-reproduction-chance').val()),
+      ['abm-cp-prey-gestation']: parseInt($('#abm-cp-prey-sexual-cost').val()),
+      ['abm-cp-prey-spawn-size']: parseInt($('#abm-cp-prey-spawn-size').val()),
+      ['abm-cp-prey-mf']: parseFloat($('#abm-cp-prey-mf').val()),
       ['abm-vp-pop-start']: parseInt($('#abm-vp-pop-start').val()),
       ['abm-vp-pop-cap']: parseInt($('#abm-vp-pop-cap').val()),
       ['abm-vp-ageing']: parseBool($('#abm-vp-ageing').is(':checked')),
@@ -196,8 +196,8 @@ $(function () {
     }
 
     var OutMsg = {
-      type: "condition",
-      data: condition
+      type: "conditions",
+      data: conditions
     }
 
     var json = JSON.stringify(OutMsg, null, 2)

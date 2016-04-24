@@ -3,24 +3,24 @@ package abm
 import "github.com/benjamin-rood/abm-cp/calc"
 
 // RBB = Rule Based Behaviour that each cpPrey agent engages in once per turn, counts as the agent's action for that turn/phase.
-func (c *ColourPolymorphicPrey) RBB(ctxt Condition, popSize int) (newpop []ColourPolymorphicPrey) {
+func (c *ColourPolymorphicPrey) RBB(conditions ConditionParams, popSize int) (newpop []ColourPolymorphicPrey) {
 	newkids := []ColourPolymorphicPrey{}
 	jump := ""
 	// BEGIN
-	jump = c.Age(ctxt)
+	jump = c.Age(conditions)
 	switch jump {
 	case "DEATH":
 		goto End
 	case "SPAWN":
-		progeny := c.Birth(ctxt) //	max spawn size, mutation factor
+		progeny := c.Birth(conditions) //	max spawn size, mutation factor
 		newkids = append(newkids, progeny...)
 	case "FERTILE":
-		if popSize <= ctxt.CppPopulationCap {
-			c.Reproduction(ctxt.CppReproductionChance, ctxt.CppGestation)
+		if popSize <= conditions.CpPreyPopulationCap {
+			c.Reproduction(conditions.CpPreyReproductionChance, conditions.CpPreyGestation)
 		}
 		fallthrough
 	case "EXPLORE":
-		𝚯 := calc.RandFloatIn(-ctxt.CppTurn, ctxt.CppTurn)
+		𝚯 := calc.RandFloatIn(-conditions.CpPreyTurn, conditions.CpPreyTurn)
 		c.Turn(𝚯)
 		c.Move()
 	}

@@ -425,7 +425,7 @@ func (mj *DrawList) MarshalJSONBuf(buf fflib.EncodingBuffer) error {
 		return err
 	}
 	buf.WriteString(`,"cpPrey-pop-string":`)
-	fflib.WriteJsonString(buf, string(mj.CppPop))
+	fflib.WriteJsonString(buf, string(mj.CpPreyPop))
 	buf.WriteString(`,"vp-pop-string":`)
 	fflib.WriteJsonString(buf, string(mj.VpPop))
 	buf.WriteString(`,"turncount-string":`)
@@ -444,7 +444,7 @@ const (
 
 	ffj_t_DrawList_BG
 
-	ffj_t_DrawList_CppPop
+	ffj_t_DrawList_CpPreyPop
 
 	ffj_t_DrawList_VpPop
 
@@ -457,7 +457,7 @@ var ffj_key_DrawList_VP = []byte("vp")
 
 var ffj_key_DrawList_BG = []byte("bg")
 
-var ffj_key_DrawList_CppPop = []byte("cpPrey-pop-string")
+var ffj_key_DrawList_CpPreyPop = []byte("cpPrey-pop-string")
 
 var ffj_key_DrawList_VpPop = []byte("vp-pop-string")
 
@@ -537,8 +537,8 @@ mainparse:
 						state = fflib.FFParse_want_colon
 						goto mainparse
 
-					} else if bytes.Equal(ffj_key_DrawList_CppPop, kn) {
-						currentKey = ffj_t_DrawList_CppPop
+					} else if bytes.Equal(ffj_key_DrawList_CpPreyPop, kn) {
+						currentKey = ffj_t_DrawList_CpPreyPop
 						state = fflib.FFParse_want_colon
 						goto mainparse
 					}
@@ -578,8 +578,8 @@ mainparse:
 					goto mainparse
 				}
 
-				if fflib.EqualFoldRight(ffj_key_DrawList_CppPop, kn) {
-					currentKey = ffj_t_DrawList_CppPop
+				if fflib.EqualFoldRight(ffj_key_DrawList_CpPreyPop, kn) {
+					currentKey = ffj_t_DrawList_CpPreyPop
 					state = fflib.FFParse_want_colon
 					goto mainparse
 				}
@@ -628,8 +628,8 @@ mainparse:
 				case ffj_t_DrawList_BG:
 					goto handle_BG
 
-				case ffj_t_DrawList_CppPop:
-					goto handle_CppPop
+				case ffj_t_DrawList_CpPreyPop:
+					goto handle_CpPreyPop
 
 				case ffj_t_DrawList_VpPop:
 					goto handle_VpPop
@@ -807,9 +807,9 @@ handle_BG:
 	state = fflib.FFParse_after_value
 	goto mainparse
 
-handle_CppPop:
+handle_CpPreyPop:
 
-	/* handler: uj.CppPop type=string kind=string quoted=false*/
+	/* handler: uj.CpPreyPop type=string kind=string quoted=false*/
 
 	{
 
@@ -825,7 +825,7 @@ handle_CppPop:
 
 			outBuf := fs.Output.Bytes()
 
-			uj.CppPop = string(string(outBuf))
+			uj.CpPreyPop = string(string(outBuf))
 
 		}
 	}

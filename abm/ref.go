@@ -19,90 +19,90 @@ const (
 
 	abmlogPath = "abmlog"
 
-	dCppPopStart           = 3
-	dCppPopCap             = 500
-	dCppAgeing             = true
-	dCppLifespan           = 50
-	dCppMovS               = 0.006
-	dCppMovA               = 1.0
-	dCppTurn               = quarterpi
-	dCppSr                 = dCppMovS
-	dCppGestation          = 1   // φ
-	dCppSexualCost         = 1   // ȣ
-	dCppReproductionChance = 0.1 // cκ
-	dCppSpawnSize          = 5   // β
-	dVpPopStart            = 3
-	dVpPopCap              = 10
-	dVpAgeing              = true
-	dVpLifespan            = 250
-	dVpMovS                = 0.01
-	dVpMovA                = 1.0
-	dVpTurn                = eigthpi
-	dVsr                   = dVpMovS
-	dV𝛄                    = 0.3
-	dV𝛄Bump                = 1.2
-	dVpReproductiveChance  = 1.0
-	dVpSexualRequirement   = 50
-	dVpGestation           = 5
-	dVpSearchChance        = 1.0
-	dVpAttackChance        = 1.0
-	dVpColAdaptationFactor = 0.2
-	dVpStarvationPoint     = 250
-	dVpStarvation          = false
-	dCppMf                 = 0.05
-	dRandomAges            = true
-	dRNGRandomSeed         = true
-	dRNGSeedVal            = 0
-	dFuzzy                 = 0.1
-	dLogging               = false
-	dVisualise             = true
-	dLimitDuration         = false
-	dSessionIdentifier     = "DefaultConditionSession"
+	dCpPreyPopStart           = 3
+	dCpPreyPopCap             = 500
+	dCpPreyAgeing             = true
+	dCpPreyLifespan           = 50
+	dCpPreyMovS               = 0.006
+	dCpPreyMovA               = 1.0
+	dCpPreyTurn               = quarterpi
+	dCpPreySr                 = dCpPreyMovS
+	dCpPreyGestation          = 1   // φ
+	dCpPreySexualCost         = 1   // ȣ
+	dCpPreyReproductionChance = 0.1 // cκ
+	dCpPreySpawnSize          = 5   // β
+	dVpPopStart               = 3
+	dVpPopCap                 = 10
+	dVpAgeing                 = true
+	dVpLifespan               = 250
+	dVpMovS                   = 0.01
+	dVpMovA                   = 1.0
+	dVpTurn                   = eigthpi
+	dVpVsr                      = dVpMovS
+	dV𝛄                       = 0.3
+	dVpV𝛄Bump                   = 1.2
+	dVpReproductiveChance     = 1.0
+	dVpSexualRequirement      = 50
+	dVpGestation              = 5
+	dVpSearchChance           = 1.0
+	dVpAttackChance           = 1.0
+	dVpColAdaptationFactor    = 0.2
+	dVpStarvationPoint        = 250
+	dVpStarvation             = false
+	dCpPreyMf                 = 0.05
+	dRandomAges               = true
+	dRNGRandomSeed            = true
+	dRNGSeedVal               = 0
+	dFuzzy                    = 0.1
+	dLogging                  = false
+	dVisualise                = true
+	dLimitDuration            = false
+	dSessionIdentifier        = "DefaultConditionParamsSession"
 
 	testStamp = "TESTING ONLY"
 
-	tCppPopStart           = 25
-	tCppPopCap             = 100
-	tCppAgeing             = false
-	tCppLifespan           = 1
-	tCppMovS               = 0.005
-	tCppMovA               = 1.0
-	tCppTurn               = quarterpi
-	tCppSr                 = tCppMovS
-	tCppGestation          = 1
-	tCppSexualCost         = 1
-	tCppReproductionChance = 1.0
-	tCppSpawnSize          = 1
-	tVpPopStart            = 5
-	tVpPopCap              = 5
-	tVpAgeing              = false
-	tVpLifespan            = 9999
-	tVpStarvationPoint     = 9999
-	tVpStarvation          = false
-	tVpMovS                = 0.2
-	tVpMovA                = 1.0
-	tVpTurn                = eigthpi / 2
-	tVpVsr                 = 0.2
-	tV𝛄                    = 0.2
-	tV𝛄Bump                = 1.2
-	tVpReproductiveChance  = 1.0
-	tVpSearchChance        = 1.0
-	tVpAttackChance        = 1.0
-	tVpColAdaptationFactor = 0.2
-	tCppMf                 = 0.1
-	tRNGRandomSeed         = false
-	tRandomAges            = false
-	tRNGSeedVal            = 0
-	tFuzzy                 = 0.1
-	tLogging               = true
-	tLogFreq               = 0 // write every turn
-	tUseCustomLogPath      = false
-	tCustomLogPath         = ""
-	tLimitDuration         = true
-	tFixedDuration         = 10 // two turns only
-	tSessionIdentifier     = "TestConditionSession"
-	tVbg                   = 20
-	tVbε                   = 3
+	tCpPreyPopStart           = 25
+	tCpPreyPopCap             = 100
+	tCpPreyAgeing             = false
+	tCpPreyLifespan           = 1
+	tCpPreyMovS               = 0.005
+	tCpPreyMovA               = 1.0
+	tCpPreyTurn               = quarterpi
+	tCpPreySr                 = tCpPreyMovS
+	tCpPreyGestation          = 1
+	tCpPreySexualCost         = 1
+	tCpPreyReproductionChance = 1.0
+	tCpPreySpawnSize          = 1
+	tVpPopStart               = 5
+	tVpPopCap                 = 5
+	tVpAgeing                 = false
+	tVpLifespan               = 9999
+	tVpStarvationPoint        = 9999
+	tVpStarvation             = false
+	tVpMovS                   = 0.2
+	tVpMovA                   = 1.0
+	tVpTurn                   = eigthpi / 2
+	tVpVpVsr                    = 0.2
+	tV𝛄                       = 0.2
+	tVpV𝛄Bump                   = 1.2
+	tVpReproductiveChance     = 1.0
+	tVpSearchChance           = 1.0
+	tVpAttackChance           = 1.0
+	tVpColAdaptationFactor    = 0.2
+	tCpPreyMf                 = 0.1
+	tRNGRandomSeed            = false
+	tRandomAges               = false
+	tRNGSeedVal               = 0
+	tFuzzy                    = 0.1
+	tLogging                  = true
+	tLogFreq                  = 0 // write every turn
+	tUseCustomLogPath         = false
+	tCustomLogPath            = ""
+	tLimitDuration            = true
+	tFixedDuration            = 10 // two turns only
+	tSessionIdentifier        = "TestConditionParamsSession"
+	tVpBaseAttackGain                      = 20
+	tVpVbε                      = 3
 )
 
 var (
@@ -116,90 +116,90 @@ var (
 		BG:             DefaultBG,
 	}
 
-	// DefaultCondition to be used as a baseline example
-	DefaultCondition = Condition{
-		Environment:           DefaultEnvironment,
-		CppPopulationStart:    dCppPopStart,
-		CppPopulationCap:      dCppPopCap,
-		CppAgeing:             dCppAgeing,
-		CppLifespan:           dCppLifespan,
-		CppS:                  dCppMovS,
-		CppA:                  1.0,
-		CppTurn:               dCppTurn,
-		CppSr:                 dCppTurn,
-		CppGestation:          dCppGestation,
-		CppSexualCost:         dCppSexualCost,
-		CppReproductionChance: dCppReproductionChance,
-		CppSpawnSize:          dCppSpawnSize,
-		VpPopulationStart:     dVpPopStart,
-		VpPopulationCap:       dVpPopCap,
-		VpAgeing:              dVpAgeing,
-		VpLifespan:            dVpLifespan,
-		VpStarvationPoint:     dVpStarvationPoint,
-		VpMovS:                dVpMovS,
-		VpMovA:                1.0,
-		VpTurn:                dVpTurn,
-		Vsr:                   dVsr,
-		Vb𝛄:                   dV𝛄,
-		V𝛄Bump:                dV𝛄Bump,
-		VpReproductionChance:  dVpReproductiveChance,
-		VpSexualRequirement:   dVpSexualRequirement,
-		VpGestation:           dVpGestation,
-		VpSearchChance:        dVpSearchChance,
-		VpAttackChance:        dVpAttackChance,
-		VpCaf:                 dVpColAdaptationFactor,
-		CppMutationFactor:     dCppMf,
-		VpStarvation:          dVpStarvation,
-		RandomAges:            dRandomAges,
-		RNGRandomSeed:         dRNGRandomSeed,
-		RNGSeedVal:            dRNGSeedVal,
-		Fuzzy:                 dFuzzy,
+	// DefaultConditionParams to be used as a baseline example
+	DefaultConditionParams = ConditionParams{
+		Environment:              DefaultEnvironment,
+		CpPreyPopulationStart:    dCpPreyPopStart,
+		CpPreyPopulationCap:      dCpPreyPopCap,
+		CpPreyAgeing:             dCpPreyAgeing,
+		CpPreyLifespan:           dCpPreyLifespan,
+		CpPreyS:                  dCpPreyMovS,
+		CpPreyA:                  1.0,
+		CpPreyTurn:               dCpPreyTurn,
+		CpPreySr:                 dCpPreyTurn,
+		CpPreyGestation:          dCpPreyGestation,
+		CpPreySexualCost:         dCpPreySexualCost,
+		CpPreyReproductionChance: dCpPreyReproductionChance,
+		CpPreySpawnSize:          dCpPreySpawnSize,
+		VpPopulationStart:        dVpPopStart,
+		VpPopulationCap:          dVpPopCap,
+		VpAgeing:                 dVpAgeing,
+		VpLifespan:               dVpLifespan,
+		VpStarvationPoint:        dVpStarvationPoint,
+		VpMovS:                   dVpMovS,
+		VpMovA:                   1.0,
+		VpTurn:                   dVpTurn,
+		VpVsr:                      dVpVsr,
+		VpVb𝛄:                      dV𝛄,
+		VpV𝛄Bump:                   dVpV𝛄Bump,
+		VpReproductionChance:     dVpReproductiveChance,
+		VpSexualRequirement:      dVpSexualRequirement,
+		VpGestation:              dVpGestation,
+		VpSearchChance:           dVpSearchChance,
+		VpAttackChance:           dVpAttackChance,
+		VpCaf:                    dVpColAdaptationFactor,
+		CpPreyMutationFactor:     dCpPreyMf,
+		VpStarvation:             dVpStarvation,
+		RandomAges:               dRandomAges,
+		RNGRandomSeed:            dRNGRandomSeed,
+		RNGSeedVal:               dRNGSeedVal,
+		Fuzzy:                    dFuzzy,
 	}
 
-	// TestCondition to be used for unit testing.
-	TestCondition = Condition{
-		Environment:           DefaultEnvironment,
-		CppPopulationStart:    tCppPopStart,
-		CppPopulationCap:      tCppPopCap,
-		CppAgeing:             tCppAgeing,
-		CppLifespan:           tCppLifespan,
-		CppS:                  tCppMovS,
-		CppA:                  1.0,
-		CppTurn:               tCppTurn,
-		CppSr:                 tCppTurn,
-		CppGestation:          tCppGestation,
-		CppSexualCost:         tCppSexualCost,
-		CppReproductionChance: tCppReproductionChance,
-		CppSpawnSize:          tCppSpawnSize,
-		VpPopulationStart:     tVpPopStart,
-		VpPopulationCap:       tVpPopCap,
-		VpAgeing:              tVpAgeing,
-		VpLifespan:            tVpLifespan,
-		VpStarvationPoint:     tVpStarvationPoint,
-		VpMovS:                tVpMovS,
-		VpMovA:                1.0,
-		VpTurn:                tVpTurn,
-		Vsr:                   tVpVsr,
-		Vb𝛄:                   tV𝛄,
-		V𝛄Bump:                tV𝛄Bump,
-		Vbε:                   tVbε,
-		Vbg:                   tVbg,
-		VpReproductionChance:  tVpReproductiveChance,
-		VpSearchChance:        tVpSearchChance,
-		VpAttackChance:        tVpAttackChance,
-		VpCaf:                 tVpColAdaptationFactor,
-		CppMutationFactor:     tCppMf,
-		VpStarvation:          tVpStarvation,
-		RandomAges:            tRandomAges,
-		RNGRandomSeed:         tRNGRandomSeed,
-		RNGSeedVal:            tRNGSeedVal,
-		Fuzzy:                 tFuzzy,
-		Logging:               tLogging,
-		LogFreq:               tLogFreq,
-		UseCustomLogPath:      tUseCustomLogPath,
-		CustomLogPath:         tCustomLogPath,
-		LimitDuration:         tLimitDuration,
-		FixedDuration:         tFixedDuration,
-		SessionIdentifier:     tSessionIdentifier,
+	// TestConditionParams to be used for unit testing.
+	TestConditionParams = ConditionParams{
+		Environment:              DefaultEnvironment,
+		CpPreyPopulationStart:    tCpPreyPopStart,
+		CpPreyPopulationCap:      tCpPreyPopCap,
+		CpPreyAgeing:             tCpPreyAgeing,
+		CpPreyLifespan:           tCpPreyLifespan,
+		CpPreyS:                  tCpPreyMovS,
+		CpPreyA:                  1.0,
+		CpPreyTurn:               tCpPreyTurn,
+		CpPreySr:                 tCpPreyTurn,
+		CpPreyGestation:          tCpPreyGestation,
+		CpPreySexualCost:         tCpPreySexualCost,
+		CpPreyReproductionChance: tCpPreyReproductionChance,
+		CpPreySpawnSize:          tCpPreySpawnSize,
+		VpPopulationStart:        tVpPopStart,
+		VpPopulationCap:          tVpPopCap,
+		VpAgeing:                 tVpAgeing,
+		VpLifespan:               tVpLifespan,
+		VpStarvationPoint:        tVpStarvationPoint,
+		VpMovS:                   tVpMovS,
+		VpMovA:                   1.0,
+		VpTurn:                   tVpTurn,
+		VpVsr:                      tVpVpVsr,
+		VpVb𝛄:                      tV𝛄,
+		VpV𝛄Bump:                   tVpV𝛄Bump,
+		VpVbε:                      tVpVbε,
+		VpBaseAttackGain:                      tVpBaseAttackGain,
+		VpReproductionChance:     tVpReproductiveChance,
+		VpSearchChance:           tVpSearchChance,
+		VpAttackChance:           tVpAttackChance,
+		VpCaf:                    tVpColAdaptationFactor,
+		CpPreyMutationFactor:     tCpPreyMf,
+		VpStarvation:             tVpStarvation,
+		RandomAges:               tRandomAges,
+		RNGRandomSeed:            tRNGRandomSeed,
+		RNGSeedVal:               tRNGSeedVal,
+		Fuzzy:                    tFuzzy,
+		Logging:                  tLogging,
+		LogFreq:                  tLogFreq,
+		UseCustomLogPath:         tUseCustomLogPath,
+		CustomLogPath:            tCustomLogPath,
+		LimitDuration:            tLimitDuration,
+		FixedDuration:            tFixedDuration,
+		SessionIdentifier:        tSessionIdentifier,
 	}
 )
