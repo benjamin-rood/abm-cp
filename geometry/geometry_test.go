@@ -55,7 +55,7 @@ func Test(t *testing.T) {
 	for _, d := range vecScalarMultiplicationTests {
 		got, _ := VecScalarMultiply(d.v, d.s)
 		if got.Equal(d.want) == false {
-			t.Errorf("VecScalarMultiply(%q, %v) == %q, want %q\n", d.v, d.s, got, d.want)
+			t.Errorf("VecScalarMultiply(%v, %v) == %q, want %q\n", d.v, d.s, got, d.want)
 		}
 	}
 
@@ -92,7 +92,7 @@ func Test(t *testing.T) {
 	for _, f := range crossProductTests {
 		got, _ := CrossProduct(f.v, f.u)
 		if got.Equal(f.want) == false {
-			t.Errorf("VecScalarMultiply(%v, %v) == %v, want %q\n", f.v, f.u, got, f.want)
+			t.Errorf("VecScalarMultiply(%v, %v) == %v, want %v\n", f.v, f.u, got, f.want)
 		}
 	}
 	/*
