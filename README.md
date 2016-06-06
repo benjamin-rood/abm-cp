@@ -1,3 +1,8 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/benjamin-rood/abm-cp)](https://goreportcard.com/report/github.com/benjamin-rood/abm-cp)
+
+[ReportCard-Url]: https://goreportcard.com/report/github.com/benjamin-rood/abm-cp
+[ReportCard-Image]: https://goreportcard.com/badge/github.com/benjamin-rood/abm-cp
+
 ###Note that all code is alpha until version 1.0
 
 ###Current Version: 0.4.1a
