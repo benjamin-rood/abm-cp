@@ -38,7 +38,7 @@ func Test(t *testing.T) {
 	for _, c := range vecAdditionTests {
 		got, _ := VecAddition(c.v, c.u)
 		if got.Equal(c.want) == false {
-			t.Errorf("VecAddition(%q, %q) == %q, want %q\n", c.v, c.u, got, c.want)
+			t.Errorf("VecAddition(%v, %v) == %v, want %v\n", c.v, c.u, got, c.want)
 		}
 	}
 
