@@ -83,7 +83,7 @@ func (m *Model) Start() error {
 // Stop the agent-based model
 func (m *Model) Stop() error {
 	if !m.running {
-		return errors.New("Model: Stop() failed: model not currently running!")
+		return errors.New("Model: Stop() failed: model not currently running")
 	}
 	close(m.rc)
 	m.running = false
@@ -97,7 +97,7 @@ func (m *Model) Stop() error {
 // Suspend = pause a running agent-based model to be resumed later.
 func (m *Model) Suspend() error {
 	if !m.running {
-		return errors.New("Model: Suspend() failed: model not currently running!")
+		return errors.New("Model: Suspend() failed: model not currently running")
 	}
 	close(m.rc)
 	m.running = false

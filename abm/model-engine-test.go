@@ -34,7 +34,7 @@ func newTestModel() *Model {
 	tm.Im = make(chan gobr.InMsg)
 	tm.e = make(chan error)
 	tm.Quit = make(chan struct{})
-	tm.rc = make(chan struct{})
+	tm.halt= make(chan struct{})
 	tm.render = make(chan render.AgentRender)
 	tm.turnSignal = gobr.NewSignalHub()
 	return &tm

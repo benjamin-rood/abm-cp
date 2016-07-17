@@ -25,11 +25,11 @@ type Model struct {
 	popCpPrey         []ColourPolymorphicPrey // current prey agent population
 	popVisualPredator []VisualPredator        // current predator agent population
 
-	Om         chan gobr.OutMsg        // Outgoing WebSckt channel
-	Im         chan gobr.InMsg         // Incoming WebSckt channel
+	Om         chan gobr.OutMsg        // Outgoing WebSckt message channel
+	Im         chan gobr.InMsg         // Incoming WebSckt message channel
 	e          chan error              // error message channel
 	Quit       chan struct{}           // WebSckt monitor signal
-	rc         chan struct{}           // run signal
+	halt       chan struct{}           // execution engine signal
 	render     chan render.AgentRender // vis message channel
 	turnSignal *gobr.SignalHub         // synchronisation
 
@@ -109,14 +109,14 @@ type ConditionParams struct {
 Timeframe holds the model's representation of the time metrics.
 Turn – The cycle length for all agents ∈ 𝐄 to perform 1 (and only 1) Action.
 Phase – Division of a Turn, between agent sets, environmental effects/factors,
-				and updates to populations and model conditionss (via external).
-				One Phase is complete when all members of a set have performed an Action
-				or all requirements for the model's continuation have been fulfilled.
+        and updates to populations and model conditionss (via external).
+        One Phase is complete when all members of a set have performed an Action
+        or all requirements for the model's continuation have been fulfilled.
 Action – An individual 'step' in the model. All Actions have a cost:
-				the period (number of turns) before that specific Action can be
-				performed again. For most actions this is zero.
-				Some Actions could also *stop* any other behaviour by that agent
-				for a period.
+        the period (number of turns) before that specific Action can be
+        performed again. For most actions this is zero.
+        Some Actions could also *stop* any other behaviour by that agent
+        for a period.
 */
 type Timeframe struct {
 	Turn   int
@@ -170,7 +170,7 @@ func NewModel() *Model {
 	m.Im = make(chan gobr.InMsg)
 	m.e = make(chan error)
 	m.Quit = make(chan struct{})
-	m.rc = make(chan struct{})
+	m.halt = make(chan struct{})
 	m.render = make(chan render.AgentRender)
 	m.turnSignal = gobr.NewSignalHub()
 	return &m
