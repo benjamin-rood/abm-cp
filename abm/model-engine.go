@@ -84,12 +84,12 @@ func (m *Model) Stop() error {
 	if !m.running {
 		return errors.New("Model: Stop() failed: model not currently running!")
 	}
-	close(m.rq)
+	close(m.halt)
 	m.running = false
 	m.popCpPrey = nil
 	m.popVisualPredator = nil
 	time.Sleep(pause)
-	m.rq = make(chan struct{})
+	m.halt = make(chan struct{})
 	return nil
 }
 
@@ -98,7 +98,7 @@ func (m *Model) Suspend() error {
 	if !m.running {
 		return errors.New("Model: Suspend() failed: model not currently running!")
 	}
-	close(m.rq)
+	close(m.halt)
 	m.running = false
 	time.Sleep(pause)
 	return nil
@@ -109,7 +109,7 @@ func (m *Model) Resume() error {
 	if m.running {
 		return errors.New("Model: Resume() failed: model already running")
 	}
-	m.rq = make(chan struct{})
+	m.halt = make(chan struct{})
 	go m.run(m.e)
 	m.running = true
 	if m.Visualise {

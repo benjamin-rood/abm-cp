@@ -11,7 +11,7 @@ func (m *Model) run(ec chan<- error) {
 	signature := "RUN_" + m.SessionIdentifier
 	for {
 		select {
-		case <-m.rq:
+		case <-m.halt:
 			gobr.WaitForSignalOnce(signature, m.turnSync) // block while waiting for turn to end.
 			time.Sleep(pause)
 			return

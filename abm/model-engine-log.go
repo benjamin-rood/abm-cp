@@ -37,7 +37,7 @@ func (m *Model) log(ec chan<- error) {
 
 	for {
 		select {
-		case <-m.rq: // RUN stopped as rq channel closed – therefore we end LOG.
+		case <-m.halt: // RUN stopped as rq channel closed – therefore we end LOG.
 			time.Sleep(time.Second)
 			// clean up?
 			return

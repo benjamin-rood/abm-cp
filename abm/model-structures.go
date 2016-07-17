@@ -18,8 +18,8 @@ import (
 type Model struct {
 	timestamp        string // instance inception time
 	running          bool
-	Timeframe        //  embedded Model clock
-	Environment      //  embedded environment attributes
+	Timeframe        // embedded Model clock
+	Environment      // embedded environment attributes
 	ConditionParams  //	embedded local model conditions and constraints
 	AgentPopulations //	embedded slices of each agent type
 
@@ -27,7 +27,7 @@ type Model struct {
 	Im     chan gobr.InMsg         // Incoming comm channel – receives user control messages
 	e      chan error              // error message channel - general
 	Quit   chan struct{}           // WebSckt monitor signal - external stop signal on ch close
-	rq     chan struct{}           // RUN stop signal on ch close
+	halt   chan struct{}           // exec engine halt signal on ch close
 	render chan render.AgentRender // VIS message channel
 
 	turnSync *gobr.SignalHub // synchronisation
@@ -175,7 +175,7 @@ func NewModel() *Model {
 	m.Im = make(chan gobr.InMsg)
 	m.e = make(chan error)
 	m.Quit = make(chan struct{})
-	m.rq = make(chan struct{})
+	m.halt = make(chan struct{})
 	m.render = make(chan render.AgentRender)
 	m.turnSync = gobr.NewSignalHub()
 	return &m

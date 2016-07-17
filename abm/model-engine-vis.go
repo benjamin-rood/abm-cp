@@ -59,7 +59,7 @@ func (m *Model) vis(ec chan<- error) {
 				VpPop:     "0",
 				TurnCount: "0",
 			}
-		case <-m.rq: //	RUN stopped as channel closed – therefore we end VIS.
+		case <-m.halt: //	RUN stopped as channel closed – therefore we end VIS.
 			return
 		}
 	}
