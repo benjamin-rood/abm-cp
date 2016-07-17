@@ -26,7 +26,7 @@ func (m *Model) Controller() {
 			case "conditions": //	if conditions params msg is recieved, (re)start
 				if m.running {
 				register:
-					clash := gobr.WaitForSignalOnce(signature, m.turnSignal)
+					clash := gobr.WaitForSignalOnce(signature, m.turnSync)
 					if clash {
 						time.Sleep(pause)
 						goto register
@@ -46,7 +46,7 @@ func (m *Model) Controller() {
 				m.e <- m.Suspend()
 			}
 		case <-m.Quit:
-			gobr.WaitForSignalOnce(signature, m.turnSignal) //	will block until receiving turn broadcast once.
+			gobr.WaitForSignalOnce(signature, m.turnSync) //	will block until receiving turn broadcast once.
 			return
 		}
 	}
@@ -54,7 +54,6 @@ func (m *Model) Controller() {
 
 // Start the agent-based model
 func (m *Model) Start() error {
-	// _ = "breakpoint" // godebug
 	if m.running {
 		return errors.New("Model: Start() failed: model already running")
 	}
@@ -85,12 +84,12 @@ func (m *Model) Stop() error {
 	if !m.running {
 		return errors.New("Model: Stop() failed: model not currently running!")
 	}
-	close(m.rc)
+	close(m.rq)
 	m.running = false
 	m.popCpPrey = nil
 	m.popVisualPredator = nil
 	time.Sleep(pause)
-	m.rc = make(chan struct{})
+	m.rq = make(chan struct{})
 	return nil
 }
 
@@ -99,7 +98,7 @@ func (m *Model) Suspend() error {
 	if !m.running {
 		return errors.New("Model: Suspend() failed: model not currently running!")
 	}
-	close(m.rc)
+	close(m.rq)
 	m.running = false
 	time.Sleep(pause)
 	return nil
@@ -110,7 +109,7 @@ func (m *Model) Resume() error {
 	if m.running {
 		return errors.New("Model: Resume() failed: model already running")
 	}
-	m.rc = make(chan struct{})
+	m.rq = make(chan struct{})
 	go m.run(m.e)
 	m.running = true
 	if m.Visualise {
@@ -120,10 +119,4 @@ func (m *Model) Resume() error {
 		go m.log(m.e)
 	}
 	return nil
-}
-
-// kill off the model and any client bound to it - internal killoff switch
-func (m *Model) kill() {
-	m.Stop()
-	close(m.Quit)
 }

@@ -14,7 +14,7 @@ import (
 // 	go tm.ErrPrinter()
 // 	tm.Start()
 // 	select {
-// 	case <-tm.rc:
+// 	case <-tm.rq:
 // 		close(tm.Quit)
 // 		return
 // 	default:
@@ -34,9 +34,9 @@ func newTestModel() *Model {
 	tm.Im = make(chan gobr.InMsg)
 	tm.e = make(chan error)
 	tm.Quit = make(chan struct{})
-	tm.rc = make(chan struct{})
+	tm.rq = make(chan struct{})
 	tm.render = make(chan render.AgentRender)
-	tm.turnSignal = gobr.NewSignalHub()
+	tm.turnSync = gobr.NewSignalHub()
 	return &tm
 }
 

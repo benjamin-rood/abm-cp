@@ -9,7 +9,7 @@ func TestDefaultModelCreation(t *testing.T) {
 	go dm.ErrPrinter()
 	dm.Start()
 	select {
-	case <-dm.rc:
+	case <-dm.rq:
 		close(dm.Quit)
 		return
 	default:

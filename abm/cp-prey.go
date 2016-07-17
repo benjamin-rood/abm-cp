@@ -37,7 +37,7 @@ func (c *ColourPolymorphicPrey) UUID() string {
 	return c.uuid
 }
 
-// MarshalJSON implements json.Marshaler interface on a CP Prey  object
+// MarshalJSON implements json.Marshaler interface on a CP Prey object
 func (c ColourPolymorphicPrey) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"description":  c.description,
@@ -68,7 +68,7 @@ func GenerateCpPreyPopulation(size int, start int, mt int, conditions ConditionP
 	for i := 0; i < size; i++ {
 		agent := ColourPolymorphicPrey{}
 		agent.uuid = uuid()
-		agent.description = AgentDescription{AgentType: "cpPrey", AgentNum: start + i, ParentUUID: "", CreatedMT: mt, CreatedAT: timestamp}
+		agent.description = AgentDescription{AgentType: "CP Prey", AgentNum: start + i, ParentUUID: "", CreatedMT: mt, CreatedAT: timestamp}
 		agent.pos = geometry.RandVector(conditions.Bounds)
 		if conditions.CpPreyAgeing {
 			if conditions.RandomAges {

@@ -16,25 +16,30 @@ import (
 
 // Model acts as the working instance of the modelling session / 'game'
 type Model struct {
-	timestamp       string // instance inception time
-	running         bool
-	Timeframe       //  embedded Model clock
-	Environment     //  embedded environment attributes
-	ConditionParams //	embedded local model conditions and constraints
+	timestamp        string // instance inception time
+	running          bool
+	Timeframe        //  embedded Model clock
+	Environment      //  embedded environment attributes
+	ConditionParams  //	embedded local model conditions and constraints
+	AgentPopulations //	embedded slices of each agent type
 
-	popCpPrey         []ColourPolymorphicPrey // current prey agent population
-	popVisualPredator []VisualPredator        // current predator agent population
+	Om     chan gobr.OutMsg        // Outgoing comm channel – dispatches batch render instructions
+	Im     chan gobr.InMsg         // Incoming comm channel – receives user control messages
+	e      chan error              // error message channel - general
+	Quit   chan struct{}           // WebSckt monitor signal - external stop signal on ch close
+	rq     chan struct{}           // RUN stop signal on ch close
+	render chan render.AgentRender // VIS message channel
 
-	Om         chan gobr.OutMsg        // Outgoing WebSckt channel
-	Im         chan gobr.InMsg         // Incoming WebSckt channel
-	e          chan error              // error message channel
-	Quit       chan struct{}           // WebSckt monitor signal
-	rc         chan struct{}           // run signal
-	render     chan render.AgentRender // vis message channel
-	turnSignal *gobr.SignalHub         // synchronisation
+	turnSync *gobr.SignalHub // synchronisation
 
 	Stats  //	embedded global agent population statistics
-	DatBuf //	embedded buffer of last turn agent pop record for log
+	DatBuf //	embedded buffer of last turn agent pop record for LOG
+}
+
+// AgentPopulations collects slices of agent types of the `abm` package active in a model instance.
+type AgentPopulations struct {
+	popCpPrey         []ColourPolymorphicPrey // current prey agent population
+	popVisualPredator []VisualPredator        // current predator agent population
 }
 
 /*
@@ -170,14 +175,13 @@ func NewModel() *Model {
 	m.Im = make(chan gobr.InMsg)
 	m.e = make(chan error)
 	m.Quit = make(chan struct{})
-	m.rc = make(chan struct{})
+	m.rq = make(chan struct{})
 	m.render = make(chan render.AgentRender)
-	m.turnSignal = gobr.NewSignalHub()
+	m.turnSync = gobr.NewSignalHub()
 	return &m
 }
 
 // PopLog prints the current time and populations
-// shit version
 func (m *Model) PopLog() {
 	log.Printf("%04dT : %04dP : %04dA\n", m.Turn, m.Phase, m.Action)
 	log.Printf("cpPrey population size = %v\n", len(m.popCpPrey))
@@ -188,38 +192,4 @@ func uuid() string {
 	b := make([]byte, 16)
 	rand.Read(b)
 	return fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:])
-}
-
-func (m *Model) cpPreyRecordCopy() map[string]ColourPolymorphicPrey {
-	defer m.rcpPreyRW.RUnlock()
-	m.rcpPreyRW.RLock()
-	var record = make(map[string]ColourPolymorphicPrey)
-	for k, v := range m.recordCPP {
-		record[k] = v
-	}
-	return record
-}
-
-func (m *Model) cpPreyRecordAssignValue(key string, value ColourPolymorphicPrey) error {
-	defer m.rcpPreyRW.Unlock()
-	m.rcpPreyRW.Lock()
-	m.recordCPP[key] = value
-	return nil
-}
-
-func (m *Model) vpRecordCopy() map[string]VisualPredator {
-	defer m.rvpRW.RUnlock()
-	m.rvpRW.RLock()
-	var record = make(map[string]VisualPredator)
-	for k, v := range m.recordVP {
-		record[k] = v
-	}
-	return record
-}
-
-func (m *Model) vpRecordAssignValue(key string, value VisualPredator) error {
-	defer m.rvpRW.Unlock()
-	m.rvpRW.Lock()
-	m.recordVP[key] = value
-	return nil
 }

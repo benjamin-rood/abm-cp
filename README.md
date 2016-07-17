@@ -113,7 +113,7 @@ Base requirements completed.
 
 * Better Prey Search (using grid system), for ~2X speedup.
 
-* Client-side input validation.
+* WebScktClient-side input validation.
 
 ### 0.5.0
 

@@ -6,8 +6,8 @@ import (
 	"golang.org/x/net/websocket"
 )
 
-// Client defines the owner of the Model.
-type Client struct {
+// WebScktClient wraps the Model, bridging it to the WebSocket user connection.
+type WebScktClient struct {
 	*websocket.Conn
 	UUID string
 	Name string
@@ -17,9 +17,9 @@ type Client struct {
 	Stamp  time.Time
 }
 
-// NewClient constructor
-func NewClient(ws *websocket.Conn, uuid string) Client {
-	c := Client{}
+// NewWebScktClient constructor
+func NewWebScktClient(ws *websocket.Conn, uuid string) WebScktClient {
+	c := WebScktClient{}
 	c.Conn = ws
 	c.UUID = uuid
 	c.Name = "EMPTY"
@@ -35,8 +35,8 @@ func NewClient(ws *websocket.Conn, uuid string) Client {
 // – e.g. if there is a fault in the running abm,
 // or if the population of the CP Prey agents reaches zero,
 // then the model will invoke Kill() and Quit will close,
-// which permits us to clean up and disconnect the Client.
-func (c *Client) Monitor(ch chan struct{}) {
+// which permits us to clean up and disconnect the WebScktClient.
+func (c *WebScktClient) Monitor(ch chan struct{}) {
 	defer func() {
 		c.Active = false
 		c.Stamp = time.Now()
