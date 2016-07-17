@@ -11,12 +11,12 @@ func (m *Model) run(ec chan<- error) {
 	signature := "RUN_" + m.SessionIdentifier
 	for {
 		select {
-		case <-m.rc:
-			gobr.WaitForSignalOnce(signature, m.turnSignal) // block while waiting for turn to end.
+		case <-m.halt:
+			gobr.WaitForSignalOnce(signature, m.turnSync) // block while waiting for turn to end.
 			time.Sleep(pause)
 			return
 		case <-m.Quit:
-			gobr.WaitForSignalOnce(signature, m.turnSignal) // block while waiting for turn to end.
+			gobr.WaitForSignalOnce(signature, m.turnSync) // block while waiting for turn to end.
 			ec <- m.Stop()
 			time.Sleep(pause)
 			return
@@ -29,7 +29,8 @@ func (m *Model) run(ec chan<- error) {
 				ec <- m.Stop()
 				return
 			}
-			m.turn(ec) //	PROCEED WITH TURN
+			//	PROCEED WITH TURN
+			m.turn(ec)
 		}
 	}
 }
@@ -91,10 +92,10 @@ func (m *Model) turn(errCh chan<- error) {
 
 	m.popVisualPredator = vpAgents //	update the population based on the results from each agent's rule-based behaviour of the turn.
 	m.Phase++
-	m.Action = 0                  // reset at phase end
-	m.Phase = 0                   // reset at Turn end
-	_ = "breakpoint"              // godebug
-	m.turnSignal.Broadcast(false) // using blocking version to ensure turn synchronisation
+	m.Action = 0                // reset at phase end
+	m.Phase = 0                 // reset at Turn end
+	_ = "breakpoint"            // godebug
+	m.turnSync.Broadcast(false) // using blocking version to ensure turn synchronisation
 	m.Turn++
 	time.Sleep(time.Millisecond * 50) // sync wiggle room
 }

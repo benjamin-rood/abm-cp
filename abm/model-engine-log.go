@@ -14,19 +14,18 @@ import (
 
 // Data Logging process local to the model instance.
 func (m *Model) log(ec chan<- error) {
-	fmt.Println("starting logging...")
 	time.Sleep(pause)
 
 	signature := "LOG_" + m.SessionIdentifier
-	turn, clash := m.turnSignal.Register(signature)
+	turn, clash := m.turnSync.Register(signature)
 	if clash {
-		errStr := "Clash when registering Model: " + m.SessionIdentifier + " log: for sync with m.turnSignal"
+		errStr := "Clash when registering Model: " + m.SessionIdentifier + " log: for sync with m.turnSync"
 		ec <- errors.New(errStr)
 		return
 	}
 
 	defer func() {
-		m.turnSignal.Deregister(signature)
+		m.turnSync.Deregister(signature)
 		// Need to wipe the agent records too? -yes, probably... but should be in Stop()?
 	}()
 
@@ -38,7 +37,7 @@ func (m *Model) log(ec chan<- error) {
 
 	for {
 		select {
-		case <-m.rc: // run finished as rc channel closed!
+		case <-m.halt: // RUN stopped as rq channel closed – therefore we end LOG.
 			time.Sleep(time.Second)
 			// clean up?
 			return

@@ -8,16 +8,16 @@ import (
 	"github.com/benjamin-rood/gobr"
 )
 
-// Visualisation process local to the model instance.
+// Visualisation process local to the model instance, orchestrated with the RUN process
 func (m *Model) vis(ec chan<- error) {
 	signature := "VIS_" + m.SessionIdentifier
-	turn, clash := m.turnSignal.Register(signature)
+	turn, clash := m.turnSync.Register(signature)
 	if clash {
-		errStr := "Clash when registering Model: " + m.SessionIdentifier + " vis: for sync with m.turnSignal"
+		errStr := "Clash when registering Model: " + m.SessionIdentifier + " vis: for sync with m.turnSync"
 		ec <- errors.New(errStr)
 		return
 	}
-	defer m.turnSignal.Deregister(signature)
+	defer m.turnSync.Deregister(signature)
 
 	msg := gobr.OutMsg{Type: "render", Data: nil}
 	bg := m.BG.To256()
@@ -25,7 +25,7 @@ func (m *Model) vis(ec chan<- error) {
 		CPP:       nil,
 		VP:        nil,
 		BG:        bg,
-		CpPreyPop:    "0",
+		CpPreyPop: "0",
 		VpPop:     "0",
 		TurnCount: "0",
 	}
@@ -55,11 +55,11 @@ func (m *Model) vis(ec chan<- error) {
 				CPP:       nil,
 				VP:        nil,
 				BG:        bg,
-				CpPreyPop:    "0",
+				CpPreyPop: "0",
 				VpPop:     "0",
 				TurnCount: "0",
 			}
-		case <-m.rc: //	run channel closed!
+		case <-m.halt: //	RUN stopped as channel closed – therefore we end VIS.
 			return
 		}
 	}

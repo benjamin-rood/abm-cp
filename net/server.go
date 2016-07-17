@@ -18,7 +18,7 @@ const (
 )
 
 // global mutable index of current abm-cp users.
-var socketUsers = make(map[string]abm.Client)
+var socketUsers = make(map[string]abm.WebScktClient)
 
 func clientUUID() string {
 	b := make([]byte, 16)
@@ -27,7 +27,7 @@ func clientUUID() string {
 	return uuid
 }
 
-func sweepSocketClients() {
+func sweepSocketWebScktClients() {
 	sweeper := time.NewTicker(sweepFreq)
 	select {
 	case <-sweeper.C:
@@ -46,7 +46,7 @@ func sweepSocketClients() {
 func wsSession(ws *websocket.Conn) {
 	uuid := clientUUID()
 	log.Println("wsSession uuid:", uuid)
-	c := abm.NewClient(ws, uuid)
+	c := abm.NewWebScktClient(ws, uuid)
 	socketUsers[uuid] = c
 	defer func() {
 		err := c.Conn.Close()
@@ -60,7 +60,7 @@ func wsSession(ws *websocket.Conn) {
 	go c.Controller()
 	go wsReader(ws, c.Im, wsCh)
 	go wsWriter(ws, c.Om, wsCh)
-	c.Monitor(wsCh) //	keep alive
+	c.Monitor(wsCh) //	keep session alive
 }
 
 // TODO: don't pass the raw CONN, instead, pass the *client* ?
