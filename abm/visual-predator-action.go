@@ -6,8 +6,8 @@ import (
 	"github.com/benjamin-rood/abm-cp/calc"
 )
 
-// RBB : Rule-Based-Behaviour for Visual Predator Agent
-func (vp *VisualPredator) RBB(errCh chan<- error, conditions ConditionParams, start int, turn int, cpPreyPop []ColourPolymorphicPrey, neighbours []VisualPredator, me int) []VisualPredator {
+// Action : Rule-Based-Behaviour for Visual Predator Agent
+func (vp *VisualPredator) Action(errCh chan<- error, conditions ConditionParams, start int, turn int, cpPreyPop []ColourPolymorphicPrey, neighbours []VisualPredator, me int) []VisualPredator {
 	var returning []VisualPredator
 	var Φ float64
 	popSize := len(neighbours)
@@ -34,7 +34,7 @@ func (vp *VisualPredator) RBB(errCh chan<- error, conditions ConditionParams, st
 		children := vp.Birth(conditions, start, turn)
 		returning = append(returning, children...)
 	default:
-		log.Println("vp.RBB Switch: FAIL: jump =", jump)
+		log.Println("vp.Action Switch: FAIL: jump =", jump)
 	}
 Patrol:
 	Φ = calc.RandFloatIn(-vp.tr, vp.tr)
@@ -46,7 +46,7 @@ End:
 	return returning
 }
 
-// SearchAndAttack gathers the logic for these steps of the VP RBB
+// SearchAndAttack gathers the logic for these steps of the VP Action
 func (vp *VisualPredator) SearchAndAttack(prey []ColourPolymorphicPrey, conditions ConditionParams, errCh chan<- error) bool {
 	var attacking bool
 	var err error

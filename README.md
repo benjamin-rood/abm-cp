@@ -76,7 +76,7 @@ Base requirements completed.
 	* Exhaustive Prey Search (very slow). :white_check_mark:
 	* Colour Imprinting (needs tweaking, no baseline yet established). :white_check_mark:
 
-* Simple concurrent execution of Predator/Prey RBB. :white_check_mark:
+* Simple concurrent execution of Predator/Prey Action. :white_check_mark:
 
 * Unit tests for `geometry`, `calc`, `render` packages. :white_check_mark:
 
