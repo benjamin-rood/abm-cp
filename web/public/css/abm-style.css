@@ -1,0 +1,12 @@
+body {
+  padding: 50px;
+  background-color: #1e1e1e;
+  ::invalid {
+    background-color: #ff91a4
+  }
+  line-height: 1.8;
+}
+
+.container-parameters {
+  color: #b4b4b4;
+}

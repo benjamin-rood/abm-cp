@@ -2,7 +2,7 @@ package abm
 
 import "github.com/benjamin-rood/abm-cp/colour"
 
-// Default holds baseline parameters for a running model.
+// holds baseline parameters for a running model.
 
 const (
 	x = iota
@@ -38,9 +38,9 @@ const (
 	dVpMovS                   = 0.01
 	dVpMovA                   = 1.0
 	dVpTurn                   = eigthpi
-	dVpVsr                      = dVpMovS
+	dVpVsr                    = dVpMovS
 	dV𝛄                       = 0.3
-	dVpV𝛄Bump                   = 1.2
+	dVpV𝛄Bump                 = 1.2
 	dVpReproductiveChance     = 1.0
 	dVpSexualRequirement      = 50
 	dVpGestation              = 5
@@ -82,9 +82,9 @@ const (
 	tVpMovS                   = 0.2
 	tVpMovA                   = 1.0
 	tVpTurn                   = eigthpi / 2
-	tVpVpVsr                    = 0.2
+	tVpVpVsr                  = 0.2
 	tV𝛄                       = 0.2
-	tVpV𝛄Bump                   = 1.2
+	tVpV𝛄Bump                 = 1.2
 	tVpReproductiveChance     = 1.0
 	tVpSearchChance           = 1.0
 	tVpAttackChance           = 1.0
@@ -101,8 +101,8 @@ const (
 	tLimitDuration            = true
 	tFixedDuration            = 10 // two turns only
 	tSessionIdentifier        = "TestConditionParamsSession"
-	tVpBaseAttackGain                      = 20
-	tVpVbε                      = 3
+	tVpBaseAttackGain         = 20
+	tVpVbε                    = 3
 )
 
 var (
@@ -139,9 +139,9 @@ var (
 		VpMovS:                   dVpMovS,
 		VpMovA:                   1.0,
 		VpTurn:                   dVpTurn,
-		VpVsr:                      dVpVsr,
-		VpVb𝛄:                      dV𝛄,
-		VpV𝛄Bump:                   dVpV𝛄Bump,
+		VpVsr:                    dVpVsr,
+		VpVb𝛄:                    dV𝛄,
+		VpV𝛄Bump:                 dVpV𝛄Bump,
 		VpReproductionChance:     dVpReproductiveChance,
 		VpSexualRequirement:      dVpSexualRequirement,
 		VpGestation:              dVpGestation,
@@ -179,11 +179,11 @@ var (
 		VpMovS:                   tVpMovS,
 		VpMovA:                   1.0,
 		VpTurn:                   tVpTurn,
-		VpVsr:                      tVpVpVsr,
-		VpVb𝛄:                      tV𝛄,
-		VpV𝛄Bump:                   tVpV𝛄Bump,
-		VpVbε:                      tVpVbε,
-		VpBaseAttackGain:                      tVpBaseAttackGain,
+		VpVsr:                    tVpVpVsr,
+		VpVb𝛄:                    tV𝛄,
+		VpV𝛄Bump:                 tVpV𝛄Bump,
+		VpVbε:                    tVpVbε,
+		VpBaseAttackGain:         tVpBaseAttackGain,
 		VpReproductionChance:     tVpReproductiveChance,
 		VpSearchChance:           tVpSearchChance,
 		VpAttackChance:           tVpAttackChance,
@@ -202,4 +202,7 @@ var (
 		FixedDuration:            tFixedDuration,
 		SessionIdentifier:        tSessionIdentifier,
 	}
+
+	// PresetParams holds the parameters defined at the time of `abm-cp run`. If the [-l | --load] param is not specififed, then the default conditions will be used.
+	PresetParams = DefaultConditionParams
 )
