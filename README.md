@@ -5,7 +5,7 @@
 
 ###Note that all code is alpha until version 1.0
 
-###Current Version: 0.4.1a
+###Current Version: 0.4.6
 
 ![abm preview](https://giant.gfycat.com/FondPersonalAfricanparadiseflycatcher.gif)
 
@@ -35,13 +35,12 @@ Download external dependencies:
 
 *(All dependecies will be vendored into the `abm-cp` package from v1.0.0 onwards)*
 
-Change current directory to `$GOPATH/src/github.com/benjamin-rood/abm-cp/net` and run `go run server.go`
+Change current directory to `$GOPATH/src/github.com/benjamin-rood/abm-cp` and run `go install`.
+From there, calling `abm-cp run` from the shell prompt will start the websocket server.
 
-Point web browser at `localhost:9999`
+Point web browser at `localhost:8000`
 
-Current version only tested on Safari/Chrome on OS X and Chrome on Windows 7/8.1.
-
-Can be left running for days:
+Current version only tested on Safari on OS X.
 
 
 
@@ -112,38 +111,40 @@ Base requirements completed.
 
 * Use `ffjson`–generated custom Marshal/Unmarshal JSON methods for ~2X speedup when serialising render messages to client  :white_check_mark:
 
-* Import JSON-formatted text files as pre-defined modelling ConditionParams via browser upload.
+* Better Prey Search using 2d dimensional search trees.
 
-* Automatically gzip JSON-formatted logging files.
+* Browser-side input validation.
 
-* Better Prey Search (using grid system), for ~2X speedup.
+* Beging switch to `spf13/cobra` CLI system. :white_check_mark:
 
-* WebScktClient-side input validation.
+* Use k-dimensional tree for spatial partitioning of model environment, permitting optimal search. 
+(General implementation in Go already done using trees connected to pointers to elements in slices)
 
-### 0.5.0
+* Web-side input validation for web contextual parameters
+
+### 0.4.0
 
 * Have complete control over ABM computation, logging, visualisation from command-line, rather than just starting up a web server and controlling through the the browser.
 
 * Use uncompressed JSON-formatted logging for debug only.
 
-* Switch to a compressed binary encoding for log files. 
+* Switch to a compressed binary encoding for log files – or try FlatBuffers?
 
-### 0.6.0
+### 0.4.0
 
 * Switch data serialisation to Protocol Buffers (protobuf) ~10X speedup. Marshalling drawing instructions to JSON is currently the single most expensive action!
 
+###1.0.0 – Late 2016?
 
-### 1.0.0 – June 2016?
+**Use Amazon Web Services and switch to a model of cloud (distributed) computation and storage** for all log files, thus entirely taking the burden off the user for all hardware costs in the modelling. Whilst the need for CPU and memory optimisation along with data compression over the wire remains essential, the scale of the model environment and populations could become entirely unrestricted.
 
 * Switch all public html file to templated/generated ones based on conditions parameters etc.
 
 * Switch to `gopherjs` for all front-end code?
 
-* Use *k-dimensional tree* for spatial partitioning of model environment, permitting optimal search.
+* Allow end-user to switch between different browser layouts: Visualisation only, Standard and Statistical? $\Leftarrow$ Could use *Jupyter* to present graphing in browser?
 
-* Allow end-user to switch between different browser layouts: Visualisation only, Standard *and Statistical?*  ⟵ Could use Jupyter to present graphing in browser?
-
-*  Start ABM computation remotely and keep running after disconnection? *i.e. start the model running, leave it, reconnect based on session UUID at a later tim to check up or review results.*
+* Start ABM computation remotely and keep running after disconnection? i.e. start the model running, leave it, reconnect based on session UUID at a later tim to check up or review results.
 
 * Batch processing.
 
@@ -151,12 +152,12 @@ Base requirements completed.
 
 * Enable use in a distributed environment.
 
-* Complete testing suite.
+* Complete testing suite including integration tests.
 
-* Allow hot-swapping of different `abm` packages.
+* Allow hot-swapping of different `abm` variant packages.
 
 * Store modelling sessions to server database along with statistical data for later retrieval.
 
-* Fluid ABM timescale controls? ⟵ Doable, but probably not without switching to `gopherjs` so I can integrate it all within the same codebase.
+* Fluid ABM timescale controls?  Doable, but probably not without switching to gopherjs so I can integrate it all within the same codebase.
 
-* Optional recording of Visualisation to SVG frame sequence using `ajstarks/svgo`
+* Optional recording of Visualisation to SVG frame sequence using `ajstarks/svgo` package.

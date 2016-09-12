@@ -15,8 +15,9 @@
 package cmd
 
 import (
-	"fmt"
+	"log"
 
+	"github.com/benjamin-rood/abm-cp/web"
 	"github.com/spf13/cobra"
 )
 
@@ -26,8 +27,9 @@ var runCmd = &cobra.Command{
 	Short: "Single run of the abm-cp model.",
 	Long:  `Launches a single run of the abm-cp model either based on the condition presets or the default.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
-		fmt.Println("run called")
+		// TODO: Work your own magic Here
+		log.Println("run called")
+		web.WsServer("8000", "ws")
 	},
 }
 

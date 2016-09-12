@@ -2,6 +2,7 @@ package web
 
 import (
 	"crypto/rand"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -46,7 +47,8 @@ func sweepClients() {
 func wsSession(ws *websocket.Conn) {
 	uuid := clientUUID()
 	log.Println("wsSession uuid:", uuid)
-	c := abm.NewWebScktClient(ws, uuid)
+	paramsJSON, _ := json.MarshalIndent(abm.DefaultConditionParams, "", " ")
+	c := NewSocketClient(ws, uuid, json.RawMessage(paramsJSON))
 	Users[uuid] = &c
 	defer func() {
 		err := c.Conn.Close()
@@ -104,8 +106,10 @@ func wsWriter(ws *websocket.Conn, out <-chan gobr.OutMsg, quit <-chan struct{}) 
 	}
 }
 
-func webserver(port string, ws string) {
-	http.Handle("/", http.FileServer(http.Dir("./public")))
+// WsServer is the process launched by `abm-cp` program by default `run` command
+// soon will be
+func WsServer(port string, ws string) {
+	http.Handle("/", http.FileServer(http.Dir("./web/public")))
 	http.Handle(`/`+ws, websocket.Handler(wsSession))
 	http.ListenAndServe(`:`+port, nil) // need (channel-based?) way of closing this.
 }

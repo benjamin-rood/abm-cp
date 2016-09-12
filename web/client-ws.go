@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"time"
 
-	"golang.org/x/net/websocket"
 	"github.com/benjamin-rood/abm-cp/abm"
+	"golang.org/x/net/websocket"
 )
 
-// WebScktClient wraps the Model, bridging it to the WebSocket user connection.
-type WebScktClient struct {
+// SocketClient wraps the Model, bridging it to the WebSocket user connection.
+type SocketClient struct {
 	*websocket.Conn
 	UUID string
 	Name string
@@ -18,9 +18,9 @@ type WebScktClient struct {
 	timestamp time.Time
 }
 
-// NewWebScktClient constructor
-func NewWebScktClient(ws *websocket.Conn, uuid string, params json.RawMessage) WebScktClient {
-	c := WebScktClient{}
+// NewSocketClient constructor
+func NewSocketClient(ws *websocket.Conn, uuid string, params json.RawMessage) SocketClient {
+	c := SocketClient{}
 	c.Conn = ws
 	c.UUID = uuid
 	c.Name = "EMPTY"
@@ -35,9 +35,9 @@ func NewWebScktClient(ws *websocket.Conn, uuid string, params json.RawMessage) W
 // – e.g. if there is a fault in the running abm,
 // or if the population of the CP Prey agents reaches zero,
 // then the model will invoke Kill() and Quit will close,
-// which permits us to clean up and disconnect the WebScktClient.
+// which permits us to clean up and disconnect the SocketClient.
 // Implements abm.Client interface.
-func (c *WebScktClient) Monitor(ch chan struct{}) {
+func (c *SocketClient) Monitor(ch chan struct{}) {
 	defer func() {
 		c.active = false
 		c.timestamp = time.Now() //	record when closed.
@@ -58,12 +58,12 @@ func (c *WebScktClient) Monitor(ch chan struct{}) {
 	}
 }
 
-// Dead implements Client interface method for WebScktClient
-func (c *WebScktClient) Dead() bool {
+// Dead implements Client interface method for SocketClient
+func (c *SocketClient) Dead() bool {
 	return c.active
 }
 
-// TimeStamp implement Client interface method for WebScktClient
-func (c *WebScktClient) TimeStamp() time.Time {
+// TimeStamp implement Client interface method for SocketClient
+func (c *SocketClient) TimeStamp() time.Time {
 	return c.timestamp
 }
