@@ -1,13 +1,12 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/benjamin-rood/abm-cp)](https://goreportcard.com/report/github.com/benjamin-rood/abm-cp)
 
-[ReportCard-Url]: https://goreportcard.com/report/github.com/benjamin-rood/abm-cp
-[ReportCard-Image]: https://goreportcard.com/badge/github.com/benjamin-rood/abm-cp
-
 ###Note that all code is alpha until version 1.0
 
 ###Current Version: 0.4.6
 
-![abm preview](https://giant.gfycat.com/FondPersonalAfricanparadiseflycatcher.gif)
+GIF Preview: https://gfycat.com/NippyTidyCassowary
+
+YouTube Preview: https://www.youtube.com/watch?v=FJfskjJOQKc
 
 ##ConditionParams
 Software for computing a Predator-Prey Agent Based Model of prey colour polymorphism (CP) in Go. 
