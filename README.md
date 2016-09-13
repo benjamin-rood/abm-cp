@@ -8,7 +8,6 @@ GIF Preview: https://gfycat.com/NippyTidyCassowary
 
 YouTube Preview: https://www.youtube.com/watch?v=FJfskjJOQKc
 
-##ConditionParams
 Software for computing a Predator-Prey Agent Based Model of prey colour polymorphism (CP) in Go. 
 
 Written specifically to assist the research by Dr. James Dale in evaluating hypotheses for the evolutionary maintenance of extreme colour polymorphism.
