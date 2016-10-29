@@ -36,7 +36,7 @@ func NewSocketClient(ws *websocket.Conn, uuid string, params json.RawMessage) So
 // or if the population of the CP Prey agents reaches zero,
 // then the model will invoke Kill() and Quit will close,
 // which permits us to clean up and disconnect the SocketClient.
-// Implements abm.Client interface.
+// Implements abm.Client interface method for SocketClient.
 func (c *SocketClient) Monitor(ch chan struct{}) {
 	defer func() {
 		c.active = false
