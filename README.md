@@ -12,7 +12,7 @@ Software for computing a Predator-Prey Agent Based Model of prey colour polymorp
 
 Written specifically to assist the research by Dr. James Dale in evaluating hypotheses for the evolutionary maintenance of extreme colour polymorphism.
 
-[Initial Academic Recport](https://goo.gl/GjQqv6)
+[Initial Academic Report](https://goo.gl/GjQqv6)
 
 ##Goal
 
