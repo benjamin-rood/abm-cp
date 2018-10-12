@@ -1,8 +1,8 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/benjamin-rood/abm-cp)](https://goreportcard.com/report/github.com/benjamin-rood/abm-cp)
 
-###Note that all code is alpha until version 1.0
+### Note that all code is alpha until version 1.0
 
-###Current Version: 0.4.6
+### Current Version: 0.4.6
 
 GIF Preview: https://gfycat.com/NippyTidyCassowary
 
@@ -14,13 +14,13 @@ Written specifically to assist the research by Dr. James Dale in evaluating hypo
 
 [Initial Academic Report](https://goo.gl/GjQqv6)
 
-##Goal
+## Goal
 
 Server-side computation, client-side GUI controls and visualisation of the running ABM in a web browser.
 
 Generalise system so any `abm` package with local model conditions, agent design, etc can be hot-swapped in (linked via a command line flag) and run.
 
-###How to use:
+### How to use:
 
 Install Go from [here](https://golang.org/dl/).
 
